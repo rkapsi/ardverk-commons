@@ -1,0 +1,5 @@
+A collection of classes for concurrent programming that I have written
+over the past few years. It's a work in progress and maybe not suitable
+for production.
+
+See also <http://code.google.com/p/async-future>
