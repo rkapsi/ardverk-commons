@@ -35,7 +35,7 @@ public class ZipperList<E> implements Collection<E>, Serializable {
     
     @Override
     public boolean add(E e) {
-        zipper.add(e);
+        zipper = zipper.add(e);
         return true;
     }
 
