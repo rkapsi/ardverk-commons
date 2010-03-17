@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class Zipper<E> implements Iterable<E>, Serializable {
+public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     
     private static final long serialVersionUID = 8081213933323928016L;
 
@@ -35,8 +35,8 @@ public class Zipper<E> implements Iterable<E>, Serializable {
     }
     
     public static <E> Zipper<E> create(Iterable<? extends E> c) {
-        Zipper<E> list = create();
-        return list.addAll(c);
+        Zipper<E> zipper = create();
+        return zipper.addAll(c);
     }
     
     private final E element;
@@ -68,89 +68,94 @@ public class Zipper<E> implements Iterable<E>, Serializable {
     }
     
     public Zipper<E> addAll(Iterable<? extends E> c) {
-        Zipper<E> list = this;
+        Zipper<E> zipper = this;
         
         for (E element : c) {
-            list = list.add(element);
+            zipper = zipper.add(element);
         }
         
-        return list;
+        return zipper;
     }
     
-    public Zipper<E> remove(Object element) {
-        Zipper<E> list = create();
+    public Zipper<E> remove(Object o) {
+        Zipper<E> zipper = create();
         boolean found = false;
         
         for (Zipper<E> current = this; 
-                current != EMPTY; current = current.next) {
+                current != EMPTY; current = current.tail()) {
             
-            if (!found && PersistentUtils.equals(element, current.element)) {
+            E element = current.element();
+            if (!found && ZipperUtils.equals(o, element)) {
                 found = true;
                 continue;
             }
             
-            list = list.add(current.element);
+            zipper = zipper.add(element);
         }
         
-        return list;
+        return zipper;
     }
     
-    public Zipper<E> without(Object element) {
-        Zipper<E> list = create();
+    public Zipper<E> without(Object o) {
+        Zipper<E> zipper = create();
         
         for (Zipper<E> current = this; 
-                current != EMPTY; current = current.next) {
+                current != EMPTY; current = current.tail()) {
             
-            if (!PersistentUtils.equals(element, current.element)) {
-                list = list.add(current.element);
+            E element = current.element();
+            if (!ZipperUtils.equals(o, element)) {
+                zipper = zipper.add(element);
             }
         }
         
-        return list;
+        return zipper;
     }
     
     public Zipper<E> removeAll(Iterable<?> c) {
-        Zipper<E> list = this;
+        Zipper<E> zipper = this;
         for (Object element : c) {
-            if (list.isEmpty()) {
+            if (zipper.isEmpty()) {
                 break;
             }
             
-            list = list.remove(element);
+            zipper = zipper.remove(element);
         }
-        return list;
+        return zipper;
     }
     
     public Zipper<E> retainAll(Collection<?> c) {
-        Zipper<E> list = create();
+        Zipper<E> zipper = create();
         
         for (Zipper<E> current = this; 
-                current != EMPTY; current = current.next) {
-            if (c.contains(current.element)) {
-                list = list.add(current.element);
+                current != EMPTY; current = current.tail()) {
+            E element = current.element();
+            if (c.contains(element)) {
+                zipper = zipper.add(element);
             }
         }
         
-        return list;
+        return zipper;
     }
     
     public Zipper<E> retainAll(Zipper<?> c) {
-        Zipper<E> list = create();
+        Zipper<E> zipper = create();
         
         for (Zipper<E> current = this; 
-                current != EMPTY; current = current.next) {
-            if (c.contains(current.element)) {
-                list = list.add(current.element);
+                current != EMPTY; current = current.tail()) {
+            E element = current.element();
+            if (c.contains(element)) {
+                zipper = zipper.add(element);
             }
         }
         
-        return list;
+        return zipper;
     }
     
-    public boolean contains(Object element) {
+    public boolean contains(Object o) {
         for (Zipper<E> current = this; 
-                current != EMPTY; current = current.next) {
-            if (PersistentUtils.equals(element, current.element)) {
+                current != EMPTY; current = current.tail()) {
+            E element = current.element();
+            if (ZipperUtils.equals(o, element)) {
                 return true;
             }
         }
@@ -168,14 +173,14 @@ public class Zipper<E> implements Iterable<E>, Serializable {
     }
     
     public Zipper<E> flip() {
-        Zipper<E> list = create();
+        Zipper<E> zipper = create();
         
         for (Zipper<E> current = this; 
-                current != EMPTY; current = current.next) {
-            list = list.add(current.element);
+                current != EMPTY; current = current.tail()) {
+            zipper = zipper.add(current.element());
         }
         
-        return list;
+        return zipper;
     }
     
     public Iterator<E> iterator() {
@@ -208,20 +213,25 @@ public class Zipper<E> implements Iterable<E>, Serializable {
         
         int index = 0;
         for (Zipper<E> current = this; 
-                current != EMPTY; current = current.next) {
-            dst[index++] = (T)current.element;
+                current != EMPTY; current = current.tail()) {
+            dst[index++] = (T)current.element();
         }
         
         return dst;
     }
     
     @Override
+    public Zipper<E> clone() {
+        return create(this);
+    }
+
+    @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder("[");
         
         for (Zipper<E> current = this; 
-                current != EMPTY; current = current.next) {
-            buffer.append(current.element).append(", ");
+                current != EMPTY; current = current.tail()) {
+            buffer.append(current.element()).append(", ");
         }
         
         // Remove the last comma
@@ -248,8 +258,8 @@ public class Zipper<E> implements Iterable<E>, Serializable {
                 throw new NoSuchElementException();
             }
             
-            E element = current.element;
-            current = current.next;
+            E element = current.element();
+            current = current.tail();
             return element;
         }
     

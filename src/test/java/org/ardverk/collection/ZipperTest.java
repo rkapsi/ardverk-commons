@@ -20,11 +20,11 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-public class PersistentListTest {
+public class ZipperTest {
 
     @Test
     public void add() {
-        PersistentList<String> list = PersistentList.create();
+        Zipper<String> list = Zipper.create();
         list = list.add("Hello").add("World");
         
         TestCase.assertFalse(list.isEmpty());
