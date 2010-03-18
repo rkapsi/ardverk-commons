@@ -19,6 +19,7 @@ package org.ardverk.collection;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class ZipperList<E> implements Collection<E>, Serializable {
 
@@ -34,19 +35,19 @@ public class ZipperList<E> implements Collection<E>, Serializable {
     }
     
     @Override
-    public boolean add(E e) {
+    public synchronized boolean add(E e) {
         zipper = zipper.add(e);
         return true;
     }
 
     @Override
-    public boolean addAll(Collection<? extends E> c) {
+    public synchronized boolean addAll(Collection<? extends E> c) {
         zipper = zipper.addAll(c);
         return true;
     }
 
     @Override
-    public void clear() {
+    public synchronized void clear() {
         zipper = zipper.clear();
     }
 
@@ -67,25 +68,54 @@ public class ZipperList<E> implements Collection<E>, Serializable {
 
     @Override
     public Iterator<E> iterator() {
-        return zipper.iterator();
+        return new Iterator<E>() {
+            
+            private final Iterator<E> it = zipper.iterator();
+
+            private E element = null;
+            
+            private boolean flag = false;
+            
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public E next() {
+                element = it.next();
+                flag = true;
+                return element;
+            }
+
+            @Override
+            public void remove() {
+                if (!flag) {
+                    throw new NoSuchElementException();
+                }
+                
+                flag = false;
+                ZipperList.this.remove(element);
+            }
+        };
     }
 
     @Override
-    public boolean remove(Object o) {
+    public synchronized boolean remove(Object o) {
         zipper = zipper.remove(o);
         // TODO: Don't really know if item was found
         return true;
     }
 
     @Override
-    public boolean removeAll(Collection<?> c) {
+    public synchronized boolean removeAll(Collection<?> c) {
         zipper = zipper.removeAll(c);
         // TODO: Don't really know if all items were found
         return true;
     }
 
     @Override
-    public boolean retainAll(Collection<?> c) {
+    public synchronized boolean retainAll(Collection<?> c) {
         zipper = zipper.retainAll(c);
         // TODO: Don't really know if all items were found
         return true;
