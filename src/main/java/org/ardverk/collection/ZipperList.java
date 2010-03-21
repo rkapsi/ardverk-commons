@@ -21,7 +21,13 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class ZipperList<E> implements Collection<E>, Serializable {
+/**
+ * Insert: O(1)
+ * Remove: O(n)
+ * 
+ * http://en.wikipedia.org/wiki/Persistent_data_structure
+ */
+public class ZipperList<E> implements Collection<E>, Cloneable, Serializable {
 
     private static final long serialVersionUID = -8210279044829321415L;
     
@@ -31,7 +37,19 @@ public class ZipperList<E> implements Collection<E>, Serializable {
     }
     
     public ZipperList(Collection<E> c) {
+        if (c == null) {
+            throw new NullPointerException("c");
+        }
+        
         addAll(c);
+    }
+    
+    private ZipperList(Zipper<E> zipper) {
+        if (zipper == null) {
+            throw new NullPointerException("zipper");
+        }
+        
+        this.zipper = zipper;
     }
     
     @Override
@@ -42,8 +60,13 @@ public class ZipperList<E> implements Collection<E>, Serializable {
 
     @Override
     public synchronized boolean addAll(Collection<? extends E> c) {
-        zipper = zipper.addAll(c);
-        return true;
+        boolean modified = false;
+        for (E element : c) {
+            if (add(element)) {
+                modified = true;
+            }
+        }
+        return modified;
     }
 
     @Override
@@ -58,7 +81,12 @@ public class ZipperList<E> implements Collection<E>, Serializable {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return zipper.containsAll(c);
+        for (Object o : c) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override
@@ -102,28 +130,46 @@ public class ZipperList<E> implements Collection<E>, Serializable {
 
     @Override
     public synchronized boolean remove(Object o) {
-        zipper = zipper.remove(o);
-        // TODO: Don't really know if item was found
-        return true;
+        Zipper<E> after = zipper.remove(o);
+        if (after != zipper) {
+            zipper = after;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public synchronized boolean removeAll(Collection<?> c) {
-        zipper = zipper.removeAll(c);
-        // TODO: Don't really know if all items were found
-        return true;
+        boolean modified = false;
+        for (Iterator<?> it = iterator(); it.hasNext(); ) {
+            if (c.contains(it.next())) {
+                it.remove();
+                modified = true;
+            }
+        }
+        return modified;
     }
 
     @Override
     public synchronized boolean retainAll(Collection<?> c) {
-        zipper = zipper.retainAll(c);
-        // TODO: Don't really know if all items were found
-        return true;
+        boolean modified = false;
+        for (Iterator<?> it = iterator(); it.hasNext(); ) {
+            if (!c.contains(it.next())) {
+                it.remove();
+                modified = true;
+            }
+        }
+        return modified;
     }
 
     @Override
     public int size() {
         return zipper.size();
+    }
+    
+    @Override
+    public ZipperList<E> clone() {
+        return new ZipperList<E>(zipper);
     }
     
     @Override

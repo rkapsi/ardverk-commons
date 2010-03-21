@@ -18,7 +18,6 @@ package org.ardverk.collection;
 
 import java.io.Serializable;
 import java.lang.reflect.Array;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -36,7 +35,12 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     
     public static <E> Zipper<E> create(Iterable<? extends E> c) {
         Zipper<E> zipper = create();
-        return zipper.addAll(c);
+        
+        for (E element : c) {
+            zipper = zipper.add(element);
+        }
+        
+        return zipper;
     }
     
     private final E element;
@@ -67,109 +71,35 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         return new Zipper<E>(element, size+1, this);
     }
     
-    public Zipper<E> addAll(Iterable<? extends E> c) {
-        Zipper<E> zipper = this;
-        
-        for (E element : c) {
-            zipper = zipper.add(element);
-        }
-        
-        return zipper;
-    }
-    
     public Zipper<E> remove(Object o) {
         Zipper<E> zipper = create();
-        boolean found = false;
+        boolean modified = false;
         
         for (Zipper<E> current = this; 
                 current != EMPTY; current = current.tail()) {
             
             E element = current.element();
-            if (!found && ZipperUtils.equals(o, element)) {
-                found = true;
+            if (!modified && equals(o, element)) {
+                modified = true;
                 continue;
             }
             
             zipper = zipper.add(element);
         }
         
-        return zipper;
-    }
-    
-    public Zipper<E> without(Object o) {
-        Zipper<E> zipper = create();
-        
-        for (Zipper<E> current = this; 
-                current != EMPTY; current = current.tail()) {
-            
-            E element = current.element();
-            if (!ZipperUtils.equals(o, element)) {
-                zipper = zipper.add(element);
-            }
-        }
-        
-        return zipper;
-    }
-    
-    public Zipper<E> removeAll(Iterable<?> c) {
-        Zipper<E> zipper = this;
-        for (Object element : c) {
-            if (zipper.isEmpty()) {
-                break;
-            }
-            
-            zipper = zipper.remove(element);
-        }
-        return zipper;
-    }
-    
-    public Zipper<E> retainAll(Collection<?> c) {
-        Zipper<E> zipper = create();
-        
-        for (Zipper<E> current = this; 
-                current != EMPTY; current = current.tail()) {
-            E element = current.element();
-            if (c.contains(element)) {
-                zipper = zipper.add(element);
-            }
-        }
-        
-        return zipper;
-    }
-    
-    public Zipper<E> retainAll(Zipper<?> c) {
-        Zipper<E> zipper = create();
-        
-        for (Zipper<E> current = this; 
-                current != EMPTY; current = current.tail()) {
-            E element = current.element();
-            if (c.contains(element)) {
-                zipper = zipper.add(element);
-            }
-        }
-        
-        return zipper;
+        return modified ? zipper : this;
     }
     
     public boolean contains(Object o) {
         for (Zipper<E> current = this; 
                 current != EMPTY; current = current.tail()) {
             E element = current.element();
-            if (ZipperUtils.equals(o, element)) {
+            if (equals(o, element)) {
                 return true;
             }
         }
         
         return false;
-    }
-    
-    public boolean containsAll(Iterable<?> c) {
-        for (Object o : c) {
-            if (!contains(o)) {
-                return false;
-            }
-        }
-        return true;
     }
     
     public Zipper<E> flip() {
@@ -222,7 +152,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     
     @Override
     public Zipper<E> clone() {
-        return create(this);
+        return this;
     }
 
     @Override
@@ -243,9 +173,22 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         return buffer.toString();
     }
     
+    private static boolean equals(Object a, Object b) {
+        if (a == null) {
+            return b == null;
+        } else if (b == null) {
+            return false;
+        }
+        
+        return a.equals(b);
+    }
+
     private class ZipperItereator implements Iterator<E> {
     
         private Zipper<E> current = Zipper.this;
+        
+        private ZipperItereator() {
+        }
         
         @Override
         public boolean hasNext() {
@@ -260,6 +203,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
             
             E element = current.element();
             current = current.tail();
+            
             return element;
         }
     
