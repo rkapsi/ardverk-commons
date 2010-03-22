@@ -47,7 +47,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     
     private final int size;
     
-    private final Zipper<E> tail;
+    private volatile Zipper<E> tail;
     
     private Zipper(E element, int size, Zipper<E> tail) {
         this.element = element;
@@ -85,6 +85,41 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
             }
             
             zipper = zipper.add(element);
+        }
+        
+        return modified ? zipper : this;
+    }
+    
+    public Zipper<E> remove2(Object o) {
+        Zipper<E> zipper = null;
+        Zipper<E> tail = null;
+        
+        boolean modified = false;
+        
+        int size = size();
+        for (Zipper<E> current = this; 
+                current != EMPTY; current = current.tail()) {
+            
+            E element = current.element();
+            if (!modified && equals(o, element)) {
+                modified = true;
+                continue;
+            }
+            
+            if (zipper == null) {
+                zipper = new Zipper<E>(element, --size, null);
+                tail = zipper;
+            } else {
+                tail.tail = new Zipper<E>(element, --size, null);
+                tail = tail.tail;
+            }
+        }
+        
+        if (zipper == null) {
+            zipper = create();
+            tail = zipper;
+        } else {
+            tail.tail = create();            
         }
         
         return modified ? zipper : this;
@@ -211,5 +246,12 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         public void remove() {
             throw new UnsupportedOperationException();
         }
+    }
+    
+    public static void main(String[] args) {
+        Zipper<Object> zipper = Zipper.create().add("Hello").add("World").add("Foo").add("Bar").add("1").add("2").add("3");
+        System.out.println(zipper.size());
+        System.out.println(zipper.remove("Foo").size());
+        System.out.println(zipper.remove2("Foo").size());
     }
 }
