@@ -47,12 +47,12 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     
     private final int size;
     
-    private final Zipper<E> next;
+    private final Zipper<E> tail;
     
-    private Zipper(E element, int size, Zipper<E> next) {
+    private Zipper(E element, int size, Zipper<E> tail) {
         this.element = element;
         this.size = size;
-        this.next = next;
+        this.tail = tail;
     }
     
     public E element() {
@@ -64,7 +64,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     }
     
     public Zipper<E> tail() {
-        return next;
+        return tail;
     }
     
     public Zipper<E> add(E element) {

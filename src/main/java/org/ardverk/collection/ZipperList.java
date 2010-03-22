@@ -26,6 +26,7 @@ import java.util.NoSuchElementException;
  * Remove: O(n)
  * 
  * http://en.wikipedia.org/wiki/Persistent_data_structure
+ * http://en.wikipedia.org/wiki/Zipper_(data_structure)
  */
 public class ZipperList<E> implements Collection<E>, Cloneable, Serializable {
 
