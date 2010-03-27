@@ -90,6 +90,8 @@ public class ExecutorGroup implements Executor {
     
     private boolean open = true;
     
+    private boolean closed = false;
+    
     public ExecutorGroup(Executor executor) {
         this(executor, new LinkedList<Runnable>());
     }
@@ -121,29 +123,50 @@ public class ExecutorGroup implements Executor {
         this.queue = queue;
     }
     
+    /**
+     * Returns the {@link Executor}
+     */
     public Executor getExecutor() {
         return executor;
     }
     
+    /**
+     * Returns the {@link Scheduler}
+     */
     public Scheduler getScheduler() {
         return scheduler;
     }
     
+    /**
+     * Returns the {@link Queue}
+     */
     public Queue<Runnable> getQueue() {
         return queue;
     }
     
+    /**
+     * Initiates an orderly shutdown in which previously submitted tasks 
+     * are executed, but no new tasks will be accepted.
+     */
     public synchronized void shutdown() {
         if (open) {
             open = false;
             
-            if (queue.isEmpty()) {
-                List<Runnable> tasks = Collections.emptyList();
+            if (!closed && !scheduled) {
+                closed = true;
+                
+                List<Runnable> tasks 
+                    = Collections.emptyList();
                 executorClosed(tasks);
             }
         }
     }
     
+    /**
+     * Attempts to stop all actively executing tasks, halts the processing 
+     * of waiting tasks, and returns a list of the tasks that were awaiting 
+     * execution.
+     */
     public synchronized List<Runnable> shutdownNow() {
         if (open) {
             open = false;
@@ -152,29 +175,49 @@ public class ExecutorGroup implements Executor {
                 = new ArrayList<Runnable>(queue);
             queue.clear();
             
-            executorClosed(copy);
+            if (!closed && !scheduled) {
+                closed = true;
+                executorClosed(copy);
+            }
             
             return copy;
         }
         return Collections.emptyList();
     }
     
+    /**
+     * Returns true if this executor has been shut down.
+     */
     public synchronized boolean isShutdown() {
         return !open;
     }
     
+    /**
+     * Returns true if all tasks have completed following shut down.
+     */
     public synchronized boolean isTerminated() {
         return !open && queue.isEmpty();
     }
     
+    /**
+     * Returns true if the {@link Queue} is empty.
+     */
     public synchronized boolean isEmpty() {
         return queue.isEmpty();
     }
     
+    /**
+     * Returns the {@link Queue} size.
+     */
     public synchronized int size() {
         return queue.size();
     }
     
+    /**
+     * Blocks until all tasks have completed execution after a shutdown 
+     * request, or the timeout occurs, or the current thread is interrupted, 
+     * whichever happens first.
+     */
     public synchronized boolean awaitTermination(long timeout, TimeUnit unit) 
             throws InterruptedException {
         
@@ -225,7 +268,7 @@ public class ExecutorGroup implements Executor {
     }
     
     private synchronized boolean executeIfNotAlready() {
-        if (!scheduled && !queue.isEmpty()) {
+        if (!scheduled) {
             scheduled = true;
             executor.execute(processor);
             return true;
@@ -240,6 +283,13 @@ public class ExecutorGroup implements Executor {
         }
         
         if (isTerminated()) {
+            if (!closed) {
+                closed = true;
+                List<Runnable> tasks 
+                    = Collections.emptyList();
+                executorClosed(tasks);
+            }
+            
             notifyAll();
         }
         
