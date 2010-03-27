@@ -1,3 +1,19 @@
+/*
+ * Copyright 2010 Roger Kapsi
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package org.ardverk.concurrent;
 
 import java.lang.Thread.UncaughtExceptionHandler;
@@ -7,16 +23,50 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * An {@link ExecutorGroup} is an {@link Executor} that preserves the 
+ * execution order in which {@link Runnable}s were added if the underlying 
+ * {@link Executor} is using more than one {@link Thread}.
  * 
+ * In other words it's like an {@link Executors#newSingleThreadExecutor()}
+ * but done with more than one {@link Thread}.
+ * 
+ * For example there could be a Connection class that has the ability to
+ * send messages. The requirement is to send messages in sequential order
+ * but off-load the operation to a different {@link Thread} and at the same
+ * time utilize more one {@link Thread}.
+ * 
+ * static Executor EXECUTOR = Executors.newFixedThreadPool(16);
+ * 
+ * class Connection {
+ *     
+ *     private final ExecutorGroup group = new ExecutorGroup(EXECUTOR);
+ *     
+ *     public void sendMessage() {
+ *         group.execute(new Runnable() {
+ *             public void run() {
+ *                 // Do Something
+ *             }
+ *         });
+ *     }
+ * }
  */
 public class ExecutorGroup implements Executor {
 
-    public static final Scheduler ONE = new DefaultScheduler(1);
+    /**
+     * Takes one {@link Runnable} from the {@link Queue}, executes
+     * it and reschedules itself if necessary.
+     */
+    public static final Scheduler DEFAULT = new DefaultScheduler(1);
     
+    /**
+     * Takes all {@link Runnable}s from the queue, executes them
+     * and reschedules itself if necessary.
+     */
     public static final Scheduler DRAIN = new DefaultScheduler(-1);
     
     private final Executor executor;
@@ -45,7 +95,7 @@ public class ExecutorGroup implements Executor {
     }
     
     public ExecutorGroup(Executor executor, Queue<Runnable> queue) {
-        this(executor, ONE, queue);
+        this(executor, DEFAULT, queue);
     }
     
     public ExecutorGroup(Executor executor, Scheduler scheduler) {
@@ -200,10 +250,12 @@ public class ExecutorGroup implements Executor {
         Runnable task = null;
         long timeStamp = System.currentTimeMillis();
         int index = 0;
+        boolean doContinue = true;
         
         try {
-            while (doNext(index, timeStamp) && (task = poll()) != null) {
-                doRun(task, index, timeStamp);
+            while (doContinue && doNext(index, timeStamp) 
+                    && (task = poll()) != null) {
+                doContinue = doRun(task, index, timeStamp);
                 ++index;
             }
         } finally {
@@ -215,12 +267,13 @@ public class ExecutorGroup implements Executor {
         return scheduler.doNext(this, index, timeStamp);
     }
     
-    protected void doRun(Runnable task, int index, long timeStamp) {
+    protected boolean doRun(Runnable task, int index, long timeStamp) {
         try {
             task.run();
         } catch (Exception t) {
             exceptionCaught(Thread.currentThread(), task, t);
         }
+        return true;
     }
     
     protected void exceptionCaught(Thread thread, Runnable task, Throwable t) {
