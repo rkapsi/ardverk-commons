@@ -16,7 +16,6 @@
 
 package org.ardverk.concurrent;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -26,6 +25,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import org.ardverk.utils.ExceptionUtils;
 
 /**
  * An {@link ExecutorGroup} is an {@link Executor} that preserves the 
@@ -248,6 +249,9 @@ public class ExecutorGroup implements Executor {
         }
     }
     
+    /**
+     * 
+     */
     private synchronized boolean offer(Runnable task) {
         if (task == null) {
             throw new NullPointerException("task");
@@ -263,10 +267,16 @@ public class ExecutorGroup implements Executor {
         return added;
     }
     
+    /**
+     * 
+     */
     private synchronized Runnable poll() {
         return queue.poll();
     }
     
+    /**
+     * 
+     */
     private synchronized boolean executeIfNotAlready() {
         if (!scheduled) {
             scheduled = true;
@@ -276,6 +286,9 @@ public class ExecutorGroup implements Executor {
         return false;
     }
     
+    /**
+     * 
+     */
     private synchronized boolean reschedule() {
         scheduled = !queue.isEmpty();
         if (scheduled) {
@@ -296,6 +309,9 @@ public class ExecutorGroup implements Executor {
         return scheduled;
     }
     
+    /**
+     * 
+     */
     private void process() {
         Runnable task = null;
         long timeStamp = System.currentTimeMillis();
@@ -313,10 +329,16 @@ public class ExecutorGroup implements Executor {
         }
     }
     
+    /**
+     * 
+     */
     protected boolean doNext(int index, long timeStamp) {
         return scheduler.doNext(this, index, timeStamp);
     }
     
+    /**
+     * 
+     */
     protected boolean doRun(Runnable task, int index, long timeStamp) {
         try {
             task.run();
@@ -326,16 +348,11 @@ public class ExecutorGroup implements Executor {
         return true;
     }
     
+    /**
+     * 
+     */
     protected void exceptionCaught(Thread thread, Runnable task, Throwable t) {
-        UncaughtExceptionHandler ueh 
-            = thread.getUncaughtExceptionHandler();
-        if (ueh == null) {
-            ueh = Thread.getDefaultUncaughtExceptionHandler();
-        }
-        
-        if (ueh != null) {
-            ueh.uncaughtException(thread, t);
-        }
+        ExceptionUtils.exceptionCaught(t);
     }
     
     /**

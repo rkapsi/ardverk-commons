@@ -16,7 +16,6 @@
 
 package org.ardverk.concurrent;
 
-import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
@@ -43,9 +42,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see EventThreadProvider
  */
 public class AsyncExecutors {
-    
-    private static final UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER 
-        = new DefaultUncaughtExceptionHandler();
     
     private static final EventThreadProvider PROVIDER;
     
@@ -290,25 +286,6 @@ public class AsyncExecutors {
     }
     
     /**
-     * An utility method that will pass the given {@link Throwable}
-     * to the calling {@link Thread}'s {@link UncaughtExceptionHandler}.
-     */
-    static void exceptionCaught(Throwable t) {
-        Thread thread = Thread.currentThread();
-        UncaughtExceptionHandler ueh 
-            = thread.getUncaughtExceptionHandler();
-        if (ueh == null) {
-            ueh = Thread.getDefaultUncaughtExceptionHandler();
-            
-            if (ueh == null) {
-                ueh = UNCAUGHT_EXCEPTION_HANDLER;
-            }
-        }
-        
-        ueh.uncaughtException(thread, t);
-    }
-    
-    /**
      * The default event {@link Thread} provider that is being used 
      * if no other {@link EventThreadProvider} was given.
      */
@@ -387,19 +364,6 @@ public class AsyncExecutors {
             }
             
             return t;
-        }
-    }
-    
-    /**
-     * An {@link UncaughtExceptionHandler} that is printing the
-     * stack trace.
-     */
-    private static class DefaultUncaughtExceptionHandler 
-            implements UncaughtExceptionHandler {
-        
-        @Override
-        public void uncaughtException(Thread t, Throwable e) {
-            e.printStackTrace();
         }
     }
 }
