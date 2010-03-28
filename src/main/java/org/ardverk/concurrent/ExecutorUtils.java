@@ -16,9 +16,7 @@
 
 package org.ardverk.concurrent;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -103,7 +101,7 @@ public class ExecutorUtils {
         ThreadFactory threadFactory 
             = new DefaultThreadFactory(name);
             
-        return new ManagedExecutor(0, Integer.MAX_VALUE,
+        return new ManagedThreadPoolExecutor(0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(), 
                 threadFactory,
@@ -141,53 +139,10 @@ public class ExecutorUtils {
         ThreadFactory threadFactory 
             = new DefaultThreadFactory(name);
             
-        return new ManagedExecutor(nThreads, nThreads,
+        return new ManagedThreadPoolExecutor(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(), 
                 threadFactory,
                 frequency, unit);
-    }
-    
-    private static class ManagedExecutor extends ThreadPoolExecutor {
-
-        private static final ScheduledThreadPoolExecutor EXECUTOR 
-            = ExecutorUtils.newSingleThreadScheduledExecutor(
-                "ManagedExecutorThread");
-        
-        private final ScheduledFuture<?> future;
-        
-        public ManagedExecutor(int corePoolSize, int maximumPoolSize,
-                long keepAliveTime, TimeUnit unit,
-                BlockingQueue<Runnable> workQueue,
-                ThreadFactory threadFactory,
-                long purgeFrequency, TimeUnit purgeUnit) {
-            super(corePoolSize, maximumPoolSize, 
-                    keepAliveTime, unit, workQueue, threadFactory);
-            
-            ScheduledFuture<?> future = null;
-            if (purgeFrequency != -1L) {
-                
-                Runnable task = new ManagedRunnable() {
-                    @Override
-                    protected void doRun() {
-                        ManagedExecutor.this.purge();
-                    }
-                };
-                
-                future = EXECUTOR.scheduleWithFixedDelay(
-                        task, purgeFrequency, purgeFrequency, purgeUnit);
-            }
-            
-            this.future = future;
-        }
-
-        @Override
-        protected void terminated() {
-            if (future != null) {
-                future.cancel(true);
-            }
-            
-            super.terminated();
-        }
     }
 }
