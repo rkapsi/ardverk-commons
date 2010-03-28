@@ -502,6 +502,6 @@ public class AsyncFutureTask<V> implements AsyncRunnableFuture<V> {
             int defaultThreadCount, String name) {
         int nThreads = SystemUtils.getInteger(
                 AsyncFutureTask.class, "watchdogThreadCount", defaultThreadCount);
-        return AsyncExecutors.newScheduledThreadPool(nThreads, name);
+        return ExecutorUtils.newScheduledThreadPool(nThreads, name);
     }
 }

@@ -93,4 +93,10 @@ public class AsyncThreadPoolExecutor extends ThreadPoolExecutor
         execute(future);
         return future;
     }
+
+    @Override
+    protected void terminated() {
+        // TODO Auto-generated method stub
+        super.terminated();
+    }
 }

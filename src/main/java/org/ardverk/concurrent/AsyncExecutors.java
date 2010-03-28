@@ -22,14 +22,11 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-
-import org.ardverk.utils.SystemUtils;
 
 /**
  * Factory and utility methods for {@link AsyncExecutor}, 
@@ -47,9 +44,6 @@ import org.ardverk.utils.SystemUtils;
  */
 public class AsyncExecutors {
     
-    private static final long PURGE_FREQUENCY 
-        = SystemUtils.getLong(AsyncExecutors.class, "purgeFrequency", 30L * 1000L);
-
     private static final UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER 
         = new DefaultUncaughtExceptionHandler();
     
@@ -272,39 +266,6 @@ public class AsyncExecutors {
     }
     
     /**
-     * Creates and returns a {@link ScheduledThreadPoolExecutor}.
-     * 
-     * @link http://www.kapsi.de/blog/?p=129
-     */
-    static ScheduledThreadPoolExecutor newScheduledThreadPool(
-            int count, String name) {
-        return newScheduledThreadPool(count, name, PURGE_FREQUENCY);
-    }
-    
-    private static ScheduledThreadPoolExecutor newScheduledThreadPool(
-            int count, String name, long purgeFrequency) {
-        
-        final ScheduledThreadPoolExecutor executor 
-            = (ScheduledThreadPoolExecutor)
-                Executors.newScheduledThreadPool(count, 
-                        defaultThreadFactory(name));
-        
-        if (purgeFrequency > 0L) {
-            Runnable task = new ResilientRunnable() {
-                @Override
-                protected void execute() {
-                    executor.purge();
-                }
-            };
-            
-            executor.scheduleWithFixedDelay(task, PURGE_FREQUENCY, 
-                    PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
-        }
-        
-        return executor;
-    }
-    
-    /**
      * Returns true if the caller {@link Thread} is the same as the event 
      * {@link Thread}. In other words {@link Thread}s can use method to 
      * determinate if they are the event {@link Thread}.
@@ -382,36 +343,6 @@ public class AsyncExecutors {
             }
             
             executor.execute(event);
-        }
-    }
-    
-    /**
-     * Instances of this {@link Runnable} catch all {@link Exception} that
-     * are being thrown in the {@link #run()} method and pass them up to
-     * the {@link Thread}'s {@link UncaughtExceptionHandler}.
-     */
-    private static abstract class ResilientRunnable implements Runnable {
-        
-        @Override
-        public final void run() {
-            try {
-                execute();
-            } catch (Exception err) {
-                caughtException(err);
-            }
-        }
-        
-        /**
-         * This method is being called by {@link #run()}.
-         */
-        protected abstract void execute() throws Exception;
-        
-        /**
-         * This method is being called by {@link #run()} in case of 
-         * an {@link Exception}.
-         */
-        protected void caughtException(Throwable t) {
-            AsyncExecutors.exceptionCaught(t);
         }
     }
     
