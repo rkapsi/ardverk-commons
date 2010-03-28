@@ -16,6 +16,9 @@
 
 package org.ardverk.concurrent;
 
+/**
+ * A default implementation of a {@link Scheduler}.
+ */
 public class DefaultScheduler implements Scheduler {
     
     private final int max;

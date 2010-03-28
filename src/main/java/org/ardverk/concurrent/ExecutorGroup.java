@@ -157,7 +157,7 @@ public class ExecutorGroup implements Executor {
                 
                 List<Runnable> tasks 
                     = Collections.emptyList();
-                executorClosed(tasks);
+                terminated(tasks);
             }
         }
     }
@@ -177,7 +177,7 @@ public class ExecutorGroup implements Executor {
             
             if (!closed && !scheduled) {
                 closed = true;
-                executorClosed(copy);
+                terminated(copy);
             }
             
             return copy;
@@ -287,7 +287,7 @@ public class ExecutorGroup implements Executor {
                 closed = true;
                 List<Runnable> tasks 
                     = Collections.emptyList();
-                executorClosed(tasks);
+                terminated(tasks);
             }
             
             notifyAll();
@@ -338,9 +338,16 @@ public class ExecutorGroup implements Executor {
         }
     }
     
+    /**
+     * 
+     */
     protected void complete(int count, long timeStamp) {
     }
     
-    protected void executorClosed(List<? extends Runnable> tasks) {
+    /**
+     * Method invoked when the {@link ExecutorGroup} has terminated. 
+     * Default implementation does nothing.
+     */
+    protected void terminated(List<? extends Runnable> tasks) {
     }
 }

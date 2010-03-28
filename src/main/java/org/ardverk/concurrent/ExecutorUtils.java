@@ -26,7 +26,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 
+ * A utility class to create {@link ScheduledThreadPoolExecutor}s and
+ * {@link ThreadPoolExecutor}s.
  */
 public class ExecutorUtils {
 
@@ -34,20 +35,32 @@ public class ExecutorUtils {
     
     private ExecutorUtils() {}
     
+    /**
+     * Creates and returns a {@link ScheduledThreadPoolExecutor}
+     */
     public static ScheduledThreadPoolExecutor newSingleThreadScheduledExecutor(String name) {
         return newSingleThreadScheduledExecutor(name, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
     }
     
+    /**
+     * Creates and returns a {@link ScheduledThreadPoolExecutor}
+     */
     public static ScheduledThreadPoolExecutor newSingleThreadScheduledExecutor(
             String name, long frequency, TimeUnit unit) {
         return newScheduledThreadPool(1, name, frequency, unit);
     }
     
+    /**
+     * Creates and returns a {@link ScheduledThreadPoolExecutor}
+     */
     public static ScheduledThreadPoolExecutor newScheduledThreadPool(
             int corePoolSize, String name) {
         return newScheduledThreadPool(corePoolSize, name, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
     }
     
+    /**
+     * Creates and returns a {@link ScheduledThreadPoolExecutor}
+     */
     public static ScheduledThreadPoolExecutor newScheduledThreadPool(
             int corePoolSize, String name, long frequency, TimeUnit unit) {
         
@@ -68,10 +81,16 @@ public class ExecutorUtils {
         return executor;
     }
 
+    /**
+     * Creates and returns a {@link ThreadPoolExecutor}
+     */
     public static ThreadPoolExecutor newCachedThreadPool(String name) {
         return newCachedThreadPool(name, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
     }
     
+    /**
+     * Creates and returns a {@link ThreadPoolExecutor}
+     */
     public static ThreadPoolExecutor newCachedThreadPool(String name, 
             long frequency, TimeUnit unit) {
         
@@ -85,21 +104,33 @@ public class ExecutorUtils {
                 frequency, unit);
     }
     
+    /**
+     * Creates and returns a {@link ThreadPoolExecutor}
+     */
     public static ThreadPoolExecutor newSingleThreadExecutor(int nThreads, String name) {
         return newSingleThreadExecutor(nThreads, name, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
     }
     
+    /**
+     * Creates and returns a {@link ThreadPoolExecutor}
+     */
     public static ThreadPoolExecutor newSingleThreadExecutor(int nThreads, 
             String name, long frequency, TimeUnit unit) {
         return newFixedThreadPool(1, name, frequency, unit);
     }
     
+    /**
+     * Creates and returns a {@link ThreadPoolExecutor}
+     */
     public static ThreadPoolExecutor newFixedThreadPool(int nThreads, String name) {
         return newFixedThreadPool(nThreads, name, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
     }
     
-    public static ThreadPoolExecutor newFixedThreadPool(int nThreads, String name, 
-            long frequency, TimeUnit unit) {
+    /**
+     * Creates and returns a {@link ThreadPoolExecutor}
+     */
+    public static ThreadPoolExecutor newFixedThreadPool(int nThreads, 
+            String name, long frequency, TimeUnit unit) {
         
         ThreadFactory threadFactory 
             = new DefaultThreadFactory(name);
@@ -129,7 +160,7 @@ public class ExecutorUtils {
             
             Runnable task = new ManagedRunnable() {
                 @Override
-                public void doRun() {
+                protected void doRun() {
                     ManagedExecutor.this.purge();
                 }
             };
