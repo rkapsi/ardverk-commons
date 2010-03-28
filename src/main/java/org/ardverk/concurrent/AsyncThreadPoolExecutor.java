@@ -25,37 +25,45 @@ import java.util.concurrent.TimeUnit;
 /**
  * An implementation of {@link ThreadPoolExecutor} for {@link AsyncFuture}s.
  */
-public class AsyncThreadPoolExecutor extends ThreadPoolExecutor 
+public class AsyncThreadPoolExecutor extends ManagedThreadPoolExecutor 
         implements AsyncExecutorService {
 
     private volatile Time timeout = Time.NONE;
     
     public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
             long keepAliveTime, TimeUnit unit,
-            BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
+            BlockingQueue<Runnable> workQueue, long purgeFrequency,
+            TimeUnit purgeUnit) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
+                purgeFrequency, purgeUnit);
+    }
+
+    public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
+            long keepAliveTime, TimeUnit unit,
+            BlockingQueue<Runnable> workQueue,
+            RejectedExecutionHandler handler, long purgeFrequency,
+            TimeUnit purgeUnit) {
+        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler,
+                purgeFrequency, purgeUnit);
     }
 
     public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
             long keepAliveTime, TimeUnit unit,
             BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,
-            RejectedExecutionHandler handler) {
+            long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-                threadFactory, handler);
+                threadFactory, purgeFrequency, purgeUnit);
     }
 
     public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
             long keepAliveTime, TimeUnit unit,
-            BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
+            BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,
+            RejectedExecutionHandler handler, long purgeFrequency,
+            TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
-                threadFactory);
+                threadFactory, handler, purgeFrequency, purgeUnit);
     }
 
-    public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
-            long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-    }
-    
     @Override
     public void setTimeout(long timeout, TimeUnit unit) {
         this.timeout = new Time(timeout, unit);
@@ -92,11 +100,5 @@ public class AsyncThreadPoolExecutor extends ThreadPoolExecutor
         AsyncRunnableFuture<T> future = newTaskFor(process, timeout, unit);
         execute(future);
         return future;
-    }
-
-    @Override
-    protected void terminated() {
-        // TODO Auto-generated method stub
-        super.terminated();
     }
 }

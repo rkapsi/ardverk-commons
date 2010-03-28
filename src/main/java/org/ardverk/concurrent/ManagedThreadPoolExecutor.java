@@ -14,7 +14,6 @@
  *   limitations under the License.
  */
 
-
 package org.ardverk.concurrent;
 
 import java.util.concurrent.BlockingQueue;
@@ -25,7 +24,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class ManagedThreadPoolExecutor extends ThreadPoolExecutor {
+public class ManagedThreadPoolExecutor extends ThreadPoolExecutor 
+        implements ManagedExecutor {
 
     private static final ScheduledThreadPoolExecutor EXECUTOR 
         = ExecutorUtils.newSingleThreadScheduledExecutor(
@@ -39,7 +39,7 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor {
             RejectedExecutionHandler handler,
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
-        this.future = createPurge(purgeFrequency, purgeUnit);
+        this.future = createPurgeTask(purgeFrequency, purgeUnit);
     }
 
     public ManagedThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
@@ -49,7 +49,7 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor {
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, 
                 workQueue, threadFactory, handler);
-        this.future = createPurge(purgeFrequency, purgeUnit);
+        this.future = createPurgeTask(purgeFrequency, purgeUnit);
     }
     
     public ManagedThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
@@ -57,7 +57,7 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor {
             BlockingQueue<Runnable> workQueue,
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-        this.future = createPurge(purgeFrequency, purgeUnit);
+        this.future = createPurgeTask(purgeFrequency, purgeUnit);
     }
 
     public ManagedThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
@@ -67,10 +67,10 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor {
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, 
                 keepAliveTime, unit, workQueue, threadFactory);    
-        this.future = createPurge(purgeFrequency, purgeUnit);
+        this.future = createPurgeTask(purgeFrequency, purgeUnit);
     }
 
-    private ScheduledFuture<?> createPurge(long frequency, TimeUnit unit) {
+    private ScheduledFuture<?> createPurgeTask(long frequency, TimeUnit unit) {
         if (frequency != -1L) {
             
             Runnable task = new ManagedRunnable() {
