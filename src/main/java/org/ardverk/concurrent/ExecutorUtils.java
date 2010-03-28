@@ -25,13 +25,16 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.ardverk.utils.SystemUtils;
+
 /**
  * A utility class to create {@link ScheduledThreadPoolExecutor}s and
  * {@link ThreadPoolExecutor}s.
  */
 public class ExecutorUtils {
 
-    private static final long PURGE_FREQUENCY = 30L * 1000L;
+    private static final long PURGE_FREQUENCY = SystemUtils.getLong(
+            ExecutorUtils.class, "purgeFrequency", 30L * 1000L);
     
     private ExecutorUtils() {}
     
@@ -70,14 +73,17 @@ public class ExecutorUtils {
         final ScheduledThreadPoolExecutor executor 
             = new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
         
-        Runnable task = new ManagedRunnable() {
-            @Override
-            protected void doRun() {
-                executor.purge();
-            }
-        };
+        if (frequency != -1L) {
+            Runnable task = new ManagedRunnable() {
+                @Override
+                protected void doRun() {
+                    executor.purge();
+                }
+            };
+            
+            executor.scheduleWithFixedDelay(task, frequency, frequency, unit);
+        }
         
-        executor.scheduleWithFixedDelay(task, frequency, frequency, unit);
         return executor;
     }
 
@@ -158,15 +164,16 @@ public class ExecutorUtils {
             super(corePoolSize, maximumPoolSize, 
                     keepAliveTime, unit, workQueue, threadFactory);
             
-            Runnable task = new ManagedRunnable() {
-                @Override
-                protected void doRun() {
-                    ManagedExecutor.this.purge();
-                }
-            };
-            
             ScheduledFuture<?> future = null;
-            if (purgeFrequency >= 0L) {
+            if (purgeFrequency != -1L) {
+                
+                Runnable task = new ManagedRunnable() {
+                    @Override
+                    protected void doRun() {
+                        ManagedExecutor.this.purge();
+                    }
+                };
+                
                 future = EXECUTOR.scheduleWithFixedDelay(
                         task, purgeFrequency, purgeFrequency, purgeUnit);
             }
