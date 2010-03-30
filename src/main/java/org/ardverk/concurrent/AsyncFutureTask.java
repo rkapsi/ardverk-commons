@@ -25,6 +25,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.ardverk.utils.EventUtils;
 import org.ardverk.utils.SystemUtils;
 
 /**
@@ -408,7 +409,7 @@ public class AsyncFutureTask<V> implements AsyncRunnableFuture<V> {
             }
         };
         
-        AsyncExecutors.fireEvent(event);
+        EventUtils.fireEvent(event);
     }
 
     @Override
@@ -475,7 +476,7 @@ public class AsyncFutureTask<V> implements AsyncRunnableFuture<V> {
                 }
             };
             
-            AsyncExecutors.fireEvent(event);
+            EventUtils.fireEvent(event);
         }
     }
     
@@ -484,7 +485,7 @@ public class AsyncFutureTask<V> implements AsyncRunnableFuture<V> {
      * from the event {@link Thread} as it is very difficult to debug.
      */
     protected void checkIfEventThread() throws IllegalStateException {
-        if (AsyncExecutors.isEventThread() && !isDone()) {
+        if (EventUtils.isEventThread() && !isDone()) {
             throw new IllegalStateException(
                     "Can not call get() from the EventThread!");
         }

@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.ardverk.concurrent;
+package org.ardverk.utils;
 
 import java.util.ServiceLoader;
 

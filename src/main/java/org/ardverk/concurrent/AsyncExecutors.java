@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Roger Kapsi
+ * Copyright 2010 Roger Kapsi
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@ package org.ardverk.concurrent;
 
 import java.util.ServiceLoader;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+
+import org.ardverk.utils.EventThreadProvider;
 
 /**
  * Factory and utility methods for {@link AsyncExecutor}, 
@@ -42,25 +42,6 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see EventThreadProvider
  */
 public class AsyncExecutors {
-    
-    private static final EventThreadProvider PROVIDER;
-    
-    static {
-        EventThreadProvider provider = null;
-        for (EventThreadProvider element 
-                : ServiceLoader.load(
-                        EventThreadProvider.class)) {
-            provider = element;
-            break;
-        }
-        
-        if (provider == null) {
-            provider = new DefaultEventThreadProvider();
-        }
-      
-    
-        PROVIDER = provider;
-    }
     
     private AsyncExecutors() {}
     
@@ -268,65 +249,11 @@ public class AsyncExecutors {
     }
     
     /**
-     * Returns true if the caller {@link Thread} is the same as the event 
-     * {@link Thread}. In other words {@link Thread}s can use method to 
-     * determinate if they are the event {@link Thread}.
-     */
-    public static boolean isEventThread() {
-        return PROVIDER.isEventThread();
-    }
-    
-    /**
-     * Executes the given {@link Runnable} on the event {@link Thread}.
-     */
-    public static void fireEvent(Runnable event) {
-        PROVIDER.fireEvent(event);
-    }
-    
-    /**
      * Creates and returns a {@link ThreadFactory} which creates 
      * {@link Thread}s that are pre-fixed with the given name.
      */
     public static ThreadFactory defaultThreadFactory(String name) {
         return new DefaultThreadFactory(name);
-    }
-    
-    /**
-     * The default event {@link Thread} provider that is being used 
-     * if no other {@link EventThreadProvider} was given.
-     */
-    private static class DefaultEventThreadProvider 
-            implements EventThreadProvider {
-
-        private final AtomicReference<Thread> reference 
-            = new AtomicReference<Thread>();
-        
-        private final ThreadFactory factory 
-                = new DefaultThreadFactory("DefaultThreadEvent") {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = super.newThread(r);
-                reference.set(thread);
-                return thread;
-            } 
-        };
-        
-        private final Executor executor 
-            = Executors.newSingleThreadExecutor(factory);
-        
-        @Override
-        public boolean isEventThread() {
-            return reference.get() == Thread.currentThread();
-        }
-        
-        @Override
-        public void fireEvent(Runnable event) {
-            if (event == null) {
-                throw new NullPointerException("event");
-            }
-            
-            executor.execute(event);
-        }
     }
     
     /**
