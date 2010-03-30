@@ -65,11 +65,8 @@ public class ExecutorUtils {
     public static ScheduledThreadPoolExecutor newScheduledThreadPool(
             int corePoolSize, String name, long frequency, TimeUnit unit) {
         
-        ThreadFactory threadFactory 
-            = new DefaultThreadFactory(name);
-        
-        return new ManagedScheduledThreadPoolExecutor(
-                corePoolSize, threadFactory, frequency, unit);
+        return new ManagedScheduledThreadPoolExecutor(corePoolSize, 
+                defaultThreadFactory(name), frequency, unit);
     }
 
     /**
@@ -85,13 +82,10 @@ public class ExecutorUtils {
     public static ThreadPoolExecutor newCachedThreadPool(String name, 
             long frequency, TimeUnit unit) {
         
-        ThreadFactory threadFactory 
-            = new DefaultThreadFactory(name);
-            
         return new ManagedThreadPoolExecutor(0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(), 
-                threadFactory,
+                defaultThreadFactory(name),
                 frequency, unit);
     }
     
@@ -123,13 +117,18 @@ public class ExecutorUtils {
     public static ThreadPoolExecutor newFixedThreadPool(int nThreads, 
             String name, long frequency, TimeUnit unit) {
         
-        ThreadFactory threadFactory 
-            = new DefaultThreadFactory(name);
-            
         return new ManagedThreadPoolExecutor(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(), 
-                threadFactory,
+                defaultThreadFactory(name),
                 frequency, unit);
+    }
+
+    /**
+     * Creates and returns a {@link ThreadFactory} which creates 
+     * {@link Thread}s that are pre-fixed with the given name.
+     */
+    public static ThreadFactory defaultThreadFactory(String name) {
+        return new DefaultThreadFactory(name);
     }
 }

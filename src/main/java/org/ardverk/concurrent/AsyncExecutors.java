@@ -246,12 +246,4 @@ public class AsyncExecutors {
             }
         };
     }
-    
-    /**
-     * Creates and returns a {@link ThreadFactory} which creates 
-     * {@link Thread}s that are pre-fixed with the given name.
-     */
-    public static ThreadFactory defaultThreadFactory(String name) {
-        return new DefaultThreadFactory(name);
-    }
 }
