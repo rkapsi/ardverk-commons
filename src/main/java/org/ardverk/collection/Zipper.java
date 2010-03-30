@@ -71,7 +71,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         return new Zipper<E>(element, size+1, this);
     }
     
-    public Zipper<E> remove(Object o) {
+    /*public Zipper<E> remove(Object o) {
         Zipper<E> zipper = create();
         boolean modified = false;
         
@@ -88,9 +88,9 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         }
         
         return modified ? zipper : this;
-    }
+    }*/
     
-    public Zipper<E> remove2(Object o) {
+    public Zipper<E> remove(Object o) {
         Zipper<E> zipper = null;
         Zipper<E> tail = null;
         
@@ -115,14 +115,12 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
             }
         }
         
-        if (zipper == null) {
-            zipper = create();
-            tail = zipper;
-        } else {
-            tail.tail = create();            
+        if (modified && zipper != null) {
+            tail.tail = create();
+            return zipper;
         }
         
-        return modified ? zipper : this;
+        return this;
     }
     
     public boolean contains(Object o) {
@@ -246,12 +244,5 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         public void remove() {
             throw new UnsupportedOperationException();
         }
-    }
-    
-    public static void main(String[] args) {
-        Zipper<Object> zipper = Zipper.create().add("Hello").add("World").add("Foo").add("Bar").add("1").add("2").add("3");
-        System.out.println(zipper.size());
-        System.out.println(zipper.remove("Foo").size());
-        System.out.println(zipper.remove2("Foo").size());
     }
 }
