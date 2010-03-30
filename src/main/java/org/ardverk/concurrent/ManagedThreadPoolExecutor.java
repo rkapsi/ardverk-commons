@@ -16,6 +16,7 @@
 
 package org.ardverk.concurrent;
 
+import java.lang.ref.WeakReference;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledFuture;
@@ -23,6 +24,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import org.ardverk.utils.ExceptionUtils;
 
 public class ManagedThreadPoolExecutor extends ThreadPoolExecutor 
         implements ManagedExecutor {
@@ -39,7 +42,7 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor
             RejectedExecutionHandler handler,
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
-        this.future = createPurgeTask(purgeFrequency, purgeUnit);
+        this.future = createPurgeTask(this, purgeFrequency, purgeUnit);
     }
 
     public ManagedThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
@@ -49,7 +52,7 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, 
                 workQueue, threadFactory, handler);
-        this.future = createPurgeTask(purgeFrequency, purgeUnit);
+        this.future = createPurgeTask(this, purgeFrequency, purgeUnit);
     }
     
     public ManagedThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
@@ -57,7 +60,7 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor
             BlockingQueue<Runnable> workQueue,
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-        this.future = createPurgeTask(purgeFrequency, purgeUnit);
+        this.future = createPurgeTask(this, purgeFrequency, purgeUnit);
     }
 
     public ManagedThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
@@ -67,25 +70,9 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, 
                 keepAliveTime, unit, workQueue, threadFactory);    
-        this.future = createPurgeTask(purgeFrequency, purgeUnit);
+        this.future = createPurgeTask(this, purgeFrequency, purgeUnit);
     }
 
-    private ScheduledFuture<?> createPurgeTask(long frequency, TimeUnit unit) {
-        if (frequency != -1L) {
-            
-            Runnable task = new ManagedRunnable() {
-                @Override
-                protected void doRun() {
-                    purge();
-                }
-            };
-            
-            return EXECUTOR.scheduleWithFixedDelay(
-                    task, frequency, frequency, unit);
-        }
-        return null;
-    }
-    
     @Override
     protected void terminated() {
         if (future != null) {
@@ -93,5 +80,35 @@ public class ManagedThreadPoolExecutor extends ThreadPoolExecutor
         }
         
         super.terminated();
+    }
+    
+    private static ScheduledFuture<?> createPurgeTask(
+            ThreadPoolExecutor executor, long frequency, TimeUnit unit) {
+        if (frequency != -1L) {
+            
+            final WeakReference<ThreadPoolExecutor> executorRef 
+                = new WeakReference<ThreadPoolExecutor>(executor);
+            
+            Runnable task = new Runnable() {
+                @Override
+                public void run() {
+                    ThreadPoolExecutor executor = executorRef.get();
+                    if (executor == null) {
+                        // This will cancel the ScheduledFuture!
+                        throw new IllegalStateException();
+                    }
+                    
+                    try {
+                        executor.purge();
+                    } catch (Exception err) {
+                        ExceptionUtils.exceptionCaught(err);
+                    }
+                }
+            };
+            
+            return EXECUTOR.scheduleWithFixedDelay(task, 
+                    frequency, frequency, unit);
+        }
+        return null;
     }
 }
