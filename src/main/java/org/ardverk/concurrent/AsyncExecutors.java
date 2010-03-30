@@ -144,6 +144,7 @@ public class AsyncExecutors {
         AsyncThreadPoolExecutor executor = new AsyncThreadPoolExecutor(
                 1, 1, 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(),
+                threadFactory,
                 -1L, TimeUnit.MILLISECONDS);
         executor.setTimeout(timeout, unit);
         return executor;
@@ -195,7 +196,8 @@ public class AsyncExecutors {
             ThreadFactory threadFactory, long timeout, TimeUnit unit) {
         AsyncThreadPoolExecutor executor = new AsyncThreadPoolExecutor(
                 nThreads, nThreads, 0L, TimeUnit.MILLISECONDS,
-                new LinkedBlockingQueue<Runnable>(), threadFactory,
+                new LinkedBlockingQueue<Runnable>(), 
+                threadFactory,
                 -1L, TimeUnit.MILLISECONDS);
         executor.setTimeout(timeout, unit);
         return executor;
