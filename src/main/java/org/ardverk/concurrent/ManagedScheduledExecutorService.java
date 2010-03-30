@@ -16,8 +16,9 @@
 
 package org.ardverk.concurrent;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
 
-public interface ManagedExecutor extends ExecutorService {
+public interface ManagedScheduledExecutorService 
+        extends ManagedExecutor, ScheduledExecutorService {
 
 }

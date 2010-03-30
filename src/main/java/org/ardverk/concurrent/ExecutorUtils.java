@@ -68,21 +68,8 @@ public class ExecutorUtils {
         ThreadFactory threadFactory 
             = new DefaultThreadFactory(name);
         
-        final ScheduledThreadPoolExecutor executor 
-            = new ScheduledThreadPoolExecutor(corePoolSize, threadFactory);
-        
-        if (frequency != -1L) {
-            Runnable task = new ManagedRunnable() {
-                @Override
-                protected void doRun() {
-                    executor.purge();
-                }
-            };
-            
-            executor.scheduleWithFixedDelay(task, frequency, frequency, unit);
-        }
-        
-        return executor;
+        return new ManagedScheduledThreadPoolExecutor(
+                corePoolSize, threadFactory, frequency, unit);
     }
 
     /**
