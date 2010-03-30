@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
 import org.ardverk.utils.ExceptionUtils;
 
 public class ManagedThreadPoolExecutor extends ThreadPoolExecutor 
-        implements ManagedExecutor {
+        implements ManagedExecutorService {
 
     private static final ScheduledThreadPoolExecutor EXECUTOR 
         = ExecutorUtils.newSingleThreadScheduledExecutor(

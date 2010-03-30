@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class ManagedScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor 
-        implements ManagedExecutor {
+        implements ManagedScheduledExecutorService {
 
     private final ScheduledFuture<?> future;
     
