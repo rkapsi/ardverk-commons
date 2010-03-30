@@ -23,7 +23,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.ardverk.utils.EventThreadProvider;
 
@@ -254,49 +253,5 @@ public class AsyncExecutors {
      */
     public static ThreadFactory defaultThreadFactory(String name) {
         return new DefaultThreadFactory(name);
-    }
-    
-    /**
-     * The default thread factory
-     */
-    private static class DefaultThreadFactory implements ThreadFactory {
-        
-        private final AtomicInteger threadNumber = new AtomicInteger();
-
-        private final ThreadGroup group;
-        private final String name;
-        
-        private DefaultThreadFactory(String name) {
-            if (name == null) {
-                throw new NullPointerException("name");
-            }
-            
-            SecurityManager s = System.getSecurityManager();
-            ThreadGroup group = null;
-            if (s != null) {
-                group = s.getThreadGroup();
-            } else {
-                group = Thread.currentThread().getThreadGroup();
-            }
-            
-            this.group = group;
-            this.name = name;
-        }
-
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(group, r, 
-                    name + threadNumber.incrementAndGet(), 0);
-            
-            if (t.isDaemon()) {
-                t.setDaemon(false);
-            }
-            
-            if (t.getPriority() != Thread.NORM_PRIORITY) {
-                t.setPriority(Thread.NORM_PRIORITY);
-            }
-            
-            return t;
-        }
     }
 }
