@@ -29,8 +29,12 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         = new Zipper<Object>(null, 0, null);
     
     @SuppressWarnings("unchecked")
-    public static <E> Zipper<E> create() {
+    private static <E> Zipper<E> empty() {
         return (Zipper<E>)EMPTY;
+    }
+    
+    public static <E> Zipper<E> create() {
+        return empty();
     }
     
     public static <E> Zipper<E> create(Iterable<? extends E> c) {
@@ -116,7 +120,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         }
         
         if (modified && zipper != null) {
-            tail.tail = create();
+            tail.tail = empty(); // EOF
             return zipper;
         }
         
