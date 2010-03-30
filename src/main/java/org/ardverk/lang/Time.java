@@ -67,6 +67,14 @@ public class Time implements Serializable, Cloneable, Comparable<Time> {
         return unit.convert(time, this.unit);
     }
     
+    /**
+     * Converts the time to the given {@link TimeUnit} and 
+     * returns a new {@link Time} instance.
+     */
+    public Time convert(TimeUnit unit) {
+        return new Time(getTime(unit), unit);
+    }
+    
     @Override
     public int hashCode() {
         return (int)unit.toMillis(time);
