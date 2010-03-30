@@ -58,18 +58,6 @@ import org.ardverk.utils.ExceptionUtils;
  */
 public class ExecutorGroup implements Executor {
 
-    /**
-     * Takes one {@link Runnable} from the {@link Queue}, executes
-     * it and reschedules itself if necessary.
-     */
-    public static final Scheduler DEFAULT = new DefaultScheduler(1);
-    
-    /**
-     * Takes all {@link Runnable}s from the queue, executes them
-     * and reschedules itself if necessary.
-     */
-    public static final Scheduler DRAIN = new DefaultScheduler(-1);
-    
     private final Executor executor;
     
     private final Scheduler scheduler;
@@ -98,7 +86,7 @@ public class ExecutorGroup implements Executor {
     }
     
     public ExecutorGroup(Executor executor, Queue<Runnable> queue) {
-        this(executor, DEFAULT, queue);
+        this(executor, DefaultScheduler.DEFAULT, queue);
     }
     
     public ExecutorGroup(Executor executor, Scheduler scheduler) {

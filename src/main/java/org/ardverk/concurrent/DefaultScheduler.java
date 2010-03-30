@@ -16,10 +16,24 @@
 
 package org.ardverk.concurrent;
 
+import java.util.Queue;
+
 /**
  * A default implementation of a {@link Scheduler}.
  */
 public class DefaultScheduler implements Scheduler {
+    
+    /**
+     * Takes one {@link Runnable} from the {@link Queue}, executes
+     * it and reschedules itself if necessary.
+     */
+    public static final Scheduler DEFAULT = new DefaultScheduler(1);
+    
+    /**
+     * Takes all {@link Runnable}s from the queue, executes them
+     * and reschedules itself if necessary.
+     */
+    public static final Scheduler DRAIN = new DefaultScheduler(-1);
     
     private final int max;
     
