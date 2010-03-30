@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * {@link Time} is an immutable class that holds a time (a long value)
  * and the {@link TimeUnit} of the {@link Time}.
  */
-public class Time implements Serializable, Comparable<Time> {
+public class Time implements Serializable, Cloneable, Comparable<Time> {
     
     private static final long serialVersionUID = 8113035746133232743L;
 
@@ -98,6 +98,11 @@ public class Time implements Serializable, Comparable<Time> {
         }
         
         return 0;
+    }
+    
+    @Override
+    public Time clone() {
+        return this;
     }
     
     @Override
