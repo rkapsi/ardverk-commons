@@ -19,6 +19,8 @@ package org.ardverk.collection;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -28,7 +30,7 @@ import java.util.NoSuchElementException;
  * http://en.wikipedia.org/wiki/Persistent_data_structure
  * http://en.wikipedia.org/wiki/Zipper_(data_structure)
  */
-public class ZipperList<E> implements Collection<E>, Cloneable, Serializable {
+public class ZipperList<E> implements List<E>, Cloneable, Serializable {
 
     private static final long serialVersionUID = -8210279044829321415L;
     
@@ -54,9 +56,23 @@ public class ZipperList<E> implements Collection<E>, Cloneable, Serializable {
     }
     
     @Override
-    public synchronized boolean add(E e) {
-        zipper = zipper.add(e);
+    public synchronized boolean add(E element) {
+        zipper = zipper.add(element);
         return true;
+    }
+    
+    @Override
+    public synchronized void add(int index, E element) {
+        int size = size();
+        if (index < 0 || size < index) {
+            throw new IndexOutOfBoundsException("index=" + index);
+        }
+        
+        if (index != size) {
+            throw new UnsupportedOperationException();
+        }
+        
+        add(element);
     }
 
     @Override
@@ -69,7 +85,160 @@ public class ZipperList<E> implements Collection<E>, Cloneable, Serializable {
         }
         return modified;
     }
+    
+    @Override
+    public synchronized boolean addAll(int index, Collection<? extends E> c) {
+        int size = size();
+        if (index < 0 || size < index) {
+            throw new IndexOutOfBoundsException("index=" + index);
+        }
+        
+        if (index != size) {
+            throw new UnsupportedOperationException();
+        }
+        
+        return addAll(c);
+    }
 
+    @Override
+    public E get(int index) {
+        Zipper<E> zipper = this.zipper;
+        if (index < 0 || zipper.size() < index) {
+            throw new IndexOutOfBoundsException("index=" + index);
+        }
+        
+        for (E element : zipper) {
+            if (index == 0) {
+                return element;
+            }
+            --index;
+        }
+        
+        throw new IllegalStateException();
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        int index = 0;
+        for (E element : zipper) {
+            if (Zipper.equals(o, element)) {
+                return index;
+            }
+            ++index;
+        }
+        
+        return -1;
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        int index = 0;
+        int lastIndex = -1;
+        for (E element : zipper) {
+            if (Zipper.equals(o, element)) {
+                lastIndex = index;
+            }
+            ++index;
+        }
+        
+        return lastIndex;
+    }
+
+    @Override
+    public ListIterator<E> listIterator() {
+        return new ListIterator<E>() {
+            
+            private final Iterator<E> it = iterator();
+
+            @Override
+            public void add(E e) {
+                ZipperList.this.add(e);
+            }
+
+            @Override
+            public boolean hasNext() {
+                return it.hasNext();
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                return false;
+            }
+
+            @Override
+            public E next() {
+                return it.next();
+            }
+
+            @Override
+            public int nextIndex() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public E previous() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public int previousIndex() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public void remove() {
+                it.remove();
+            }
+
+            @Override
+            public void set(E e) {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    @Override
+    public synchronized ListIterator<E> listIterator(int index) {
+        if (index < 0 || size() < index) {
+            throw new IndexOutOfBoundsException("index=" + index);
+        }
+        
+        if (index != 0) {
+            throw new UnsupportedOperationException();
+        }
+        
+        return listIterator();
+    }
+
+    @Override
+    public synchronized E remove(int index) {
+        if (index < 0 || size() < index) {
+            throw new IndexOutOfBoundsException("index=" + index);
+        }
+        
+        E element = null;
+        for (Iterator<E> it = iterator(); it.hasNext(); ) {
+            element = it.next();
+            if (index == 0) {
+                it.remove();
+                break;
+            }
+            --index;
+        }
+        
+        return element;
+    }
+
+    @Override
+    public E set(int index, E element) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public List<E> subList(int fromIndex, int toIndex) {
+        throw new UnsupportedOperationException();
+    }
+    
     @Override
     public synchronized void clear() {
         zipper = zipper.clear();

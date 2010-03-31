@@ -163,7 +163,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     }
     
     public Zipper<E> clear() {
-        return create();
+        return empty();
     }
     
     public Object[] toArray() {
@@ -210,7 +210,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         return buffer.toString();
     }
     
-    private static boolean equals(Object a, Object b) {
+    static boolean equals(Object a, Object b) {
         if (a == null) {
             return b == null;
         } else if (b == null) {
