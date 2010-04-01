@@ -68,6 +68,13 @@ public class Time implements Serializable, Cloneable, Comparable<Time> {
     }
     
     /**
+     * Returns the time in milliseconds.
+     */
+    public long getTimeInMills() {
+        return getTime(TimeUnit.MILLISECONDS);
+    }
+    
+    /**
      * Converts the time to the given {@link TimeUnit} and 
      * returns a new {@link Time} instance.
      */
