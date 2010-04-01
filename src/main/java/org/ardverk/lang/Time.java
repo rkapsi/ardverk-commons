@@ -33,6 +33,13 @@ public class Time implements Serializable, Cloneable, Comparable<Time> {
     
     private final TimeUnit unit;
     
+    /**
+     * Creates and returns a {@link Time} object for the current time.
+     */
+    public static Time currentTime() {
+        return new Time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+    }
+    
     public Time(long time, TimeUnit unit) {
         if (time < 0L && time != -1L) {
             throw new IllegalArgumentException("time=" + time);
