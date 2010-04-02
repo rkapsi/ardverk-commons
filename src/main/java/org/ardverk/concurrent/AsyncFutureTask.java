@@ -42,7 +42,7 @@ public class AsyncFutureTask<V> implements AsyncRunnableFuture<V> {
      * The Watchdog {@link Thread}s
      */
     private static final ScheduledThreadPoolExecutor EXECUTOR 
-        = createWatchdogExecutor(4, "AsyncFutureWatchdogThread");
+        = createWatchdog("AsyncFutureWatchdogThread", 4);
     
     /**
      * An {@link AsyncProcess} that throws an {@link IllegalStateException}.
@@ -499,10 +499,10 @@ public class AsyncFutureTask<V> implements AsyncRunnableFuture<V> {
     /**
      * A helper method to create the watchdog scheduler
      */
-    private static ScheduledThreadPoolExecutor createWatchdogExecutor(
-            int defaultThreadCount, String name) {
+    private static ScheduledThreadPoolExecutor createWatchdog(
+            String name, int defaultValue) {
         int nThreads = SystemUtils.getInteger(
-                AsyncFutureTask.class, "watchdogThreadCount", defaultThreadCount);
+                AsyncFutureTask.class, "watchdogThreadCount", defaultValue);
         return ExecutorUtils.newScheduledThreadPool(nThreads, name);
     }
 }
