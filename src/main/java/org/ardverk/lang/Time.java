@@ -86,7 +86,7 @@ public class Time implements Serializable, Cloneable, Comparable<Time> {
      * returns a new {@link Time} instance.
      */
     public Time convert(TimeUnit unit) {
-        return new Time(getTime(unit), unit);
+        return this.unit != unit ? new Time(getTime(unit), unit) : this;
     }
     
     @Override
