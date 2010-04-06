@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * 
  * @see Future
  */
-public interface AsyncFuture<V> extends Future<V> {
+public interface AsyncFuture<V> extends Future<V>, Cancellable {
     
     /**
      * Returns the timeout in the given {@link TimeUnit} or
