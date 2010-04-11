@@ -28,12 +28,19 @@ public class DefaultThreadFactory implements ThreadFactory {
     
     private final String name;
     
+    private final boolean daemon;
+    
     public DefaultThreadFactory(String name) {
+        this(name, false);
+    }
+    
+    public DefaultThreadFactory(String name, boolean daemon) {
         if (name == null) {
             throw new NullPointerException("name");
         }
         
         this.name = name;
+        this.daemon = daemon;
     }
     
     private String createName() {
@@ -42,6 +49,8 @@ public class DefaultThreadFactory implements ThreadFactory {
     
     @Override
     public Thread newThread(Runnable r) {
-        return new Thread(r, createName());
+        Thread thread = new Thread(r, createName());
+        thread.setDaemon(daemon);
+        return thread;
     }
 }
