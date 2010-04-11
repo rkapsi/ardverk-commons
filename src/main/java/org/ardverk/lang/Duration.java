@@ -20,44 +20,44 @@ import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
 /**
- * {@link Time} is an immutable class that holds a time (a long value)
- * and the {@link TimeUnit} of the {@link Time}.
+ * {@link Duration} is an immutable class that holds a duration (a long value)
+ * and the {@link TimeUnit} of the {@link Duration}.
  */
-public class Time implements Serializable, Cloneable, Comparable<Time> {
+public class Duration implements Serializable, Cloneable, Comparable<Duration> {
     
     private static final long serialVersionUID = 8113035746133232743L;
 
-    public static final Time NONE = new Time(-1L, TimeUnit.MILLISECONDS);
+    public static final Duration NONE = new Duration(-1L, TimeUnit.MILLISECONDS);
     
-    private final long time;
+    private final long duration;
     
     private final TimeUnit unit;
     
     /**
-     * Creates and returns a {@link Time} object for the current time.
+     * Creates and returns a {@link Duration} object for the current time.
      */
-    public static Time currentTime() {
-        return new Time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
+    public static Duration currentDuration() {
+        return new Duration(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
     }
     
-    public Time(long time, TimeUnit unit) {
-        if (time < 0L && time != -1L) {
-            throw new IllegalArgumentException("time=" + time);
+    public Duration(long duration, TimeUnit unit) {
+        if (duration < 0L && duration != -1L) {
+            throw new IllegalArgumentException("time=" + duration);
         }
         
         if (unit == null) {
-            throw new NullPointerException("unit");
+            throw new NullArgumentException("unit");
         }
         
-        this.time = time;
+        this.duration = duration;
         this.unit = unit;
     }
     
     /**
      * Returns the time.
      */
-    public long getTime() {
-        return time;
+    public long getDuration() {
+        return duration;
     }
     
     /**
@@ -70,48 +70,48 @@ public class Time implements Serializable, Cloneable, Comparable<Time> {
     /**
      * Converts the time to the given {@link TimeUnit} and returns it.
      */
-    public long getTime(TimeUnit unit) {
-        return unit.convert(time, this.unit);
+    public long getDuration(TimeUnit unit) {
+        return unit.convert(duration, this.unit);
     }
     
     /**
      * Returns the time in milliseconds.
      */
-    public long getTimeInMills() {
-        return getTime(TimeUnit.MILLISECONDS);
+    public long getDurationInMills() {
+        return getDuration(TimeUnit.MILLISECONDS);
     }
     
     /**
      * Converts the time to the given {@link TimeUnit} and 
-     * returns a new {@link Time} instance.
+     * returns a new {@link Duration} instance.
      */
-    public Time convert(TimeUnit unit) {
-        return this.unit != unit ? new Time(getTime(unit), unit) : this;
+    public Duration convert(TimeUnit unit) {
+        return this.unit != unit ? new Duration(getDuration(unit), unit) : this;
     }
     
     @Override
     public int hashCode() {
-        return (int)unit.toMillis(time);
+        return (int)unit.toMillis(duration);
     }
     
     @Override
     public boolean equals(Object o) {
         if (o == this) {
             return true;
-        } else if (!(o instanceof Time)) {
+        } else if (!(o instanceof Duration)) {
             return false;
         }
         
-        return compareTo((Time)o) == 0;
+        return compareTo((Duration)o) == 0;
     }
 
     @Override
-    public int compareTo(Time other) {
+    public int compareTo(Duration other) {
         if (other == null) {
             throw new NullPointerException("other");
         }
         
-        long diff = time - unit.convert(other.time, other.unit);
+        long diff = duration - unit.convert(other.duration, other.unit);
         
         if (diff < 0L) {
             return -1;
@@ -123,12 +123,12 @@ public class Time implements Serializable, Cloneable, Comparable<Time> {
     }
     
     @Override
-    public Time clone() {
+    public Duration clone() {
         return this;
     }
     
     @Override
     public String toString() {
-        return time + " " + unit;
+        return duration + " " + unit;
     }
 }
