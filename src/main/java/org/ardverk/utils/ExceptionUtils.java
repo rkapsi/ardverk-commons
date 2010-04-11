@@ -16,6 +16,8 @@
 
 package org.ardverk.utils;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 public class ExceptionUtils {
@@ -59,6 +61,17 @@ public class ExceptionUtils {
         ueh.uncaughtException(thread, t);
     }
 
+    public static String toString(Throwable t) {
+        if (t == null) {
+            return null;
+        }
+        StringWriter out = new StringWriter();
+        PrintWriter pw = new PrintWriter(out);
+        t.printStackTrace(pw);
+        pw.close();
+        return out.toString();
+    }
+    
     /**
      * An {@link UncaughtExceptionHandler} that is printing the
      * stack trace.

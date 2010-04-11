@@ -16,11 +16,11 @@
 
 package org.ardverk.concurrent;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.ardverk.utils.ExceptionUtils;
 
 /**
  * The {@link AsyncExchanger} is an one-way synchronization point for 
@@ -30,7 +30,7 @@ import java.util.concurrent.TimeoutException;
  * value or an {@link Exception} which will be thrown by the 
  * {@link #get()} method.
  */
-class AsyncExchanger<V, E extends Throwable> {
+public class AsyncExchanger<V, E extends Throwable> {
     
     /** Used during construction time as a substitute for 'this'  */
     private static final Object THIS = new Object();
@@ -257,21 +257,7 @@ class AsyncExchanger<V, E extends Throwable> {
             .append("done=").append(done)
             .append(", cancelled=").append(cancelled)
             .append(", value=").append(value)
-            .append(", exception=").append(toString(exception));
+            .append(", exception=").append(ExceptionUtils.toString(exception));
         return buffer.toString();
-    }
-    
-    /**
-     * Turns the given {@link Throwable} in a nicely formatted {@link String}.
-     */
-    private static String toString(Throwable t) {
-        if (t == null) {
-            return null;
-        }
-        StringWriter out = new StringWriter();
-        PrintWriter pw = new PrintWriter(out);
-        t.printStackTrace(pw);
-        pw.close();
-        return out.toString();
     }
 }
