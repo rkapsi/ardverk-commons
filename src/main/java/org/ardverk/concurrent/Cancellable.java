@@ -22,13 +22,13 @@ package org.ardverk.concurrent;
  */
 public interface Cancellable {
 
-	/**
-	 * 
-	 */
-	public boolean cancel(boolean mayInterruptIfRunning);
-	
-	/**
-	 * 
-	 */
-	public boolean isCancelled();
+    /**
+     * 
+     */
+    public boolean cancel(boolean mayInterruptIfRunning);
+    	
+    /**
+     * 
+     */
+    public boolean isCancelled();
 }
