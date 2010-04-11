@@ -31,6 +31,7 @@ public class Base16 extends AbstractBaseCoder implements Serializable {
     
     private Base16() {}
     
+    @Override
     public byte[] encode(byte[] data, int offset, int length) {
         
         if (data == null) {
@@ -56,6 +57,7 @@ public class Base16 extends AbstractBaseCoder implements Serializable {
         return output;
     }
     
+    @Override
     public byte[] decode(byte[] data, int offset, int length) {
         if (data == null) {
             throw new NullPointerException("data");
