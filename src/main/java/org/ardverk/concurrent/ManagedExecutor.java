@@ -18,6 +18,11 @@ package org.ardverk.concurrent;
 
 import java.util.concurrent.Executor;
 
+/**
+ * A mix-in interface to mark managed {@link Executor}s.
+ * 
+ * @see Executor
+ */
 public interface ManagedExecutor extends Executor {
 
 }

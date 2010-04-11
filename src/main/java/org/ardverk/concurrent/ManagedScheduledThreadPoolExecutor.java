@@ -22,6 +22,13 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A {@link ManagedScheduledThreadPoolExecutor} has a built-in cleanup task 
+ * that calls {@link #purge()} in periodic intervals on itself.
+ * 
+ * @see ScheduledThreadPoolExecutor
+ * @see ManagedScheduledExecutorService
+ */
 public class ManagedScheduledThreadPoolExecutor extends ScheduledThreadPoolExecutor 
         implements ManagedScheduledExecutorService {
 

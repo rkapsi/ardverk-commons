@@ -16,10 +16,13 @@
 
 package org.ardverk.concurrent;
 
-import java.lang.Thread.UncaughtExceptionHandler;
+import org.ardverk.utils.ExceptionUtils;
 
 /**
+ * A {@link ManagedRunnable} catches all {@link Exception}s and delegates
+ * them to {@link #exceptionCaught(Throwable)}.
  * 
+ * @see Runnable
  */
 public abstract class ManagedRunnable implements Runnable {
 
@@ -33,7 +36,7 @@ public abstract class ManagedRunnable implements Runnable {
     }
     
     /**
-     * 
+     * See {@link Runnable#run()}
      */
     protected abstract void doRun() throws Exception;
     
@@ -41,15 +44,6 @@ public abstract class ManagedRunnable implements Runnable {
      * 
      */
     protected void exceptionCaught(Throwable t) {
-        Thread currentThread = Thread.currentThread();
-        UncaughtExceptionHandler ueh 
-            = currentThread.getUncaughtExceptionHandler();
-        if (ueh == null) {
-            ueh = Thread.getDefaultUncaughtExceptionHandler();
-        }
-        
-        if (ueh != null) {
-            ueh.uncaughtException(currentThread, t);
-        }
+        ExceptionUtils.exceptionCaught(t);
     }
 }

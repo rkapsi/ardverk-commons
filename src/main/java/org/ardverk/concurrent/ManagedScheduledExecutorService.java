@@ -18,6 +18,12 @@ package org.ardverk.concurrent;
 
 import java.util.concurrent.ScheduledExecutorService;
 
+/**
+ * A mix-in interface to mark managed {@link ScheduledExecutorService}es.
+ * 
+ * @see ManagedExecutorService
+ * @see ScheduledExecutorService
+ */
 public interface ManagedScheduledExecutorService 
         extends ManagedExecutorService, ScheduledExecutorService {
 

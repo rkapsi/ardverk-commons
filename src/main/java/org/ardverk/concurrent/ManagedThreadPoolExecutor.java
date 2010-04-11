@@ -27,6 +27,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.ardverk.utils.ExceptionUtils;
 
+/**
+ * A {@link ManagedThreadPoolExecutor} has a built-in cleanup task 
+ * that calls {@link #purge()} in periodic intervals on itself.
+ * 
+ * @see ThreadPoolExecutor
+ * @see ManagedExecutorService
+ */
 public class ManagedThreadPoolExecutor extends ThreadPoolExecutor 
         implements ManagedExecutorService {
 
