@@ -21,6 +21,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import org.ardverk.lang.NullArgumentException;
+
 public class ExceptionUtils {
 
     private static final UncaughtExceptionHandler UNCAUGHT_EXCEPTION_HANDLER 
@@ -35,7 +37,7 @@ public class ExceptionUtils {
      */
     public static IOException toIoException(Throwable cause) {
         if (cause == null) {
-            throw new NullPointerException("cause");
+            throw new NullArgumentException("cause");
         }
         
         if (cause instanceof IOException) {

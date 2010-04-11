@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.ardverk.lang.NullArgumentException;
 import org.ardverk.utils.ExceptionUtils;
 
 /**
@@ -96,15 +97,15 @@ public class ExecutorGroup implements Executor {
     public ExecutorGroup(Executor executor, Scheduler scheduler, 
             Queue<Runnable> queue) {
         if (executor == null) {
-            throw new NullPointerException("executor");
+            throw new NullArgumentException("executor");
         }
         
         if (scheduler == null) {
-            throw new NullPointerException("scheduler");
+            throw new NullArgumentException("scheduler");
         }
         
         if (queue == null) {
-            throw new NullPointerException("queue");
+            throw new NullArgumentException("queue");
         }
         
         this.executor = executor;
@@ -215,7 +216,7 @@ public class ExecutorGroup implements Executor {
         }
         
         if (unit == null) {
-            throw new NullPointerException("unit");
+            throw new NullArgumentException("unit");
         }
         
         if (!isTerminated()) {
@@ -242,7 +243,7 @@ public class ExecutorGroup implements Executor {
      */
     private synchronized boolean offer(Runnable task) {
         if (task == null) {
-            throw new NullPointerException("task");
+            throw new NullArgumentException("task");
         }
         
         boolean added = false;

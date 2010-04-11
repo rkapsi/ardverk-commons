@@ -18,6 +18,8 @@ package org.ardverk.coding;
 
 import java.io.Serializable;
 
+import org.ardverk.lang.NullArgumentException;
+
 public class Base16 extends AbstractBaseCoder implements Serializable {
     
     private static final long serialVersionUID = 485864896492653810L;
@@ -35,7 +37,7 @@ public class Base16 extends AbstractBaseCoder implements Serializable {
     public byte[] encode(byte[] data, int offset, int length) {
         
         if (data == null) {
-            throw new NullPointerException("data");
+            throw new NullArgumentException("data");
         }
         
         if (offset < 0 || length < 0 || (offset+length) > data.length) {
@@ -60,7 +62,7 @@ public class Base16 extends AbstractBaseCoder implements Serializable {
     @Override
     public byte[] decode(byte[] data, int offset, int length) {
         if (data == null) {
-            throw new NullPointerException("data");
+            throw new NullArgumentException("data");
         }
         
         if (offset < 0 || length < 0 || (offset+length) > data.length) {

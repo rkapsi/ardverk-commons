@@ -20,6 +20,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.ardverk.lang.NullArgumentException;
 import org.ardverk.utils.ExceptionUtils;
 
 /**
@@ -62,7 +63,7 @@ public class AsyncExchanger<V, E extends Throwable> {
      */
     public AsyncExchanger(Object lock) {
         if (lock == null) {
-            throw new NullPointerException("lock");
+            throw new NullArgumentException("lock");
         }
         
         this.lock = (lock != THIS) ? lock : this;     
@@ -206,7 +207,7 @@ public class AsyncExchanger<V, E extends Throwable> {
      */
     public boolean setException(E exception) {
         if (exception == null) {
-            throw new NullPointerException("exception");
+            throw new NullArgumentException("exception");
         }
         
         synchronized (lock) {

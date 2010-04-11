@@ -108,7 +108,7 @@ public class Duration implements Serializable, Cloneable, Comparable<Duration> {
     @Override
     public int compareTo(Duration other) {
         if (other == null) {
-            throw new NullPointerException("other");
+            throw new NullArgumentException("other");
         }
         
         long diff = duration - unit.convert(other.duration, other.unit);
