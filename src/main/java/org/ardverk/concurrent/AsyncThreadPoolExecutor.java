@@ -17,20 +17,17 @@
 package org.ardverk.concurrent;
 
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import org.ardverk.lang.Time;
 
 /**
  * An implementation of {@link ThreadPoolExecutor} for {@link AsyncFuture}s.
  */
 public class AsyncThreadPoolExecutor extends ManagedThreadPoolExecutor 
         implements AsyncExecutorService {
-
-    private volatile Time timeout = Time.NONE;
     
     public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
             long keepAliveTime, TimeUnit unit,
@@ -67,40 +64,27 @@ public class AsyncThreadPoolExecutor extends ManagedThreadPoolExecutor
     }
 
     @Override
-    public void setTimeout(long timeout, TimeUnit unit) {
-        this.timeout = new Time(timeout, unit);
+    protected <T> AsyncRunnableFuture<T> newTaskFor(Callable<T> callable) {
+        return new AsyncFutureTask<T>(callable);
     }
-    
+
     @Override
-    public long getTimeout(TimeUnit unit) {
-        if (unit == null) {
-            throw new NullPointerException("unit");
-        }
-        
-        Time timeout = this.timeout;
-        long value = timeout.getTime();
-        if (value == -1L) {
-            return -1L;
-        }
-        
-        return unit.convert(value, timeout.getUnit());
+    protected <T> AsyncRunnableFuture<T> newTaskFor(Runnable runnable, T value) {
+        return new AsyncFutureTask<T>(runnable, value);
     }
-    
-    protected <T> AsyncRunnableFuture<T> newTaskFor(AsyncProcess<T> process, 
-            long timeout, TimeUnit unit) {
-        return new AsyncProcessFutureTask<T>(process, timeout, unit);
-    }
-    
+
     @Override
-    public <T> AsyncFuture<T> submit(AsyncProcess<T> process) {
-        return submit(process, timeout.getTime(), timeout.getUnit());
+    public <T> AsyncFuture<T> submit(Callable<T> task) {
+        return (AsyncFuture<T>)super.submit(task);
     }
-    
+
     @Override
-    public <T> AsyncFuture<T> submit(AsyncProcess<T> process, 
-            long timeout, TimeUnit unit) {
-        AsyncRunnableFuture<T> future = newTaskFor(process, timeout, unit);
-        execute(future);
-        return future;
+    public <T> AsyncFuture<T> submit(Runnable task, T result) {
+        return (AsyncFuture<T>)super.submit(task, result);
+    }
+
+    @Override
+    public AsyncFuture<?> submit(Runnable task) {
+        return (AsyncFuture<?>)super.submit(task);
     }
 }

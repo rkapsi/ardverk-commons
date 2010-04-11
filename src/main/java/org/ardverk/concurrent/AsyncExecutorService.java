@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Roger Kapsi
+ * Copyright 2010 Roger Kapsi
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.ardverk.concurrent;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link AsyncExecutor} that provides methods to manage termination and
@@ -28,29 +28,13 @@ import java.util.concurrent.TimeUnit;
  * @see ExecutorService
  */
 public interface AsyncExecutorService extends AsyncExecutor, ExecutorService {
+    
+    @Override
+    public <T> AsyncFuture<T> submit(Callable<T> task);
 
-    /**
-     * Sets default timeout for {@link AsyncFuture}s. Use -1 to disable 
-     * the default timeout.
-     */
-    public void setTimeout(long timeout, TimeUnit unit);
-    
-    /**
-     * Returns the default timeout of {@link AsyncFuture}s or -1 if no
-     * timeout is specified (default).
-     */
-    public long getTimeout(TimeUnit unit);
-    
-    /**
-     * Submits the given {@link AsyncProcess} for execution and returns 
-     * an {@link AsyncFuture} for it.
-     */
-    public <T> AsyncFuture<T> submit(AsyncProcess<T> process);
-    
-    /**
-     * Submits the given {@link AsyncProcess} for execution and returns 
-     * an {@link AsyncFuture} for it.
-     */
-    public <T> AsyncFuture<T> submit(AsyncProcess<T> process, 
-            long timeout, TimeUnit unit);
+    @Override
+    public <T> AsyncFuture<T> submit(Runnable task, T result);
+
+    @Override
+    public AsyncFuture<?> submit(Runnable task);
 }

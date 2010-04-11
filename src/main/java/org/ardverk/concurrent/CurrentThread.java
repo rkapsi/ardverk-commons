@@ -20,7 +20,7 @@ package org.ardverk.concurrent;
  * An implementation of {@link Interruptible} that holds a reference
  * to the {@link Thread} that instantiated it.
  */
-class CurrentThread implements Interruptible {
+public class CurrentThread implements Interruptible {
     
     /**
      * The {@link Thread} that created this {@link CurrentThread} instance.

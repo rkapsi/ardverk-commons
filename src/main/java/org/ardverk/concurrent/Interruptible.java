@@ -19,7 +19,7 @@ package org.ardverk.concurrent;
 /**
  * An interface for interruptible objects.
  */
-interface Interruptible {
+public interface Interruptible {
     
     public static final Interruptible INIT = new Interruptible() {
         @Override

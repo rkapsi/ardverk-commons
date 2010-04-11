@@ -255,11 +255,11 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
         
         if (first != null) {
             first.operationComplete(this);
-            
-            if (others != null) {
-                for (AsyncFutureListener<V> l : others) {
-                    l.operationComplete(this);
-                }
+        }
+        
+        if (others != null) {
+            for (AsyncFutureListener<V> l : others) {
+                l.operationComplete(this);
             }
         }
     }
