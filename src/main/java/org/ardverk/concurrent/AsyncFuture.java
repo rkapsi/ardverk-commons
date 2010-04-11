@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
  * 
  * @see Future
  */
-public interface AsyncFuture<V> extends Future<V> {
+public interface AsyncFuture<V> extends Future<V>, Cancellable {
     
     /**
      * Sets the value of the {@link AsyncFuture}
