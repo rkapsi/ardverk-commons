@@ -88,7 +88,7 @@ public class AsyncThreadPoolExecutor extends ManagedThreadPoolExecutor
     
     protected <T> AsyncRunnableFuture<T> newTaskFor(AsyncProcess<T> process, 
             long timeout, TimeUnit unit) {
-        return new AsyncFutureTask<T>(process, timeout, unit);
+        return new AsyncProcessFutureTask<T>(process, timeout, unit);
     }
     
     @Override

@@ -9,6 +9,7 @@ import java.util.concurrent.TimeoutException;
 
 import junit.framework.TestCase;
 
+import org.ardverk.utils.ExceptionUtils;
 import org.junit.Test;
 
 public class AsyncFutureTaskTest {
@@ -49,30 +50,25 @@ public class AsyncFutureTaskTest {
                 10L, TimeUnit.SECONDS);
 
         final CountDownLatch latch = new CountDownLatch(1);
-        AsyncFuture<String> future = null;
-        synchronized (this) {
-            AsyncProcess<String> process = new AsyncProcess<String>() {
-                @Override
-                public void start(AsyncFuture<String> future) {
-                    synchronized (AsyncFutureTaskTest.this) {
-                        future.setValue("Hello World!");
-                    }
-                }
-            };
-            
-            future = executor.submit(process);
-            
-            synchronized (future) {
-                TestCase.assertFalse(future.isDone());
-                
-                future.addAsyncFutureListener(new AsyncFutureListener<String>() {
-                    @Override
-                    public void operationComplete(AsyncFuture<String> future) {
-                        latch.countDown();
-                    }
-                });
+        
+        final AsyncFutureListener<String> listener 
+                = new AsyncFutureListener<String>() {
+            @Override
+            public void operationComplete(AsyncFuture<String> future) {
+                latch.countDown();
             }
-        }
+        };
+        
+        AsyncProcess<String> process = new AsyncProcess<String>() {
+            @Override
+            public void start(AsyncFuture<String> future) {
+                // Add the listener *before* we're setting the result value!
+                future.addAsyncFutureListener(listener);
+                future.setValue("Hello World!");
+            }
+        };
+        
+        AsyncFuture<String> future = executor.submit(process);
         
         TestCase.assertTrue(latch.await(1L, TimeUnit.SECONDS));
         
@@ -135,8 +131,8 @@ public class AsyncFutureTaskTest {
             future.get(1L, TimeUnit.SECONDS);
             TestCase.fail("Should have failed!");
         } catch (ExecutionException expected) {
-            TestCase.assertTrue(
-                    isCausedBy(expected, TimeoutException.class));
+            TestCase.assertTrue(ExceptionUtils.isCausedBy(
+                    expected, TimeoutException.class));
         } catch (TimeoutException expected) {
             
         }
@@ -147,8 +143,8 @@ public class AsyncFutureTaskTest {
             throws InterruptedException, TimeoutException {
         Executor executor = Executors.newSingleThreadExecutor();
         
-        AsyncFutureTask<String> future 
-            = new AsyncFutureTask<String>();
+        AsyncRunnableFuture<String> future 
+            = new AsyncProcessFutureTask<String>();
         
         executor.execute(future);
         
@@ -156,8 +152,8 @@ public class AsyncFutureTaskTest {
             future.get(1L, TimeUnit.SECONDS);
             TestCase.fail("Should have failed!");
         } catch (ExecutionException expected) {
-            TestCase.assertTrue(
-                    isCausedBy(expected, IllegalStateException.class));
+            TestCase.assertTrue(ExceptionUtils.isCausedBy(
+                    expected, IllegalStateException.class));
         }
     }
     
@@ -177,20 +173,5 @@ public class AsyncFutureTaskTest {
             executor.execute(task);
         }
         
-    }
-    
-    public static boolean isCausedBy(Throwable t, Class<? extends Throwable> clazz) {
-        return getCause(t, clazz) != null;
-    }
-    
-    @SuppressWarnings("unchecked")
-    public static <T extends Throwable> T getCause(Throwable t, Class<T> clazz) {
-        while(t != null) {
-            if (clazz.isInstance(t)) {
-                return (T)t;
-            }
-            t = t.getCause();
-        }
-        return null;
     }
 }

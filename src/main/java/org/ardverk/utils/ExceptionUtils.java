@@ -25,6 +25,21 @@ public class ExceptionUtils {
     
     private ExceptionUtils() {}
     
+    public static boolean isCausedBy(Throwable t, Class<? extends Throwable> clazz) {
+        return getCause(t, clazz) != null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <T extends Throwable> T getCause(Throwable t, Class<T> clazz) {
+        while(t != null) {
+            if (clazz.isInstance(t)) {
+                return (T)t;
+            }
+            t = t.getCause();
+        }
+        return null;
+    }
+    
     /**
      * An utility method that will pass the given {@link Throwable}
      * to the calling {@link Thread}'s {@link UncaughtExceptionHandler}.

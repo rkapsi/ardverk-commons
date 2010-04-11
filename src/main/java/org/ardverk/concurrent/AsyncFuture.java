@@ -18,7 +18,6 @@ package org.ardverk.concurrent;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link AsyncFuture} represents the result of an asynchronously
@@ -29,25 +28,14 @@ import java.util.concurrent.TimeUnit;
 public interface AsyncFuture<V> extends Future<V> {
     
     /**
-     * Returns the timeout in the given {@link TimeUnit} or
-     * -1L if there is no timeout.
-     */
-    public long getTimeout(TimeUnit unit);
-    
-    /**
      * Sets the value of the {@link AsyncFuture}
      */
-    public void setValue(V value);
+    public boolean setValue(V value);
     
     /**
      * Sets the {@link Exception} of the {@link AsyncFuture}
      */
-    public void setException(Throwable t);
-    
-    /**
-     * Returns true if the {@link AsyncFuture} finished due to a timeout.
-     */
-    public boolean isTimeout();
+    public boolean setException(Throwable t);
     
     /**
      * A non-blocking version of the {@link #get()} method. It returns

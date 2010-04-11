@@ -19,7 +19,6 @@ package org.ardverk.concurrent;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -31,7 +30,7 @@ import java.util.concurrent.TimeoutException;
  * value or an {@link Exception} which will be thrown by the 
  * {@link #get()} method.
  */
-class AsyncExchanger<V> {
+class AsyncExchanger<V, E extends Throwable> {
     
     /** Used during construction time as a substitute for 'this'  */
     private static final Object THIS = new Object();
@@ -49,7 +48,7 @@ class AsyncExchanger<V> {
     private V value;
     
     /** The Exception we're going to throw */
-    private ExecutionException exception;
+    private E exception;
     
     /**
      * Creates an {@link AsyncExchanger} with the default configuration.
@@ -81,7 +80,7 @@ class AsyncExchanger<V> {
      * unless they're already set in which case this method
      * will return immediately.
      */
-    public V get() throws InterruptedException, ExecutionException {
+    public V get() throws InterruptedException, E {
         synchronized (lock) {
             try {
                 return get(0L, TimeUnit.MILLISECONDS);
@@ -97,7 +96,7 @@ class AsyncExchanger<V> {
      * this method will return immediately.
      */
     public V get(long timeout, TimeUnit unit) 
-            throws InterruptedException, TimeoutException, ExecutionException {
+            throws InterruptedException, TimeoutException, E {
         
         synchronized (lock) {
             if (!done) {
@@ -129,7 +128,7 @@ class AsyncExchanger<V> {
     /**
      * Tries to get the value without blocking.
      */
-    public V tryGet() throws InterruptedException, ExecutionException {
+    public V tryGet() throws InterruptedException, E {
         synchronized (lock) {
             if (done) {
                 return get();
@@ -205,7 +204,7 @@ class AsyncExchanger<V> {
     /**
      * Sets the Exception that will be thrown by the get() method
      */
-    public boolean setException(ExecutionException exception) {
+    public boolean setException(E exception) {
         if (exception == null) {
             throw new NullPointerException("exception");
         }
@@ -222,12 +221,30 @@ class AsyncExchanger<V> {
         }
     }
     
+    /**
+     * Resets the {@link AsyncExchanger}
+     */
+    public boolean reset() {
+        synchronized (lock) {
+            if (done || cancelled) {
+                done = false;
+                cancelled = false;
+                value = null;
+                exception = null;
+                return true;
+            }
+            
+            return false;
+        }
+    }
+    
     @Override
     public String toString() {
         boolean done = false;
         boolean cancelled = false;
         V value = null;
-        ExecutionException exception = null;
+        E exception = null;
+        
         synchronized (lock) {
             done = this.done;
             cancelled = this.cancelled;
