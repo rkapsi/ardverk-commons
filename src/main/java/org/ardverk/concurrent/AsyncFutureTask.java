@@ -34,10 +34,22 @@ import org.ardverk.lang.NullArgumentException;
 public class AsyncFutureTask<V> extends AsyncValueFuture<V> 
         implements AsyncRunnableFuture<V> {
     
+	private static final Callable<Object> NOP = new Callable<Object>() {
+		@Override
+		public Object call() {
+			throw new UnsupportedOperationException("Please override doRun()");
+		}
+	};
+	
+	private final AtomicReference<Interruptible> thread 
+    	= new AtomicReference<Interruptible>(Interruptible.INIT);
+	
     private final Callable<V> callable;
     
-    private final AtomicReference<Interruptible> thread 
-        = new AtomicReference<Interruptible>(Interruptible.INIT);
+    @SuppressWarnings("unchecked")
+	public AsyncFutureTask() {
+    	this((Callable<V>)NOP);
+    }
     
     public AsyncFutureTask(Runnable task, V value) {
         this(Executors.callable(task, value));
@@ -52,21 +64,37 @@ public class AsyncFutureTask<V> extends AsyncValueFuture<V>
     }
     
     @Override
-    public void run() {
-        if (thread.compareAndSet(Interruptible.INIT, new CurrentThread())) {
+    public final void run() {
+        if (preRun()) {
             try {
-                if (!isDone()) {
-                    try {
-                        V value = callable.call();
-                        setValue(value);
-                    } catch (Exception err) {
-                        setException(err);
-                    }
-                }
+            	doRun();
             } finally {
-                thread.set(Interruptible.DONE);
+            	postRun();
             }
         }
+    }
+    
+    private boolean preRun() {
+    	synchronized (thread) {
+    		return thread.compareAndSet(Interruptible.INIT, new CurrentThread());
+    	}
+    }
+    
+    private void postRun() {
+    	synchronized (thread) {
+    		thread.set(Interruptible.DONE);
+    	}
+    }
+    
+    protected synchronized void doRun() {
+    	if (!isDone()) {
+	    	try {
+	            V value = callable.call();
+	            setValue(value);
+	        } catch (Exception err) {
+	            setException(err);
+	        }
+    	}
     }
 
     @Override
@@ -74,7 +102,9 @@ public class AsyncFutureTask<V> extends AsyncValueFuture<V>
         boolean success = super.cancel(mayInterruptIfRunning);
         
         if (success && mayInterruptIfRunning) {
-            thread.getAndSet(Interruptible.DONE).interrupt();
+        	synchronized (thread) {
+        		thread.getAndSet(Interruptible.DONE).interrupt();
+        	}
         }
         
         return success;
