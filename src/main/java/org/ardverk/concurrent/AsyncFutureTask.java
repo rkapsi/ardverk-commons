@@ -34,27 +34,38 @@ import org.ardverk.lang.NullArgumentException;
 public class AsyncFutureTask<V> extends AsyncValueFuture<V> 
         implements AsyncRunnableFuture<V> {
     
-	private static final Callable<Object> NOP = new Callable<Object>() {
-		@Override
-		public Object call() {
-			throw new UnsupportedOperationException("Please override doRun()");
-		}
-	};
-	
-	private final AtomicReference<Interruptible> thread 
-    	= new AtomicReference<Interruptible>(Interruptible.INIT);
-	
+    private static final Callable<Object> NOP = new Callable<Object>() {
+        @Override
+        public Object call() {
+            throw new UnsupportedOperationException("Please override doRun()");
+        }
+    };
+    
+    private final AtomicReference<Interruptible> thread 
+        = new AtomicReference<Interruptible>(Interruptible.INIT);
+    
     private final Callable<V> callable;
     
+    /**
+     * Creates an {@link AsyncFutureTask}
+     */
     @SuppressWarnings("unchecked")
-	public AsyncFutureTask() {
-    	this((Callable<V>)NOP);
+    public AsyncFutureTask() {
+        this((Callable<V>)NOP);
     }
     
+    /**
+     * Creates an {@link AsyncFutureTask} with the 
+     * given {@link Runnable} and return value
+     */
     public AsyncFutureTask(Runnable task, V value) {
         this(Executors.callable(task, value));
     }
     
+    /**
+     * Creates an {@link AsyncFutureTask} with the given
+     * {@link Callable}.
+     */
     public AsyncFutureTask(Callable<V> callable) {
         if (callable == null) {
             throw new NullArgumentException("callable");
@@ -67,34 +78,51 @@ public class AsyncFutureTask<V> extends AsyncValueFuture<V>
     public final void run() {
         if (preRun()) {
             try {
-            	doRun();
+                doRun();
+            } catch (Throwable t) {
+                uncaughtException(t);
             } finally {
-            	postRun();
+                postRun();
             }
         }
     }
     
+    /**
+     * Called before {@link #doRun()}
+     */
     private boolean preRun() {
-    	synchronized (thread) {
-    		return thread.compareAndSet(Interruptible.INIT, new CurrentThread());
-    	}
+        return thread.compareAndSet(Interruptible.INIT, new CurrentThread());
     }
     
+    /**
+     * Called after {@link #doRun()}
+     */
     private void postRun() {
-    	synchronized (thread) {
-    		thread.set(Interruptible.DONE);
-    	}
+        // See cancel() for the reasoning why we're using synchronized here!
+        synchronized (thread) {
+            thread.set(Interruptible.DONE);
+        }
     }
     
-    protected synchronized void doRun() {
-    	if (!isDone()) {
-	    	try {
-	            V value = callable.call();
-	            setValue(value);
-	        } catch (Exception err) {
-	            setException(err);
-	        }
-    	}
+    /**
+     * Called by the {@link AsyncFutureTask}'s {@link #run()} method.
+     * You may override this method for custom implementations.
+     */
+    protected synchronized void doRun() throws Exception {
+        if (!isDone()) {
+            V value = callable.call();
+            setValue(value);
+        }
+    }
+    
+    /**
+     * This method is being called if an uncaught {@link Exception}
+     * occurred in {@link #doRun()} and {@link #run()} respectively.
+     * The default implementation will pass it on to 
+     * {@link #setException(Throwable)}.
+     */
+    protected void uncaughtException(Throwable t) {
+        setException(t);
     }
 
     @Override
@@ -102,9 +130,18 @@ public class AsyncFutureTask<V> extends AsyncValueFuture<V>
         boolean success = super.cancel(mayInterruptIfRunning);
         
         if (success && mayInterruptIfRunning) {
-        	synchronized (thread) {
-        		thread.getAndSet(Interruptible.DONE).interrupt();
-        	}
+            
+            // NOTE: We must use synchronized here to make sure we're
+            // not interrupting an another task. Say a Thread starts
+            // to execute this task, we call cancel(true) but haven't
+            // called interrupt() yet. The Thread moves on to execute
+            // the next task and we call interrupt. In other words,
+            // AtomicReference.getAndSet() is atomic but the interrupt()
+            // method call is not part of the atomic operation.
+            
+            synchronized (thread) {
+                thread.getAndSet(Interruptible.DONE).interrupt();
+            }
         }
         
         return success;
