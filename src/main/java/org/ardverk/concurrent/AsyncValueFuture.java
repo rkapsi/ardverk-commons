@@ -132,7 +132,8 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     @SuppressWarnings("unchecked")
     @Override
     public synchronized AsyncFutureListener<V>[] getAsyncFutureListeners() {
-        List<AsyncFutureListener<V>> listeners = new ArrayList<AsyncFutureListener<V>>();
+        List<AsyncFutureListener<V>> listeners 
+            = new ArrayList<AsyncFutureListener<V>>();
         
         if (first != null) {
             listeners.add(first);
@@ -214,7 +215,7 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     }
     
     /**
-     * 
+     * Called on completion of the {@link AsyncValueFuture}.   
      */
     private void complete() {
         fireOperationComplete();
@@ -222,7 +223,8 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     }
     
     /**
-     * 
+     * Called when the {@link AsyncValueFuture} is done. You may
+     * override this method.
      */
     protected void done() {
         
@@ -248,7 +250,15 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     }
     
     /**
+     * Called by the {@link AsyncValueFuture} to notify its 
+     * {@link AsyncFutureListener}s that the operation has completed.
      * 
+     * <p>You may override this method to off-load the events
+     * to a different {@link Thread}. The default implementation
+     * will fire events on the same {@link Thread} that called
+     * {@link #cancel(boolean)}, {@link #setValue(Object)},
+     * {@link #setException(Throwable)} or 
+     * {@link #addAsyncFutureListener(AsyncFutureListener)}
      */
     protected void fireOperationComplete(AsyncFutureListener<V> first, 
             AsyncFutureListener<V>... others) {
@@ -265,7 +275,8 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     }
     
     /**
-     * 
+     * Takes the given {@link Throwable} and wraps it into an 
+     * {@link ExecutionException} if it isn't already one.
      */
     private static ExecutionException wrap(Throwable t) {
         if (t instanceof ExecutionException) {
