@@ -14,11 +14,10 @@
  *   limitations under the License.
  */
 
-
 package org.ardverk.concurrent;
 
 /**
- * 
+ * An interface for cancellable objects.
  */
 public interface Cancellable {
 

@@ -17,10 +17,13 @@
 package org.ardverk.concurrent;
 
 /**
- * An interface for interruptible objects.
+ * An interface for interruptible objects such as {@link Thread}s.
  */
 public interface Interruptible {
     
+    /**
+     * An initial state for {@link Interruptible} objects.
+     */
     public static final Interruptible INIT = new Interruptible() {
         @Override
         public void interrupt() {
@@ -28,6 +31,9 @@ public interface Interruptible {
         }
     };
     
+    /**
+     * A final state for {@link Interruptible} objects.
+     */
     public static final Interruptible DONE = new Interruptible() {
         @Override
         public void interrupt() {
@@ -35,5 +41,8 @@ public interface Interruptible {
         }
     };
     
+    /**
+     * Interrupts the execution of the object.
+     */
     public void interrupt();
 }
