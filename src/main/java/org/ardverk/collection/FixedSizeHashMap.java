@@ -91,6 +91,7 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
         return size() >= getMaxSize();
     }
     
+    @Override
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
         if (size() > getMaxSize()) {
             removing(eldest);
