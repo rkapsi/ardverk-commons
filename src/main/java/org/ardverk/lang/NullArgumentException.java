@@ -20,6 +20,14 @@ public class NullArgumentException extends NullPointerException {
     
     private static final long serialVersionUID = 8784890523282411156L;
 
+    public static <T> T notNull(T value, String message) {
+        if (value == null) {
+            throw new NullArgumentException(message);
+        }
+        
+        return value;
+    }
+    
     public NullArgumentException() {
         super();
     }
