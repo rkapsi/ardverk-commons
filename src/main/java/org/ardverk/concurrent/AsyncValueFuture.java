@@ -24,6 +24,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.ardverk.lang.NullArgumentException;
 
+/**
+ * A basic implementation of {@link AsyncFuture}.
+ */
 public class AsyncValueFuture<V> implements AsyncFuture<V> {
 
     protected final AsyncExchanger<V, ExecutionException> exchanger 
@@ -231,7 +234,8 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     }
     
     /**
-     * 
+     * Notifies all {@link AsyncFutureListener}s that were added
+     * before the {@link AsyncValueFuture} completed.
      */
     @SuppressWarnings("unchecked")
     private void fireOperationComplete() {

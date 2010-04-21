@@ -108,7 +108,7 @@ public class AsyncFutureTask<V> extends AsyncValueFuture<V>
      * Called by the {@link AsyncFutureTask}'s {@link #run()} method.
      * You may override this method for custom implementations.
      */
-    protected synchronized void doRun() throws Exception {
+    protected void doRun() throws Exception {
         if (!isDone()) {
             V value = callable.call();
             setValue(value);
