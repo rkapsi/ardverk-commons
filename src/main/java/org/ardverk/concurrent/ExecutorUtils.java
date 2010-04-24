@@ -72,17 +72,17 @@ public class ExecutorUtils {
     /**
      * Creates and returns a {@link ThreadPoolExecutor}
      */
-    public static AsyncThreadPoolExecutor newCachedThreadPool(String name) {
+    public static AsyncProcessThreadPoolExecutor newCachedThreadPool(String name) {
         return newCachedThreadPool(name, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Creates and returns a {@link ThreadPoolExecutor}
      */
-    public static AsyncThreadPoolExecutor newCachedThreadPool(String name, 
+    public static AsyncProcessThreadPoolExecutor newCachedThreadPool(String name, 
             long frequency, TimeUnit unit) {
         
-        return new AsyncThreadPoolExecutor(0, Integer.MAX_VALUE,
+        return new AsyncProcessThreadPoolExecutor(0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<Runnable>(), 
                 defaultThreadFactory(name),
@@ -92,14 +92,14 @@ public class ExecutorUtils {
     /**
      * Creates and returns a {@link ThreadPoolExecutor}
      */
-    public static AsyncThreadPoolExecutor newSingleThreadExecutor(String name) {
+    public static AsyncProcessThreadPoolExecutor newSingleThreadExecutor(String name) {
         return newSingleThreadExecutor(name, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Creates and returns a {@link ThreadPoolExecutor}
      */
-    public static AsyncThreadPoolExecutor newSingleThreadExecutor(
+    public static AsyncProcessThreadPoolExecutor newSingleThreadExecutor(
             String name, long frequency, TimeUnit unit) {
         return newFixedThreadPool(1, name, frequency, unit);
     }
@@ -107,17 +107,17 @@ public class ExecutorUtils {
     /**
      * Creates and returns a {@link ThreadPoolExecutor}
      */
-    public static AsyncThreadPoolExecutor newFixedThreadPool(int nThreads, String name) {
+    public static AsyncProcessThreadPoolExecutor newFixedThreadPool(int nThreads, String name) {
         return newFixedThreadPool(nThreads, name, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
     }
     
     /**
      * Creates and returns a {@link ThreadPoolExecutor}
      */
-    public static AsyncThreadPoolExecutor newFixedThreadPool(int nThreads, 
+    public static AsyncProcessThreadPoolExecutor newFixedThreadPool(int nThreads, 
             String name, long frequency, TimeUnit unit) {
         
-        return new AsyncThreadPoolExecutor(nThreads, nThreads,
+        return new AsyncProcessThreadPoolExecutor(nThreads, nThreads,
                 0L, TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<Runnable>(), 
                 defaultThreadFactory(name),

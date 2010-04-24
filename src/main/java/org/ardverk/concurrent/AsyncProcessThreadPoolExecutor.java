@@ -85,20 +85,21 @@ public class AsyncProcessThreadPoolExecutor extends AsyncThreadPoolExecutor
      * Creates and returns an {@link AsyncRunnableFuture} for 
      * the given {@link AsyncProcess}.
      */
-    protected <T> AsyncRunnableFuture<T> newTaskFor(AsyncProcess<T> process, 
-            long timeout, TimeUnit unit) {
+    protected <T> AsyncProcessRunnableFuture<T> newTaskFor(
+            AsyncProcess<T> process, long timeout, TimeUnit unit) {
         return new AsyncProcessFutureTask<T>(process, timeout, unit);
     }
     
     @Override
-    public <T> AsyncFuture<T> submit(AsyncProcess<T> process) {
+    public <T> AsyncProcessFuture<T> submit(AsyncProcess<T> process) {
         return submit(process, getTimeoutInMillis(), TimeUnit.MILLISECONDS);
     }
     
     @Override
-    public <T> AsyncFuture<T> submit(AsyncProcess<T> process, 
-            long timeout, TimeUnit unit) {
-        AsyncRunnableFuture<T> future = newTaskFor(process, timeout, unit);
+    public <T> AsyncProcessFuture<T> submit(
+            AsyncProcess<T> process, long timeout, TimeUnit unit) {
+        AsyncProcessRunnableFuture<T> future 
+            = newTaskFor(process, timeout, unit);
         execute(future);
         return future;
     }

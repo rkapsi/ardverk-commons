@@ -47,11 +47,11 @@ public interface AsyncProcessExecutorService
      * @see #getTimeout(TimeUnit)
      * @see #setTimeout(long, TimeUnit)
      */
-    public <T> AsyncFuture<T> submit(AsyncProcess<T> process);
+    public <T> AsyncProcessFuture<T> submit(AsyncProcess<T> process);
     
     /**
      * Submits the given {@link AsyncProcess} for execution.
      */
-    public <T> AsyncFuture<T> submit(AsyncProcess<T> process, 
+    public <T> AsyncProcessFuture<T> submit(AsyncProcess<T> process, 
             long timeout, TimeUnit unit);
 }
