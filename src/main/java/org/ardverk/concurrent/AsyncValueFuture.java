@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Roger Kapsi
+ * Copyright 2009, 2010 Roger Kapsi
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -25,10 +25,13 @@ import java.util.concurrent.TimeoutException;
 import org.ardverk.lang.NullArgumentException;
 
 /**
- * A basic implementation of {@link AsyncFuture}.
+ * A default implementation of {@link AsyncFuture}.
  */
 public class AsyncValueFuture<V> implements AsyncFuture<V> {
 
+    /**
+     * The {@link AsyncExchanger} that is used as a synchronization point.
+     */
     protected final AsyncExchanger<V, ExecutionException> exchanger 
         = new AsyncExchanger<V, ExecutionException>(this);
     
@@ -236,20 +239,18 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     }
     
     /**
-     * Returns true if the caller is the event {@link Thread}. The default
-     * implementation is returning false and custom implementations may
-     * override this method.
+     * Checks if the caller {@link Thread} is the event {@link Thread}.
+     * The default implementation returns always false, custom 
+     * implementations may override this method.
      */
     protected boolean isEventThread() {
         return false;
     }
     
     /**
-     * Called by {@link #get()} and {@link #get(long, TimeUnit)} to
-     * determinate if the caller is the event {@link Thread}. If that's
-     * the case and the {@link AsyncFuture} is not done yet it will throw
-     * an {@link IllegalStateException} to prevent the event {@link Thread}
-     * from blocking.
+     * Checks if the {@link AsyncValueFuture} is not done and it's
+     * being called from the event {@link Thread}. If so, an {@link IllegalStateException}
+     * is thrown.
      */
     private void checkIfEventThread() {
         if (!isDone() && isEventThread()) {
@@ -258,8 +259,7 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     }
     
     /**
-     * Notifies all {@link AsyncFutureListener}s that were added
-     * before the {@link AsyncValueFuture} completed.
+     * Notifies all {@link AsyncFutureListener}s.
      */
     @SuppressWarnings("unchecked")
     private void fireOperationComplete() {

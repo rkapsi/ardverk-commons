@@ -17,31 +17,31 @@
 package org.ardverk.concurrent;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Callable;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * An implementation of {@link ThreadPoolExecutor} for {@link AsyncFuture}s.
+ * An implementation of {@link AsyncThreadPoolExecutor} for {@link AsyncProcessFuture}s.
  * 
- * @see ThreadPoolExecutor
- * @see AsyncExecutorService
+ * @see AsyncThreadPoolExecutor
+ * @see AsyncProcessExecutorService
  */
-public class AsyncThreadPoolExecutor extends ManagedThreadPoolExecutor 
-        implements AsyncExecutorService {
+public class AsyncProcessThreadPoolExecutor extends AsyncThreadPoolExecutor 
+        implements AsyncProcessExecutorService {
+
+    private volatile long timeoutInMillis = -1;
     
-    public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
-            long keepAliveTime, TimeUnit unit,
+    public AsyncProcessThreadPoolExecutor(int corePoolSize,
+            int maximumPoolSize, long keepAliveTime, TimeUnit unit,
             BlockingQueue<Runnable> workQueue, long purgeFrequency,
             TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
                 purgeFrequency, purgeUnit);
     }
 
-    public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
-            long keepAliveTime, TimeUnit unit,
+    public AsyncProcessThreadPoolExecutor(int corePoolSize,
+            int maximumPoolSize, long keepAliveTime, TimeUnit unit,
             BlockingQueue<Runnable> workQueue,
             RejectedExecutionHandler handler, long purgeFrequency,
             TimeUnit purgeUnit) {
@@ -49,16 +49,16 @@ public class AsyncThreadPoolExecutor extends ManagedThreadPoolExecutor
                 purgeFrequency, purgeUnit);
     }
 
-    public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
-            long keepAliveTime, TimeUnit unit,
+    public AsyncProcessThreadPoolExecutor(int corePoolSize,
+            int maximumPoolSize, long keepAliveTime, TimeUnit unit,
             BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,
             long purgeFrequency, TimeUnit purgeUnit) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue,
                 threadFactory, purgeFrequency, purgeUnit);
     }
 
-    public AsyncThreadPoolExecutor(int corePoolSize, int maximumPoolSize,
-            long keepAliveTime, TimeUnit unit,
+    public AsyncProcessThreadPoolExecutor(int corePoolSize,
+            int maximumPoolSize, long keepAliveTime, TimeUnit unit,
             BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory,
             RejectedExecutionHandler handler, long purgeFrequency,
             TimeUnit purgeUnit) {
@@ -67,27 +67,39 @@ public class AsyncThreadPoolExecutor extends ManagedThreadPoolExecutor
     }
 
     @Override
-    protected <T> AsyncRunnableFuture<T> newTaskFor(Callable<T> callable) {
-        return new AsyncFutureTask<T>(callable);
+    public long getTimeout(TimeUnit unit) {
+        return unit.convert(timeoutInMillis, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    protected <T> AsyncRunnableFuture<T> newTaskFor(Runnable runnable, T value) {
-        return new AsyncFutureTask<T>(runnable, value);
+    public long getTimeoutInMillis() {
+        return getTimeout(TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public void setTimeout(long timeout, TimeUnit unit) {
+        timeoutInMillis = unit.toMillis(timeout);
+    }
+    
+    /**
+     * Creates and returns an {@link AsyncRunnableFuture} for 
+     * the given {@link AsyncProcess}.
+     */
+    protected <T> AsyncRunnableFuture<T> newTaskFor(AsyncProcess<T> process, 
+            long timeout, TimeUnit unit) {
+        return new AsyncProcessFutureTask<T>(process, timeout, unit);
     }
     
     @Override
-    public <T> AsyncFuture<T> submit(Callable<T> task) {
-        return (AsyncFuture<T>)super.submit(task);
+    public <T> AsyncFuture<T> submit(AsyncProcess<T> process) {
+        return submit(process, getTimeoutInMillis(), TimeUnit.MILLISECONDS);
     }
-
+    
     @Override
-    public <T> AsyncFuture<T> submit(Runnable task, T result) {
-        return (AsyncFuture<T>)super.submit(task, result);
-    }
-
-    @Override
-    public AsyncFuture<?> submit(Runnable task) {
-        return (AsyncFuture<?>)super.submit(task);
+    public <T> AsyncFuture<T> submit(AsyncProcess<T> process, 
+            long timeout, TimeUnit unit) {
+        AsyncRunnableFuture<T> future = newTaskFor(process, timeout, unit);
+        execute(future);
+        return future;
     }
 }

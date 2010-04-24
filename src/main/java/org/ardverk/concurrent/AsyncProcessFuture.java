@@ -16,15 +16,28 @@
 
 package org.ardverk.concurrent;
 
-import java.util.EventListener;
+import java.util.concurrent.TimeUnit;
 
 /**
- * The listener interface for receiving {@link AsyncFuture} completion events.
+ * An {@link AsyncProcessFuture} is an {@link AsyncFuture} that is
+ * backed by an {@link AsyncProcess}.
  */
-public interface AsyncFutureListener<V> extends EventListener {
-
+public interface AsyncProcessFuture<V> extends AsyncFuture<V> {
+    
     /**
-     * Called by an {@link AsyncFuture} when a computation completes.
+     * Returns the timeout for the {@link AsyncProcessFuture}
      */
-    public void operationComplete(AsyncFuture<V> future);
+    public long getTimeout(TimeUnit unit);
+    
+    /**
+     * Returns the timeout for the {@link AsyncProcessFuture}
+     * in milliseconds.
+     */
+    public long getTimeoutInMillis();
+    
+    /**
+     * Returns true if the {@link AsyncProcessFuture} 
+     * completed due to a timeout.
+     */
+    public boolean isTimeout();
 }

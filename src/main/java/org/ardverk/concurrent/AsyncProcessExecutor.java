@@ -16,15 +16,6 @@
 
 package org.ardverk.concurrent;
 
-import java.util.EventListener;
+public interface AsyncProcessExecutor extends AsyncExecutor {
 
-/**
- * The listener interface for receiving {@link AsyncFuture} completion events.
- */
-public interface AsyncFutureListener<V> extends EventListener {
-
-    /**
-     * Called by an {@link AsyncFuture} when a computation completes.
-     */
-    public void operationComplete(AsyncFuture<V> future);
 }
