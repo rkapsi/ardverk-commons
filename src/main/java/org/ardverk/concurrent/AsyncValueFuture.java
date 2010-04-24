@@ -193,12 +193,14 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
 
     @Override
     public V get() throws InterruptedException, ExecutionException {
+        checkIfEventThread();
         return exchanger.get();
     }
 
     @Override
     public V get(long timeout, TimeUnit unit) throws InterruptedException,
             ExecutionException, TimeoutException {
+        checkIfEventThread();
         return exchanger.get(timeout, unit);
     }
 
@@ -231,6 +233,28 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
      */
     protected void done() {
         
+    }
+    
+    /**
+     * Returns true if the caller is the event {@link Thread}. The default
+     * implementation is returning false and custom implementations may
+     * override this method.
+     */
+    protected boolean isEventThread() {
+        return false;
+    }
+    
+    /**
+     * Called by {@link #get()} and {@link #get(long, TimeUnit)} to
+     * determinate if the caller is the event {@link Thread}. If that's
+     * the case and the {@link AsyncFuture} is not done yet it will throw
+     * an {@link IllegalStateException} to prevent the event {@link Thread}
+     * from blocking.
+     */
+    private void checkIfEventThread() {
+        if (!isDone() && isEventThread()) {
+            throw new IllegalStateException();
+        }
     }
     
     /**
