@@ -26,7 +26,6 @@ import java.net.SocketAddress;
 import java.util.Arrays;
 
 import org.ardverk.io.Writable;
-import org.ardverk.lang.NullArgumentException;
 import org.ardverk.utils.ByteArrayComparator;
 
 /**
@@ -136,31 +135,36 @@ public class NetworkMask implements Comparable<NetworkMask>,
         return address;
     }
     
-    public boolean isSameNetwork(SocketAddress a, 
-            SocketAddress b) {
-        
-        if (a == null) {
-            throw new NullArgumentException("address1");
-        }
-        
-        if (b == null) {
-            throw new NullArgumentException("address2");
-        }
-        
-        return Arrays.equals(mask(a), mask(b));
+    /**
+     * Returns true if the two given {@link SocketAddress}es 
+     * are in the same network.
+     */
+    public boolean isSameNetwork(SocketAddress a, SocketAddress b) {
+        return isSameNetwork(
+                ((InetSocketAddress)a).getAddress(), 
+                ((InetSocketAddress)b).getAddress());
     }
     
+    /**
+     * Returns true if the two given {@link InetAddress}es 
+     * are in the same network.
+     */
     public boolean isSameNetwork(InetAddress a, InetAddress b) {
-        
-        if (a == null) {
-            throw new NullArgumentException("address1");
-        }
-        
-        if (b == null) {
-            throw new NullArgumentException("address2");
-        }
-        
-        return Arrays.equals(mask(a), mask(b));
+        return isSameNetwork(a.getAddress(), b.getAddress(), false);
+    }
+    
+    /**
+     * Returns true if the two given addresses are in the same network.
+     */
+    public boolean isSameNetwork(byte[] a, byte[] b) {
+        return isSameNetwork(a, b, true);
+    }
+    
+    /**
+     * Returns true if the two given addresses are in the same network.
+     */
+    boolean isSameNetwork(byte[] a, byte[] b, boolean copy) {
+        return Arrays.equals(mask(a, copy), mask(b, copy));
     }
 
     @Override
