@@ -26,6 +26,7 @@ import java.net.SocketAddress;
 import java.util.Arrays;
 
 import org.ardverk.io.Writable;
+import org.ardverk.lang.NullArgumentException;
 import org.ardverk.utils.ByteArrayComparator;
 
 /**
@@ -133,6 +134,33 @@ public class NetworkMask implements Comparable<NetworkMask>,
         }
         
         return address;
+    }
+    
+    public boolean isSameNetwork(SocketAddress a, 
+            SocketAddress b) {
+        
+        if (a == null) {
+            throw new NullArgumentException("address1");
+        }
+        
+        if (b == null) {
+            throw new NullArgumentException("address2");
+        }
+        
+        return Arrays.equals(mask(a), mask(b));
+    }
+    
+    public boolean isSameNetwork(InetAddress a, InetAddress b) {
+        
+        if (a == null) {
+            throw new NullArgumentException("address1");
+        }
+        
+        if (b == null) {
+            throw new NullArgumentException("address2");
+        }
+        
+        return Arrays.equals(mask(a), mask(b));
     }
 
     @Override
