@@ -22,6 +22,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
+import org.ardverk.lang.NullArgumentException;
+
 public class NetworkUtils {
 
     private NetworkUtils() {}
@@ -31,11 +33,11 @@ public class NetworkUtils {
      */
     public static boolean isSameAddress(SocketAddress a1, SocketAddress a2) {
         if (a1 == null) {
-            throw new NullPointerException("address1");
+            throw new NullArgumentException("address1");
         }
         
         if (a2 == null) {
-            throw new NullPointerException("address2");
+            throw new NullArgumentException("address2");
         }
         
         return ((InetSocketAddress)a1).getAddress().equals(
