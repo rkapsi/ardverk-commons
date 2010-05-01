@@ -101,12 +101,17 @@ public class AsyncProcessFutureTask<V> extends AsyncFutureTask<V>
         }
         
         Runnable task = new Runnable() {
+            
+            private final long creationTime = System.currentTimeMillis();
+            
             @Override
             public void run() {
                 synchronized (AsyncProcessFutureTask.this) {
                     if (!isDone() && !isDelay()) {
                         wasTimeout = true;
-                        handleTimeout();
+                        
+                        long time = System.currentTimeMillis() - creationTime;
+                        handleTimeout(time, TimeUnit.MILLISECONDS);
                     }
                 }
             }
@@ -139,8 +144,8 @@ public class AsyncProcessFutureTask<V> extends AsyncFutureTask<V>
      * implementation will simply call {@link #setException(Throwable)}
      * with a {@link TimeoutException}.
      */
-    protected synchronized boolean handleTimeout() {
-        return setException(new TimeoutException());
+    protected synchronized boolean handleTimeout(long time, TimeUnit unit) {
+        return setException(new TimeoutException("Watchdog: " + time + " " + unit));
     }
     
     @Override
