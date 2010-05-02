@@ -2,6 +2,7 @@ package org.ardverk.utils;
 
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -132,7 +133,10 @@ public class DeadlockScanner {
             return;
         }
         
-        callback.deadlock(new Deadlock(deadlocks));
+        ThreadInfo[] threads = bean.getThreadInfo(
+                deadlocks, true, true);
+        
+        callback.deadlock(new Deadlock(deadlocks, threads));
     }
 
     /**
@@ -174,8 +178,11 @@ public class DeadlockScanner {
         
         private final long[] deadlocks;
         
-        private Deadlock(long[] deadlocks) {
+        private final ThreadInfo[] threads;
+        
+        private Deadlock(long[] deadlocks, ThreadInfo[] threads) {
             this.deadlocks = deadlocks;
+            this.threads = threads;
         }
         
         /**
@@ -187,9 +194,52 @@ public class DeadlockScanner {
             return deadlocks;
         }
         
+        /**
+         * 
+         */
+        public ThreadInfo[] getThreads() {
+            return threads;
+        }
+        
         @Override
         public String toString() {
-            return "Deadlock";
+            return ThreadUtils.toString(threads);
         }
     }
+    
+    /*public static void main(String[] args) {
+        DeadlockScanner.start();
+        
+        final Object lock1 = new Object();
+        final Object lock2 = new Object();
+        
+        Runnable task1 = new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    synchronized (lock1) {
+                        synchronized (lock2) {
+                            System.out.println("A");
+                        }
+                    }
+                }
+            }
+        };
+        
+        Runnable task2 = new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    synchronized (lock2) {
+                        synchronized (lock1) {
+                            System.out.println("B");
+                        }
+                    }
+                }
+            }
+        };
+        
+        new Thread(task1, "A").start();
+        task2.run();
+    }*/
 }
