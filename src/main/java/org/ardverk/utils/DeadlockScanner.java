@@ -17,10 +17,17 @@ import org.ardverk.lang.NullArgumentException;
  */
 public class DeadlockScanner {
     
+    /**
+     * The default frequency to scan for deadlocks.
+     */
     private static final long FREQUENCY 
         = SystemUtils.getLong(DeadlockScanner.class, 
                 "frequency", 3L * 1000L);
     
+    /**
+     * The default {@link Callback} which prints the deadlock information
+     * to {@link System#err}.
+     */
     private static final Callback CALLBACK = new Callback() {
         @Override
         public void deadlock(Deadlock deadlock) {
@@ -28,10 +35,16 @@ public class DeadlockScanner {
         }
     };
     
+    /**
+     * The deadlock scanner {@link Thread}.
+     */
     private static final ScheduledExecutorService EXECUTOR 
         = Executors.newSingleThreadScheduledExecutor(
             new DefaultThreadFactory("DeadlockScannerThread", true));
     
+    /**
+     * The deadlock scanner {@link ScheduledFuture}.
+     */
     private static ScheduledFuture<?> FUTURE = null;
     
     private DeadlockScanner() {}
