@@ -1,5 +1,6 @@
 package org.ardverk.utils;
 
+import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.concurrent.Executors;
@@ -16,7 +17,9 @@ import org.ardverk.lang.NullArgumentException;
  */
 public class DeadlockScanner {
     
-    private static final long FREQUENCY = 3L * 1000L;
+    private static final long FREQUENCY 
+        = SystemUtils.getLong(DeadlockScanner.class, 
+                "frequency", 3L * 1000L);
     
     private static final Callback CALLBACK = new Callback() {
         @Override
@@ -30,6 +33,8 @@ public class DeadlockScanner {
             new DefaultThreadFactory("DeadlockScannerThread", true));
     
     private static ScheduledFuture<?> FUTURE = null;
+    
+    private DeadlockScanner() {}
     
     /**
      * Starts the {@link DeadlockScanner}.
@@ -101,11 +106,15 @@ public class DeadlockScanner {
         return FUTURE != null && !FUTURE.isDone();
     }
     
+    /**
+     * The methods which scans for deadlocks.
+     */
     private static void checkForDeadlock(Callback callback) {
         
         ThreadMXBean bean = ManagementFactory.getThreadMXBean();
         long[] deadlocks = bean.findDeadlockedThreads();
         
+        // Any deadlocks found?
         if (deadlocks.length == 0) {
             return;
         }
@@ -113,21 +122,40 @@ public class DeadlockScanner {
         callback.deadlock(new Deadlock(deadlocks));
     }
 
-    private DeadlockScanner() {}
+    /**
+     * Java {@link Instrumentation}'s pre-main method
+     * 
+     * @see java.lang.instrument
+     */
+    public static void premain(String args) {
+        start();
+    }
     
     /**
+     * Java {@link Instrumentation}'s agent-main method
      * 
+     * @see java.lang.instrument
+     */
+    public static void agentmain(String args) {
+        start();
+    }
+    
+    /**
+     * A callback interface that is being called by the 
+     * {@link DeadlockScanner} if a deadlock occurred.
      */
     public static interface Callback {
         
         /**
+         * Called if a deadlock occurred.
          * 
+         * @param deadlock The details of the deadlock
          */
         public void deadlock(Deadlock deadlock);
     }
     
     /**
-     * 
+     * An object that holds all details of a deadlock.
      */
     public static class Deadlock {
         
@@ -137,6 +165,11 @@ public class DeadlockScanner {
             this.deadlocks = deadlocks;
         }
         
+        /**
+         * Returns the IDs of all {@link Thread}s that are in a deadlock
+         * 
+         * @see Thread#getId()
+         */
         public long[] getDeadlocks() {
             return deadlocks;
         }
