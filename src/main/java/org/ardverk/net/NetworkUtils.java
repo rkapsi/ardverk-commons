@@ -296,4 +296,16 @@ public class NetworkUtils {
         
         return false;  
     }
+
+    /**
+     * An utility method to get the {@link InetAddress} from the
+     * {@link SocketAddress}.
+     */
+    public static InetAddress getAddress(SocketAddress address) {
+        if (address == null) {
+            return null;
+        }
+        
+        return ((InetSocketAddress)address).getAddress();
+    }
 }
