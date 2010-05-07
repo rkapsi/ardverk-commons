@@ -33,9 +33,9 @@ public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
     
     private static final long serialVersionUID = 1692909657689736799L;
 
-    private final Queue<E> q;
+    protected final Queue<E> q;
     
-    private final Set<E> s;
+    protected final Set<E> s;
     
     public QueueSet() {
         this(new LinkedList<E>(), new HashSet<E>());
@@ -53,7 +53,7 @@ public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
         this.q = q;
         this.s = s;
     }
-
+    
     @Override
     public boolean add(E e) {
         return offer(e);

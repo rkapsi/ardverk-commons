@@ -28,7 +28,7 @@ public class FixedSizeArrayList<E> extends ArrayList<E> implements FixedSize {
     public FixedSizeArrayList(int maxSize) {
         super();
         
-        if (maxSize < 0) {
+        if (maxSize < 0 && maxSize != -1) {
             throw new IllegalArgumentException("maxSize=" + maxSize);
         }
         
@@ -38,7 +38,7 @@ public class FixedSizeArrayList<E> extends ArrayList<E> implements FixedSize {
     public FixedSizeArrayList(Collection<? extends E> c, int maxSize) {
         super(c);
         
-        if (maxSize < 0) {
+        if (maxSize < 0 && maxSize != -1) {
             throw new IllegalArgumentException("maxSize=" + maxSize);
         }
         
@@ -48,7 +48,7 @@ public class FixedSizeArrayList<E> extends ArrayList<E> implements FixedSize {
     public FixedSizeArrayList(int initialCapacity, int maxSize) {
         super(initialCapacity);
         
-        if (maxSize < 0) {
+        if (maxSize < 0 && maxSize != -1) {
             throw new IllegalArgumentException("maxSize=" + maxSize);
         }
         
@@ -62,13 +62,17 @@ public class FixedSizeArrayList<E> extends ArrayList<E> implements FixedSize {
     
     @Override
     public boolean isFull() {
-        return size() >= getMaxSize();
+        return maxSize != -1 && size() >= maxSize;
     }
 
     @Override
     public boolean add(E e) {
-        adjustSize(size(), e);
-        return super.add(e);
+        if (super.add(e)) {
+            adjustSize(size()-1, e);
+            return true;
+        }
+        
+        return false;
     }
 
     @Override
@@ -77,12 +81,12 @@ public class FixedSizeArrayList<E> extends ArrayList<E> implements FixedSize {
             throw new IllegalArgumentException("index=" + index);
         }
         
-        adjustSize(index, element);
         super.add(index, element);
+        adjustSize(index, element);
     }
     
     private void adjustSize(int index, E e) {
-        if (isFull()) {
+        if (maxSize != -1 && size() > maxSize) {
             E old = remove(eject(index, e));
             removed(old);
         }

@@ -60,7 +60,8 @@ public class FixedSizeHashSet<E> implements Set<E>, FixedSize, Serializable {
     }
     
     protected boolean removeEldestEntry(E eldest) {
-        return size() > getMaxSize();
+        int maxSize = getMaxSize();
+        return maxSize != -1 && size() > maxSize;
     }
     
     /**

@@ -33,7 +33,7 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
     public FixedSizeHashMap(int maxSize) {
         super();
         
-        if (maxSize < 0) {
+        if (maxSize < 0 && maxSize != -1) {
             throw new IllegalArgumentException("maxSize=" + maxSize);
         }
         
@@ -44,7 +44,7 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
             boolean accessOrder, int maxSize) {
         super(initialCapacity, loadFactor, accessOrder);
         
-        if (maxSize < 0) {
+        if (maxSize < 0 && maxSize != -1) {
             throw new IllegalArgumentException("maxSize=" + maxSize);
         }
         
@@ -54,7 +54,7 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
     public FixedSizeHashMap(int initialCapacity, float loadFactor, int maxSize) {
         super(initialCapacity, loadFactor);
         
-        if (maxSize < 0) {
+        if (maxSize < 0 && maxSize != -1) {
             throw new IllegalArgumentException("maxSize=" + maxSize);
         }
         
@@ -64,7 +64,7 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
     public FixedSizeHashMap(int initialCapacity, int maxSize) {
         super(initialCapacity);
         
-        if (maxSize < 0) {
+        if (maxSize < 0 && maxSize != -1) {
             throw new IllegalArgumentException("maxSize=" + maxSize);
         }
         
@@ -74,7 +74,7 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
     public FixedSizeHashMap(Map<? extends K, ? extends V> m, int maxSize) {
         super(m);
         
-        if (maxSize < 0) {
+        if (maxSize < 0 && maxSize != -1) {
             throw new IllegalArgumentException("maxSize=" + maxSize);
         }
         
@@ -88,11 +88,11 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
     
     @Override
     public boolean isFull() {
-        return size() >= getMaxSize();
+        return maxSize != -1 && size() >= maxSize;
     }
     
     protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
-        if (size() > getMaxSize()) {
+        if (maxSize != -1 && size() > maxSize) {
             removing(eldest);
             return true;
         }
