@@ -62,16 +62,21 @@ public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
     @Override
     public boolean offer(E e) {
         boolean success = false;
-        if (s.add(e)) {
-            try {
-                success = q.offer(e);
-            } finally {
-                if (!success) {
-                    s.remove(e);
-                }
+        try {
+            success = offer(s.add(e), e);
+        } finally {
+            if (!success) {
+                s.remove(e);
             }
         }
         return success;
+    }
+    
+    protected boolean offer(boolean unique, E e) {
+        if (unique) {
+            return q.offer(e);
+        }
+        return false;
     }
 
     @Override
