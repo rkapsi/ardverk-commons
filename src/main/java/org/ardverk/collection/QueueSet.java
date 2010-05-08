@@ -27,7 +27,7 @@ import java.util.Set;
 import org.ardverk.lang.NullArgumentException;
 
 /**
- * 
+ * A {@link Queue} that shares some properties of a {@link Set}.
  */
 public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
     
@@ -61,20 +61,11 @@ public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
     
     @Override
     public boolean offer(E e) {
-        boolean success = false;
-        try {
-            success = offer(s.add(e), e);
-        } finally {
-            if (!success) {
-                s.remove(e);
+        if (!contains(e)) {
+            if (q.offer(e)) {
+                s.add(e);
+                return true;
             }
-        }
-        return success;
-    }
-    
-    protected boolean offer(boolean unique, E e) {
-        if (unique) {
-            return q.offer(e);
         }
         return false;
     }
@@ -132,7 +123,8 @@ public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
     @Override
     public boolean remove(Object o) {
         if (s.remove(o)) {
-            return q.remove(o);
+            q.remove(o);
+            return true;
         }
         return false;
     }
@@ -195,7 +187,7 @@ public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
     }
     
     /**
-     * 
+     * An {@link Iterator} for the {@link QueueSet}.
      */
     private class QueueIterator implements Iterator<E> {
         

@@ -21,6 +21,9 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+/**
+ * A {@link FixedSize} {@link QueueSet}.
+ */
 public class FixedSizeQueueSet<E> extends QueueSet<E> implements FixedSize {
 
     private static final long serialVersionUID = -6583693304395649651L;
