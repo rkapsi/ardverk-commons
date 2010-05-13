@@ -29,6 +29,13 @@ public class NetworkUtils {
     private NetworkUtils() {}
     
     /**
+     * Returns the port number.
+     */
+    public static int getPort(SocketAddress address) {
+        return ((InetSocketAddress)address).getPort();
+    }
+    
+    /**
      * Returns true if both {@link SocketAddress}es have the same {@link InetAddress}
      */
     public static boolean isSameAddress(SocketAddress a1, SocketAddress a2) {
