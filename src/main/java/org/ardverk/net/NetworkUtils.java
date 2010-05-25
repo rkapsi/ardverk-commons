@@ -56,7 +56,7 @@ public class NetworkUtils {
      * must be greater than zero and less than 0xFFFF.
      */
     public static boolean isValidPort(int port) {
-        return 0 < port && port < 0xFFFF;
+        return PortRange.isUsable(port);
     }
     
     /**
