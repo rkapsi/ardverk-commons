@@ -42,7 +42,8 @@ public class PortRange implements Comparable<PortRange>, Serializable, Cloneable
         = PortRange.valueOf(MIN_PORT, MAX_PORT);
     
     /**
-     * The range of usable port numbers
+     * The range of port numbers that are usable (i.e. it's 
+     * possible to bind a socket to it).
      */
     public static final PortRange USABLE 
         = PortRange.valueOf(0x01, MAX_PORT);
