@@ -17,11 +17,14 @@
 package org.ardverk.net;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An utility class that defines a range of Port-Numbers.
  */
-public class PortRange implements Comparable<PortRange>, Serializable, Cloneable {
+public class PortRange implements Comparable<PortRange>, Serializable, 
+        Cloneable, Iterable<Integer> {
     
     private static final long serialVersionUID = 3985791699824812205L;
 
@@ -124,6 +127,55 @@ public class PortRange implements Comparable<PortRange>, Serializable, Cloneable
     }
     
     /**
+     * Returns a random port between min and max.
+     */
+    public int getRandom() {
+        return min + (int)((max - min) * Math.random());
+    }
+    
+    /**
+     * Returns all ports in the min-max range.
+     */
+    @Override
+    public Iterator<Integer> iterator() {
+        return iterator(false);
+    }
+    
+    /**
+     * Returns an {@link Iterator} that may or may not return ports 
+     * in the min-max range.
+     */
+    private Iterator<Integer> iterator(final boolean random) {
+        return new Iterator<Integer>() {
+
+            private int port = min;
+            
+            @Override
+            public boolean hasNext() {
+                return port <= max;
+            }
+
+            @Override
+            public Integer next() {
+                if (max < port) {
+                    throw new NoSuchElementException();
+                }
+                
+                if (random) {
+                    port = port + (int)((max - port) * Math.random());
+                }
+                
+                return port++;
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+
+    /**
      * Returns {@code true} if the given value is in range
      */
     public boolean contains(int port) {
@@ -203,4 +255,12 @@ public class PortRange implements Comparable<PortRange>, Serializable, Cloneable
     public static boolean isDynamic(int port) {
         return DYNAMIC.contains(port);
     }
+    
+    /*public static void main(String[] args) {
+        PortRange range = PortRange.valueOf(1024, 15000);
+        Iterator<Integer> it = range.iterator(true);
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }*/
 }
