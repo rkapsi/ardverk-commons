@@ -16,7 +16,6 @@
 
 package org.ardverk.coding;
 
-import org.ardverk.coding.Base16;
 import org.ardverk.utils.StringUtils;
 
 /**
@@ -27,7 +26,31 @@ public class CodingUtils {
     private CodingUtils() {}
     
     /**
-     * Encodes the given {@link String} in Base-16 and returns it 
+     * Encodes the given {@link String} in Base-2 (binary) and returns it 
+     * as a {@link String}.
+     */
+    public static String encodeBase2(String data) {
+        return encodeBase2(StringUtils.getBytes(data));
+    }
+    
+    /**
+     * Encodes the given byte-array in Base-2 (binary) and returns it 
+     * as a {@link String}.
+     */
+    public static String encodeBase2(byte[] data) {
+        return encodeBase2(data, 0, data.length);
+    }
+    
+    /**
+     * Encodes the given byte-array in Base-2 (binary) and returns it 
+     * as a {@link String}.
+     */
+    public static String encodeBase2(byte[] data, int offset, int length) {
+        return StringUtils.toString(Base2.encodeBase2(data, offset, length));
+    }
+
+    /**
+     * Encodes the given {@link String} in Base-16 (hex) and returns it 
      * as a {@link String}.
      */
     public static String encodeBase16(String data) {
@@ -35,7 +58,7 @@ public class CodingUtils {
     }
     
     /**
-     * Encodes the given byte-array in Base-16 and returns it 
+     * Encodes the given byte-array in Base-16 (hex) and returns it 
      * as a {@link String}.
      */
     public static String encodeBase16(byte[] data) {
@@ -43,7 +66,7 @@ public class CodingUtils {
     }
     
     /**
-     * Encodes the given byte-array in Base-16 and returns it 
+     * Encodes the given byte-array in Base-16 (hex) and returns it 
      * as a {@link String}.
      */
     public static String encodeBase16(byte[] data, int offset, int length) {
