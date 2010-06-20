@@ -30,7 +30,7 @@ public class MessageDigestCRC32 extends MessageDigest {
     /**
      * The name of the algorithm.
      */
-    public static final String ALGORITHM = "CRC32";
+    public static final String NAME = "CRC32";
     
     /**
      * The length of the hash in bytes.
@@ -40,7 +40,7 @@ public class MessageDigestCRC32 extends MessageDigest {
     private final CRC32 crc = new CRC32();
     
     public MessageDigestCRC32() {
-        super(ALGORITHM);
+        super(NAME);
     }
     
     @Override

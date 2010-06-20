@@ -18,6 +18,7 @@ package org.ardverk.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.zip.CRC32;
 
 /**
  * A utility class for {@link MessageDigest}.
@@ -45,10 +46,21 @@ public class MessageDigestUtils {
     }
     
     /**
+     * Creates and returns a {@link MessageDigest} for {@link CRC32}.
+     */
+    public static MessageDigest createCRC32() {
+        return create(MessageDigestCRC32.NAME);
+    }
+    
+    /**
      * Creates and returns a {@link MessageDigest} for the given algorithm.
      */
     public static MessageDigest create(String algorithm) {
         try {
+            if (algorithm.equalsIgnoreCase(MessageDigestCRC32.NAME)) {
+                return new MessageDigestCRC32();
+            }
+            
             return MessageDigest.getInstance(algorithm);
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException(
