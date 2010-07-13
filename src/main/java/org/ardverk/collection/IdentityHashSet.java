@@ -18,57 +18,33 @@ package org.ardverk.collection;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
-public class FixedSizeHashSet<E> implements Set<E>, FixedSize, Serializable {
+/**
+ * @see IdentityHashMap
+ */
+public class IdentityHashSet<E> implements Set<E>, Serializable {
     
-    private static final long serialVersionUID = -7937957462093712348L;
+    private static final long serialVersionUID = -4831235683897658505L;
 
     private static final Object VALUE = new Object();
     
-    private final FixedSizeHashMap<E, Object> map;
+    private final Map<E, Object> map;
 
-    public FixedSizeHashSet(int maxSize) {
-        this(16, 0.75f, false, maxSize);
+    public IdentityHashSet() {
+        map = new IdentityHashMap<E,Object>();
     }
     
-    public FixedSizeHashSet(int initialSize, float loadFactor, int maxSize) {
-        this(initialSize, loadFactor, false, maxSize);
+    public IdentityHashSet(Collection<? extends E> c) {
+        map = new IdentityHashMap<E,Object>(Math.max((int) (c.size()/.75f) + 1, 16));
+        addAll(c);
     }
-    
-    public FixedSizeHashSet(int initialCapacity, float loadFactor, 
-            boolean accessOrder, int maxSize) {
-        
-        map = new FixedSizeHashMap<E, Object>(
-                initialCapacity, loadFactor, accessOrder, maxSize) {
-            
-            private static final long serialVersionUID = -2214875570521398012L;
 
-            @Override
-            protected boolean removeEldestEntry(Map.Entry<E, Object> eldest) {
-                return FixedSizeHashSet.this.removeEldestEntry(eldest.getKey());
-            }
-
-            @Override
-            protected void removing(Entry<E, Object> eldest) {
-                FixedSizeHashSet.this.removing(eldest.getKey());
-            }
-        };
-    }
-    
-    protected boolean removeEldestEntry(E eldest) {
-        int maxSize = getMaxSize();
-        return maxSize != -1 && size() > maxSize;
-    }
-    
-    /**
-     * 
-     */
-    protected void removing(E eldest) {
-        // OVERRIDE
+    public IdentityHashSet(int initialCapacity) {
+        map = new IdentityHashMap<E,Object>(initialCapacity);
     }
     
     @Override
@@ -138,16 +114,6 @@ public class FixedSizeHashSet<E> implements Set<E>, FixedSize, Serializable {
     @Override
     public <T> T[] toArray(T[] a) {
         return map.keySet().toArray(a);
-    }
-
-    @Override
-    public int getMaxSize() {
-        return map.getMaxSize();
-    }
-
-    @Override
-    public boolean isFull() {
-        return map.isFull();
     }
     
     @Override

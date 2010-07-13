@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Roger Kapsi
+ * Copyright 2009, 2010 Roger Kapsi
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -24,8 +24,14 @@ import java.util.concurrent.TimeoutException;
 
 import org.ardverk.lang.NullArgumentException;
 
+/**
+ * A default implementation of {@link AsyncFuture}.
+ */
 public class AsyncValueFuture<V> implements AsyncFuture<V> {
 
+    /**
+     * The {@link AsyncExchanger} that is used as a synchronization point.
+     */
     protected final AsyncExchanger<V, ExecutionException> exchanger 
         = new AsyncExchanger<V, ExecutionException>(this);
     
@@ -190,12 +196,14 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
 
     @Override
     public V get() throws InterruptedException, ExecutionException {
+        checkIfEventThread();
         return exchanger.get();
     }
 
     @Override
     public V get(long timeout, TimeUnit unit) throws InterruptedException,
             ExecutionException, TimeoutException {
+        checkIfEventThread();
         return exchanger.get(timeout, unit);
     }
 
@@ -231,7 +239,27 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     }
     
     /**
-     * 
+     * Checks if the caller {@link Thread} is the event {@link Thread}.
+     * The default implementation returns always false, custom 
+     * implementations may override this method.
+     */
+    protected boolean isEventThread() {
+        return false;
+    }
+    
+    /**
+     * Checks if the {@link AsyncValueFuture} is not done and it's
+     * being called from the event {@link Thread}. If so, an {@link IllegalStateException}
+     * is thrown.
+     */
+    private void checkIfEventThread() {
+        if (!isDone() && isEventThread()) {
+            throw new IllegalStateException();
+        }
+    }
+    
+    /**
+     * Notifies all {@link AsyncFutureListener}s.
      */
     @SuppressWarnings("unchecked")
     private void fireOperationComplete() {

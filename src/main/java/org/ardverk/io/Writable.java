@@ -14,25 +14,19 @@
  *   limitations under the License.
  */
 
-package org.ardverk.lang;
+package org.ardverk.io;
 
-public class NullArgumentException extends NullPointerException {
-    
-    private static final long serialVersionUID = 8784890523282411156L;
+import java.io.IOException;
+import java.io.OutputStream;
 
-    public static <T> T notNull(T value, String message) {
-        if (value == null) {
-            throw new NullArgumentException(message);
-        }
-        
-        return value;
-    }
-    
-    public NullArgumentException() {
-        super();
-    }
+/**
+ * An interface for serializable objects.
+ */
+public interface Writable {
 
-    public NullArgumentException(String s) {
-        super(s);
-    }
+    /**
+     * Writes this Object to the given {@link OutputStream} and returns
+     * the number of bytes that were written.
+     */
+    public int write(OutputStream out) throws IOException;
 }

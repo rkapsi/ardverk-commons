@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Roger Kapsi
+ * Copyright 2009, 2010 Roger Kapsi
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -29,12 +29,21 @@ import java.util.concurrent.ExecutorService;
  */
 public interface AsyncExecutorService extends AsyncExecutor, ExecutorService {
     
+    /*
+     * Overridden to return an AsyncFuture
+     */
     @Override
     public <T> AsyncFuture<T> submit(Callable<T> task);
 
+    /*
+     * Overridden to return an AsyncFuture
+     */
     @Override
     public <T> AsyncFuture<T> submit(Runnable task, T result);
 
+    /*
+     * Overridden to return an AsyncFuture
+     */
     @Override
     public AsyncFuture<?> submit(Runnable task);
 }

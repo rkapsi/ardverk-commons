@@ -1,5 +1,5 @@
 /*
- * Copyright 2009 Roger Kapsi
+ * Copyright 2009, 2010 Roger Kapsi
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ public class AsyncFutureTask<V> extends AsyncValueFuture<V>
      * Called by the {@link AsyncFutureTask}'s {@link #run()} method.
      * You may override this method for custom implementations.
      */
-    protected synchronized void doRun() throws Exception {
+    protected void doRun() throws Exception {
         if (!isDone()) {
             V value = callable.call();
             setValue(value);

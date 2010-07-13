@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Roger Kapsi
+ * Copyright 2009, 2010 Roger Kapsi
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -14,25 +14,15 @@
  *   limitations under the License.
  */
 
-package org.ardverk.lang;
+package org.ardverk.concurrent;
 
-public class NullArgumentException extends NullPointerException {
-    
-    private static final long serialVersionUID = 8784890523282411156L;
 
-    public static <T> T notNull(T value, String message) {
-        if (value == null) {
-            throw new NullArgumentException(message);
-        }
-        
-        return value;
-    }
-    
-    public NullArgumentException() {
-        super();
-    }
+/**
+ * An {@link AsyncProcessFuture} that is {@link Runnable}.
+ * 
+ * @see AsyncRunnableFuture
+ */
+public interface AsyncProcessRunnableFuture<V> 
+        extends AsyncProcessFuture<V>, AsyncRunnableFuture<V> {
 
-    public NullArgumentException(String s) {
-        super(s);
-    }
 }
