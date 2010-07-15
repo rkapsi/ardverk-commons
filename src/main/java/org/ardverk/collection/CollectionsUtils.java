@@ -16,8 +16,11 @@
 
 package org.ardverk.collection;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class CollectionsUtils {
@@ -48,5 +51,42 @@ public class CollectionsUtils {
         }
         
         return dst;
+    }
+    
+    /**
+     * Returns the first element from the given {@link Collection}.
+     */
+    public static <V> V first(Collection<? extends V> c) {
+        return nth(c, 0);
+    }
+    
+    /**
+     * Returns the last element from the given {@link Collection}.
+     */
+    public static <V> V last(Collection<? extends V> c) {
+        return nth(c, c.size()-1);
+    }
+    
+    /**
+     * Returns the <tt>nth</tt> element from the given {@link Collection}.
+     */
+    public static <V> V nth(Collection<? extends V> c, int n) {
+        if (c instanceof List<?>) {
+            return ((List<? extends V>)c).get(n);
+        }
+        
+        if (n >= 0 && n < c.size()) {
+            Iterator<? extends V> it = c.iterator();
+            while (it.hasNext()) {
+                V element = it.next();
+                if (n == 0) {
+                    return element;
+                }
+                
+                --n;
+            }
+        }
+        
+        throw new IndexOutOfBoundsException("n=" + n);
     }
 }
