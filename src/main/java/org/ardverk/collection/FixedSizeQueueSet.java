@@ -30,18 +30,38 @@ public class FixedSizeQueueSet<E> extends QueueSet<E> implements FixedSize {
     
     private final int maxSize;
     
+    /**
+     * Creates an empty {@link FixedSizeQueueSet}.
+     */
     public FixedSizeQueueSet() {
         this(-1);
     }
-
+    
+    /**
+     * Creates a {@link FixedSizeQueueSet} with the given max size.
+     */
     public FixedSizeQueueSet(int maxSize) {
         this(new LinkedList<E>(), new HashSet<E>(), maxSize);
     }
 
+    /**
+     * Creates a {@link FixedSizeQueueSet} with the given {@link Queue} 
+     * and {@link Set}.
+     * 
+     * <p>NOTE: The {@link FixedSizeQueueSet} does not check if the
+     * initial state of the given arguments is correct.
+     */
     public FixedSizeQueueSet(Queue<E> q, Set<E> s) {
         this(q, s, -1);
     }
     
+    /**
+     * Creates a {@link FixedSizeQueueSet} with the given {@link Queue},
+     * {@link Set} and max size.
+     * 
+     * <p>NOTE: The {@link FixedSizeQueueSet} does not check if the
+     * initial state of the given arguments is correct.
+     */
     public FixedSizeQueueSet(Queue<E> q, Set<E> s, int maxSize) {
         super(q, s);
         

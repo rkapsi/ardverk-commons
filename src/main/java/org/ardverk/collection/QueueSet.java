@@ -37,10 +37,20 @@ public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
     
     protected final Set<E> s;
     
+    /**
+     * Creates an empty {@link QueueSet}
+     */
     public QueueSet() {
         this(new LinkedList<E>(), new HashSet<E>());
     }
     
+    /**
+     * Creates a {@link QueueSet} with the given {@link Queue} 
+     * and {@link Set}.
+     * 
+     * <p>NOTE: The {@link QueueSet} does not check if the initial
+     * state of the given arguments is correct.
+     */
     public QueueSet(Queue<E> q, Set<E> s) {
         if (q == null) {
             throw new NullArgumentException("q");
