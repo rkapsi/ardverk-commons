@@ -31,54 +31,28 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
     protected final int maxSize;
 
     public FixedSizeHashMap(int maxSize) {
-        super();
-        
-        if (maxSize < 0 && maxSize != -1) {
-            throw new IllegalArgumentException("maxSize=" + maxSize);
-        }
-        
-        this.maxSize = maxSize;
+        this.maxSize = checkMaxSize(maxSize);
     }
 
     public FixedSizeHashMap(int initialCapacity, float loadFactor, 
             boolean accessOrder, int maxSize) {
         super(initialCapacity, loadFactor, accessOrder);
-        
-        if (maxSize < 0 && maxSize != -1) {
-            throw new IllegalArgumentException("maxSize=" + maxSize);
-        }
-        
-        this.maxSize = maxSize;
+        this.maxSize = checkMaxSize(maxSize);
     }
 
     public FixedSizeHashMap(int initialCapacity, float loadFactor, int maxSize) {
         super(initialCapacity, loadFactor);
-        
-        if (maxSize < 0 && maxSize != -1) {
-            throw new IllegalArgumentException("maxSize=" + maxSize);
-        }
-        
-        this.maxSize = maxSize;
+        this.maxSize = checkMaxSize(maxSize);
     }
 
     public FixedSizeHashMap(int initialCapacity, int maxSize) {
         super(initialCapacity);
-        
-        if (maxSize < 0 && maxSize != -1) {
-            throw new IllegalArgumentException("maxSize=" + maxSize);
-        }
-        
-        this.maxSize = maxSize;
+        this.maxSize = checkMaxSize(maxSize);
     }
 
     public FixedSizeHashMap(Map<? extends K, ? extends V> m, int maxSize) {
-        super(m);
-        
-        if (maxSize < 0 && maxSize != -1) {
-            throw new IllegalArgumentException("maxSize=" + maxSize);
-        }
-        
-        this.maxSize = maxSize;
+        this.maxSize = checkMaxSize(maxSize);
+        putAll(m);
     }
 
     @Override
@@ -105,5 +79,13 @@ public class FixedSizeHashMap<K, V> extends LinkedHashMap<K, V>
      */
     protected void removing(Map.Entry<K, V> eldest) {
         // OVERRIDE
+    }
+    
+    private static int checkMaxSize(int maxSize) {
+        if (maxSize < 0 && maxSize != -1) {
+            throw new IllegalArgumentException("maxSize=" + maxSize);
+        }
+        
+        return maxSize;
     }
 }
