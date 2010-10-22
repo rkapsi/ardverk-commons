@@ -16,9 +16,7 @@
 
 package org.ardverk.concurrent;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
@@ -27,7 +25,11 @@ import org.ardverk.lang.Arguments;
 
 /**
  * An {@link AsyncFutureGroup} is a special purpose {@link Executor} 
- * for {@link AsyncRunnableFuture}s.
+ * for {@link AsyncRunnableFuture}s. 
+ * 
+ * The idea is very similar to {@link ExecutorGroup} where an external
+ * {@link Executor} is being used and the group is managing how many
+ * queued tasks are running in parallel.
  */
 public class AsyncFutureGroup {
 
@@ -44,6 +46,8 @@ public class AsyncFutureGroup {
     private final Queue<AsyncRunnableFuture<?>> queue;
     
     private final int concurrencyLevel;
+    
+    private boolean open = true;
     
     private int active = 0;
     
@@ -67,6 +71,20 @@ public class AsyncFutureGroup {
     }
     
     /**
+     * Returns the {@link AsyncFutureGroup}'s {@link Executor}.
+     */
+    public Executor getExecutor() {
+        return executor;
+    }
+    
+    /**
+     * Returns the {@link AsyncFutureGroup}'s {@link Queue}.
+     */
+    public Queue<AsyncRunnableFuture<?>> getQueue() {
+        return queue;
+    }
+    
+    /**
      * Returns the number of elements in the {@link AsyncFutureGroup}
      */
     public synchronized int size() {
@@ -81,26 +99,78 @@ public class AsyncFutureGroup {
     }
     
     /**
-     * Cancels all {@link AsyncRunnableFuture}s in the queue.
+     * Returns true if the {@link AsyncFutureGroup} is shutdown.
      */
-    public AsyncRunnableFuture<?>[] cancelAll(boolean mayInterruptIfRunning) {
-        List<AsyncRunnableFuture<?>> copy = null;
-        synchronized (this) {
-            copy = new ArrayList<AsyncRunnableFuture<?>>(queue);
-            queue.clear();
-        }
-        
-        for (AsyncRunnableFuture<?> future : copy) {
-            future.cancel(mayInterruptIfRunning);
-        }
-        
-        return copy.toArray(new AsyncRunnableFuture[0]);
+    public synchronized boolean isShutdown() {
+        return !open;
     }
     
     /**
-     * Executes the given {@link AsyncRunnableFuture}.
+     * Returns true if the {@link AsyncFutureGroup} is terminated.
      */
-    public synchronized void execute(AsyncRunnableFuture<?> future) {
+    public synchronized boolean isTerminated() {
+        return !open && queue.isEmpty();
+    }
+    
+    // TODO
+    /*public synchronized boolean awaitTermination(long timeout, TimeUnit unit) 
+            throws InterruptedException {
+        
+        if (timeout < 0L) {
+            throw new IllegalArgumentException("timeout=" + timeout);
+        }
+        
+        if (unit == null) {
+            throw new NullArgumentException("unit");
+        }
+        
+        if (!isTerminated()) {
+            if (timeout == 0L) {
+                wait();
+            } else {
+                unit.timedWait(this, timeout);
+            }
+        }
+        
+        return isTerminated();
+    }*/
+    
+    // TODO
+    /*public synchronized void shutdown() {
+        if (open) {
+            open = false;
+            
+            if (!closed && !scheduled) {
+                closed = true;
+                
+                List<Runnable> tasks 
+                    = Collections.emptyList();
+                terminated(tasks);
+            }
+        }
+    }*/
+    
+    /**
+     * Shuts down the {@link AsyncFutureGroup} and returns all 
+     * {@link AsyncRunnableFuture}s that were in the queue.
+     */
+    public synchronized AsyncRunnableFuture<?>[] shutdownNow() {
+        open = false;
+        
+        AsyncRunnableFuture<?>[] copy 
+            = queue.toArray(new AsyncRunnableFuture[0]);
+        queue.clear();
+        return copy;
+    }
+    
+    /**
+     * Submits the given {@link AsyncRunnableFuture} for execution.
+     */
+    public synchronized void submit(AsyncRunnableFuture<?> future) {
+        if (!open) {
+            throw new RejectedExecutionException();
+        }
+        
         boolean success = queue.offer(Arguments.notNull(future, "future"));
         if (!success) {
             throw new RejectedExecutionException();
@@ -112,7 +182,6 @@ public class AsyncFutureGroup {
     /**
      * Executes the next {@link AsyncRunnableFuture} from the queue.
      */
-    @SuppressWarnings("unchecked")
     private synchronized void processNext(boolean callback) {
         if (callback) {
             assert (0 < active);
@@ -120,19 +189,29 @@ public class AsyncFutureGroup {
         }
         
         if (active < concurrencyLevel && !queue.isEmpty()) {
-            AsyncRunnableFuture<?> future = queue.poll();
+            @SuppressWarnings("unchecked")
+            AsyncRunnableFuture<Object> future 
+                = (AsyncRunnableFuture<Object>)queue.poll();
             
             try {
                 executor.execute(future);
-                ((AsyncRunnableFuture<Object>)future)
-                    .addAsyncFutureListener(listener);
+                future.addAsyncFutureListener(listener);
                 ++active;
             } catch (RejectedExecutionException err) {
-                // Let everyone know there was an Exception!
-                do {
-                    future.setException(err);
-                } while ((future = queue.poll()) != null);
+                handleRejection(future, err);
             }
         }
+    }
+    
+    // Awwww
+    private synchronized void handleRejection(
+            AsyncFuture<?> future, RejectedExecutionException err) {
+        
+        // Let the future know there was an Exception, drain the 
+        // queue and do the same for the remaining Futures because
+        // the same will happen to them.
+        do {
+            future.setException(err);
+        } while ((future = queue.poll()) != null);
     }
 }
