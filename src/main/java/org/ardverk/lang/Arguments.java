@@ -48,6 +48,17 @@ public class Arguments {
     /**
      * Makes sure the given argument is not negative.
      */
+    public static int greaterZero(int value, String message) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(message + "=" + value);
+        }
+        
+        return value;
+    }
+    
+    /**
+     * Makes sure the given argument is not negative.
+     */
     public static long notNegative(long value, String message) {
         if (value < 0L) {
             throw new IllegalArgumentException(message + "=" + value);
