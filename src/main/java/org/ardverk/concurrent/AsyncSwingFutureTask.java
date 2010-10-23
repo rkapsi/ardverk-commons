@@ -21,7 +21,8 @@ import java.util.concurrent.Callable;
 import javax.swing.SwingUtilities;
 
 /**
- * An {@link AsyncFutureTask} that fires its events on the Swing Event Thread.
+ * An {@link AsyncFutureTask} that fires its events on the Swing 
+ * Event Dispatcher Thread (EDT).
  * 
  * @see SwingUtilities#isEventDispatchThread()
  * @see SwingUtilities#invokeLater(Runnable)
