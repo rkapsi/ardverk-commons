@@ -17,6 +17,8 @@
 package org.ardverk.concurrent;
 
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -24,6 +26,26 @@ import java.util.concurrent.TimeUnit;
  */
 public interface ExecutorQueue<T extends Runnable> {
 
+    /**
+     * Returns the {@link ExecutorQueue}'s {@link Executor}.
+     */
+    public Executor getExecutor();
+    
+    /**
+     * Returns the {@link ExecutorQueue}'s {@link Queue}.
+     */
+    public Queue<T> getQueue();
+    
+    /**
+     * Returns the number of elements in the {@link ExecutorQueue}
+     */
+    public int size();
+    
+    /**
+     * Returns true if the {@link ExecutorQueue} is empty.
+     */
+    public boolean isEmpty();
+    
     /**
      * Returns true if the {@link ExecutorQueue} is shutdown.
      */

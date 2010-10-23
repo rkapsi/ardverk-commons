@@ -35,7 +35,7 @@ import org.ardverk.lang.NullArgumentException;
  * {@link Executor} is being used and the group is managing how many
  * queued tasks are running in parallel.
  */
-public class AsyncFutureGroup implements ExecutorQueue<AsyncRunnableFuture<?>> {
+public class AsyncFutureGroup extends AbstractExecutorQueue<AsyncRunnableFuture<?>> {
 
     private final AsyncFutureListener<Object> listener
             = new AsyncFutureListener<Object>() {    
@@ -44,10 +44,6 @@ public class AsyncFutureGroup implements ExecutorQueue<AsyncRunnableFuture<?>> {
             processNext(true);
         }
     };
-    
-    private final Executor executor;
-
-    private final Queue<AsyncRunnableFuture<?>> queue;
     
     private final int concurrencyLevel;
     
@@ -68,38 +64,9 @@ public class AsyncFutureGroup implements ExecutorQueue<AsyncRunnableFuture<?>> {
      */
     public AsyncFutureGroup(Executor executor, 
             Queue<AsyncRunnableFuture<?>> queue, int concurrencyLevel) {
-        this.executor = Arguments.notNull(executor, "executor");
-        this.queue = Arguments.notNull(queue, "queue");
+        super(executor, queue);
         this.concurrencyLevel = Arguments.greaterZero(
                 concurrencyLevel, "concurrencyLevel");
-    }
-    
-    /**
-     * Returns the {@link AsyncFutureGroup}'s {@link Executor}.
-     */
-    public Executor getExecutor() {
-        return executor;
-    }
-    
-    /**
-     * Returns the {@link AsyncFutureGroup}'s {@link Queue}.
-     */
-    public Queue<AsyncRunnableFuture<?>> getQueue() {
-        return queue;
-    }
-    
-    /**
-     * Returns the number of elements in the {@link AsyncFutureGroup}
-     */
-    public synchronized int size() {
-        return queue.size();
-    }
-    
-    /**
-     * Returns true if the {@link AsyncFutureGroup} is empty.
-     */
-    public synchronized boolean isEmpty() {
-        return queue.isEmpty();
     }
     
     @Override

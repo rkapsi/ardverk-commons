@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.ardverk.lang.Arguments;
 import org.ardverk.lang.NullArgumentException;
 import org.ardverk.utils.ExceptionUtils;
 
@@ -57,13 +58,9 @@ import org.ardverk.utils.ExceptionUtils;
  *     }
  * }
  */
-public class ExecutorGroup implements ExecutorQueue<Runnable>, Executor {
-
-    private final Executor executor;
+public class ExecutorGroup extends AbstractExecutorQueue<Runnable> implements Executor {
     
     private final Scheduler scheduler;
-    
-    private final Queue<Runnable> queue;
     
     private final Runnable processor = new Runnable() {
         @Override
@@ -96,28 +93,8 @@ public class ExecutorGroup implements ExecutorQueue<Runnable>, Executor {
     
     public ExecutorGroup(Executor executor, Scheduler scheduler, 
             Queue<Runnable> queue) {
-        if (executor == null) {
-            throw new NullArgumentException("executor");
-        }
-        
-        if (scheduler == null) {
-            throw new NullArgumentException("scheduler");
-        }
-        
-        if (queue == null) {
-            throw new NullArgumentException("queue");
-        }
-        
-        this.executor = executor;
-        this.scheduler = scheduler;
-        this.queue = queue;
-    }
-    
-    /**
-     * Returns the {@link Executor}
-     */
-    public Executor getExecutor() {
-        return executor;
+        super(executor, queue);
+        this.scheduler = Arguments.notNull(scheduler, "scheduler");
     }
     
     /**
@@ -127,17 +104,6 @@ public class ExecutorGroup implements ExecutorQueue<Runnable>, Executor {
         return scheduler;
     }
     
-    /**
-     * Returns the {@link Queue}
-     */
-    public Queue<Runnable> getQueue() {
-        return queue;
-    }
-    
-    /**
-     * Initiates an orderly shutdown in which previously submitted tasks 
-     * are executed, but no new tasks will be accepted.
-     */
     @Override
     public synchronized void shutdown() {
         if (open) {
@@ -153,11 +119,6 @@ public class ExecutorGroup implements ExecutorQueue<Runnable>, Executor {
         }
     }
     
-    /**
-     * Attempts to stop all actively executing tasks, halts the processing 
-     * of waiting tasks, and returns a list of the tasks that were awaiting 
-     * execution.
-     */
     @Override
     public synchronized List<Runnable> shutdownNow() {
         if (open) {
@@ -185,20 +146,6 @@ public class ExecutorGroup implements ExecutorQueue<Runnable>, Executor {
     @Override
     public synchronized boolean isTerminated() {
         return !open && queue.isEmpty();
-    }
-    
-    /**
-     * Returns true if the {@link Queue} is empty.
-     */
-    public synchronized boolean isEmpty() {
-        return queue.isEmpty();
-    }
-    
-    /**
-     * Returns the {@link Queue} size.
-     */
-    public synchronized int size() {
-        return queue.size();
     }
     
     @Override
