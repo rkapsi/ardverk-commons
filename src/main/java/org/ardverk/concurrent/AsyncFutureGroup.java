@@ -20,8 +20,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import org.ardverk.lang.Arguments;
+import org.ardverk.lang.NullArgumentException;
 
 /**
  * An {@link AsyncFutureGroup} is a special purpose {@link Executor} 
@@ -112,8 +114,12 @@ public class AsyncFutureGroup {
         return !open && queue.isEmpty();
     }
     
-    // TODO
-    /*public synchronized boolean awaitTermination(long timeout, TimeUnit unit) 
+    /**
+     * Waits for the {@link AsyncFutureGroup} to terminate. Returns
+     * true if the {@link AsyncFutureGroup} is terminated and false
+     * if it isn't.
+     */
+    public synchronized boolean awaitTermination(long timeout, TimeUnit unit) 
             throws InterruptedException {
         
         if (timeout < 0L) {
@@ -133,33 +139,32 @@ public class AsyncFutureGroup {
         }
         
         return isTerminated();
-    }*/
+    }
     
-    // TODO
-    /*public synchronized void shutdown() {
+    /**
+     * Shuts down the {@link AsyncFutureGroup}. Queued tasks
+     * continue to be executed but no new tasks will be accepted.
+     */
+    public synchronized void shutdown() {
         if (open) {
             open = false;
             
-            if (!closed && !scheduled) {
-                closed = true;
-                
-                List<Runnable> tasks 
-                    = Collections.emptyList();
-                terminated(tasks);
+            if (isTerminated()) {
+                notifyAll();
             }
         }
-    }*/
+    }
     
     /**
      * Shuts down the {@link AsyncFutureGroup} and returns all 
      * {@link AsyncRunnableFuture}s that were in the queue.
      */
     public synchronized AsyncRunnableFuture<?>[] shutdownNow() {
-        open = false;
-        
         AsyncRunnableFuture<?>[] copy 
             = queue.toArray(new AsyncRunnableFuture[0]);
         queue.clear();
+    
+        shutdown();
         return copy;
     }
     
@@ -188,10 +193,13 @@ public class AsyncFutureGroup {
             --active;
         }
         
-        if (active < concurrencyLevel && !queue.isEmpty()) {
+        while (active < concurrencyLevel) {
             @SuppressWarnings("unchecked")
             AsyncRunnableFuture<Object> future 
                 = (AsyncRunnableFuture<Object>)queue.poll();
+            if (future == null) {
+                break;
+            }
             
             try {
                 executor.execute(future);
@@ -200,6 +208,10 @@ public class AsyncFutureGroup {
             } catch (RejectedExecutionException err) {
                 handleRejection(future, err);
             }
+        }
+        
+        if (queue.isEmpty()) {
+            notifyAll();
         }
     }
     
