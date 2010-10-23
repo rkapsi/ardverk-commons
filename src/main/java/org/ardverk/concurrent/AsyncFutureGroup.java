@@ -16,7 +16,9 @@
 
 package org.ardverk.concurrent;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
@@ -33,7 +35,7 @@ import org.ardverk.lang.NullArgumentException;
  * {@link Executor} is being used and the group is managing how many
  * queued tasks are running in parallel.
  */
-public class AsyncFutureGroup {
+public class AsyncFutureGroup implements ExecutorQueue<AsyncRunnableFuture<?>> {
 
     private final AsyncFutureListener<Object> listener
             = new AsyncFutureListener<Object>() {    
@@ -100,25 +102,17 @@ public class AsyncFutureGroup {
         return queue.isEmpty();
     }
     
-    /**
-     * Returns true if the {@link AsyncFutureGroup} is shutdown.
-     */
+    @Override
     public synchronized boolean isShutdown() {
         return !open;
     }
     
-    /**
-     * Returns true if the {@link AsyncFutureGroup} is terminated.
-     */
+    @Override
     public synchronized boolean isTerminated() {
         return !open && queue.isEmpty();
     }
     
-    /**
-     * Waits for the {@link AsyncFutureGroup} to terminate. Returns
-     * true if the {@link AsyncFutureGroup} is terminated and false
-     * if it isn't.
-     */
+    @Override
     public synchronized boolean awaitTermination(long timeout, TimeUnit unit) 
             throws InterruptedException {
         
@@ -141,10 +135,7 @@ public class AsyncFutureGroup {
         return isTerminated();
     }
     
-    /**
-     * Shuts down the {@link AsyncFutureGroup}. Queued tasks
-     * continue to be executed but no new tasks will be accepted.
-     */
+    @Override
     public synchronized void shutdown() {
         if (open) {
             open = false;
@@ -155,23 +146,19 @@ public class AsyncFutureGroup {
         }
     }
     
-    /**
-     * Shuts down the {@link AsyncFutureGroup} and returns all 
-     * {@link AsyncRunnableFuture}s that were in the queue.
-     */
-    public synchronized AsyncRunnableFuture<?>[] shutdownNow() {
-        AsyncRunnableFuture<?>[] copy 
-            = queue.toArray(new AsyncRunnableFuture[0]);
+    @Override
+    public synchronized List<AsyncRunnableFuture<?>> shutdownNow() {
+        List<AsyncRunnableFuture<?>> copy 
+            = new ArrayList<AsyncRunnableFuture<?>>(queue);
         queue.clear();
     
         shutdown();
         return copy;
     }
     
-    /**
-     * Submits the given {@link AsyncRunnableFuture} for execution.
-     */
-    public synchronized void submit(AsyncRunnableFuture<?> future) {
+    @Override
+    public synchronized void execute(AsyncRunnableFuture<?> future) 
+            throws RejectedExecutionException {
         if (!open) {
             throw new RejectedExecutionException();
         }

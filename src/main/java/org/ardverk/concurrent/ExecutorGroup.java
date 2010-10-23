@@ -57,7 +57,7 @@ import org.ardverk.utils.ExceptionUtils;
  *     }
  * }
  */
-public class ExecutorGroup implements Executor {
+public class ExecutorGroup implements ExecutorQueue<Runnable>, Executor {
 
     private final Executor executor;
     
@@ -138,6 +138,7 @@ public class ExecutorGroup implements Executor {
      * Initiates an orderly shutdown in which previously submitted tasks 
      * are executed, but no new tasks will be accepted.
      */
+    @Override
     public synchronized void shutdown() {
         if (open) {
             open = false;
@@ -157,6 +158,7 @@ public class ExecutorGroup implements Executor {
      * of waiting tasks, and returns a list of the tasks that were awaiting 
      * execution.
      */
+    @Override
     public synchronized List<Runnable> shutdownNow() {
         if (open) {
             open = false;
@@ -175,16 +177,12 @@ public class ExecutorGroup implements Executor {
         return Collections.emptyList();
     }
     
-    /**
-     * Returns true if this executor has been shut down.
-     */
+    @Override
     public synchronized boolean isShutdown() {
         return !open;
     }
     
-    /**
-     * Returns true if all tasks have completed following shut down.
-     */
+    @Override
     public synchronized boolean isTerminated() {
         return !open && queue.isEmpty();
     }
@@ -203,11 +201,7 @@ public class ExecutorGroup implements Executor {
         return queue.size();
     }
     
-    /**
-     * Blocks until all tasks have completed execution after a shutdown 
-     * request, or the timeout occurs, or the current thread is interrupted, 
-     * whichever happens first.
-     */
+    @Override
     public synchronized boolean awaitTermination(long timeout, TimeUnit unit) 
             throws InterruptedException {
         
