@@ -18,15 +18,18 @@ package org.ardverk.concurrent;
 
 import java.util.concurrent.atomic.AtomicReference;
 
-public class AsyncAtomicReference<V> extends AtomicReference<V> {
+/**
+ * A special purpose version of an {@link AtomicReference}.
+ */
+public class ValueReference<V> extends AtomicReference<V> {
     
     private static final long serialVersionUID = -1871652270359986302L;
 
-    public AsyncAtomicReference() {
+    public ValueReference() {
         super();
     }
 
-    public AsyncAtomicReference(V initialValue) {
+    public ValueReference(V initialValue) {
         super(initialValue);
     }
     
