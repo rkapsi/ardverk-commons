@@ -22,12 +22,12 @@ package org.ardverk.concurrent;
 public interface Cancellable {
 
     /**
-     * 
+     * Cancels the task and returns true on success.
      */
     public boolean cancel(boolean mayInterruptIfRunning);
     	
     /**
-     * 
+     * Returns true if the task has been cancelled.
      */
     public boolean isCancelled();
 }
