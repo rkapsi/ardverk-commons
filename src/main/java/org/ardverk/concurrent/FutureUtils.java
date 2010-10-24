@@ -47,4 +47,18 @@ public class FutureUtils {
         }
         return false;
     }
+    
+    /**
+     * Cancels the given {@link Iterable} of {@link Future}s.
+     */
+    public static boolean cancelAll(Iterable<? extends Future<?>> futures, 
+            boolean mayInterruptIfRunning) {
+        boolean success = false;
+        if (futures != null) {
+            for (Future<?> future : futures) {
+                success |= cancel(future, mayInterruptIfRunning);
+            }
+        }
+        return success;
+    }
 }
