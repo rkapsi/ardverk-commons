@@ -28,15 +28,16 @@ import org.ardverk.lang.Arguments;
 import org.ardverk.lang.NullArgumentException;
 
 /**
- * An {@link AsyncFutureGroup} is a special purpose {@link Executor} 
+ * An {@link FutureGroup} is a special purpose {@link Executor} 
  * for {@link AsyncRunnableFuture}s. 
  * 
  * The idea is very similar to {@link ExecutorGroup} where an external
  * {@link Executor} is being used and the group is managing how many
  * queued tasks are running in parallel.
  */
-public class AsyncFutureGroup extends AbstractExecutorQueue<AsyncRunnableFuture<?>> {
+public class FutureGroup extends AbstractExecutorQueue<AsyncRunnableFuture<?>> {
 
+    
     private final AsyncFutureListener<Object> listener
             = new AsyncFutureListener<Object>() {    
         @Override
@@ -52,17 +53,17 @@ public class AsyncFutureGroup extends AbstractExecutorQueue<AsyncRunnableFuture<
     private int active = 0;
     
     /**
-     * Creates an {@link AsyncFutureGroup}.
+     * Creates an {@link FutureGroup}.
      */
-    public AsyncFutureGroup(Executor executor, int concurrencyLevel) {
+    public FutureGroup(Executor executor, int concurrencyLevel) {
         this(executor, new LinkedList<AsyncRunnableFuture<?>>(), 
                 concurrencyLevel);
     }
     
     /**
-     * Creates an {@link AsyncFutureGroup}.
+     * Creates an {@link FutureGroup}.
      */
-    public AsyncFutureGroup(Executor executor, 
+    public FutureGroup(Executor executor, 
             Queue<AsyncRunnableFuture<?>> queue, int concurrencyLevel) {
         super(executor, queue);
         this.concurrencyLevel = Arguments.greaterZero(
