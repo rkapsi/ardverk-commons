@@ -18,10 +18,11 @@ package org.ardverk.collection;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 public class CollectionsUtils {
 
@@ -73,17 +74,27 @@ public class CollectionsUtils {
     public static <V> V nth(Collection<? extends V> c, int n) {
         if (c instanceof List<?>) {
             return ((List<? extends V>)c).get(n);
+        } else if (c instanceof SortedSet<?>) {
+            if (n == 0) {
+        	return ((SortedSet<? extends V>)c).first();
+            } else if (n == c.size()-1) {
+        	return ((SortedSet<? extends V>)c).last();
+            }
+        } else if (c instanceof Deque<?>) {
+            if (n == 0) {
+        	return ((Deque<? extends V>)c).getFirst();
+            } else if (n == c.size()-1) {
+        	return ((Deque<? extends V>)c).getLast();
+            }
         }
         
         if (n >= 0 && n < c.size()) {
-            Iterator<? extends V> it = c.iterator();
-            while (it.hasNext()) {
-                V element = it.next();
-                if (n == 0) {
-                    return element;
-                }
-                
-                --n;
+            for (V element : c) {
+        	if (n == 0) {
+        	    return element;
+        	}
+        	
+        	--n;
             }
         }
         
