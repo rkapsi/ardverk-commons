@@ -145,6 +145,6 @@ public class CollectionsUtils {
             }
         }
 
-        throw new IndexOutOfBoundsException("n=" + n);
+        throw new IndexOutOfBoundsException("element=" + element + ", n=" + n);
     }
 }
