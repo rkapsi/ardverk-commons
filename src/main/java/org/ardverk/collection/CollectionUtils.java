@@ -27,7 +27,7 @@ import java.util.SortedSet;
 
 import org.ardverk.lang.Arguments;
 
-public class CollectionsUtils {
+public class CollectionUtils {
 
     private static enum Element {
         FIRST {
@@ -55,7 +55,7 @@ public class CollectionsUtils {
         public abstract int convert(Iterable<?> src, int index);
     }
 
-    private CollectionsUtils() {
+    private CollectionUtils() {
     }
 
     /**
