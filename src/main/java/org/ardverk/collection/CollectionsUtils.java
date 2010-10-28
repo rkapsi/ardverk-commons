@@ -125,7 +125,6 @@ public class CollectionsUtils {
         }
 
         Iterator<? extends V> it = c.iterator();
-
         if (it.hasNext()) {
             
             int counter = n;
