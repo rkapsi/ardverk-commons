@@ -126,18 +126,19 @@ public class CollectionsUtils {
 
         Iterator<? extends V> it = c.iterator();
 
+        int counter = n;
         V value = null;
         while (it.hasNext()) {
             value = it.next();
 
-            if (n == 0) {
+            if (counter == 0) {
                 return value;
             }
 
-            --n;
+            --counter;
         }
 
-        if (element == Element.LAST) {
+        if (element == Element.LAST && counter != n) {
             return value;
         }
 
