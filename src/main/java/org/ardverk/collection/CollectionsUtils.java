@@ -20,12 +20,41 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import org.ardverk.lang.Arguments;
+
 public class CollectionsUtils {
 
+    private static enum Element {
+	FIRST {
+	    public int convert(Iterable<?> src, int index) {
+		return 0;
+	    }
+	},
+	
+	LAST {
+	    public int convert(Iterable<?> src, int index) {
+		if (src instanceof Collection<?>) {
+		    return ((Collection<?>)src).size()-1;
+		} else {
+		    return -1;
+		}
+	    }
+	},
+	
+	NTH {
+	    public int convert(Iterable<?> src, int index) {
+		return index;
+	    }
+	};
+	
+	public abstract int convert(Iterable<?> src, int index);
+    }
+    
     private CollectionsUtils() {}
     
     /**
@@ -55,49 +84,62 @@ public class CollectionsUtils {
     }
     
     /**
-     * Returns the first element from the given {@link Collection}.
+     * Returns the first element from the given {@link Iterable}.
      */
-    public static <V> V first(Collection<? extends V> c) {
-        return nth(c, 0);
+    public static <V> V first(Iterable<? extends V> c) {
+        return nth(c, Element.FIRST, 0);
     }
     
     /**
-     * Returns the last element from the given {@link Collection}.
+     * Returns the last element from the given {@link Iterable}.
      */
-    public static <V> V last(Collection<? extends V> c) {
-        return nth(c, c.size()-1);
+    public static <V> V last(Iterable<? extends V> c) {
+        return nth(c, Element.LAST, -1);
     }
     
     /**
-     * Returns the <tt>nth</tt> element from the given {@link Collection}.
+     * Returns the <tt>nth</tt> element from the given {@link Iterable}.
      */
-    public static <V> V nth(Collection<? extends V> c, int n) {
-	if (n >= 0 && n < c.size()) {
-	    
-            if (c instanceof List<?>) {
-                return ((List<? extends V>)c).get(n);
-            } else if (c instanceof SortedSet<?>) {
-                if (n == 0) {
-            	return ((SortedSet<? extends V>)c).first();
-                } else if (n == c.size()-1) {
-            	return ((SortedSet<? extends V>)c).last();
-                }
-            } else if (c instanceof Deque<?>) {
-                if (n == 0) {
-            	return ((Deque<? extends V>)c).getFirst();
-                } else if (n == c.size()-1) {
-            	return ((Deque<? extends V>)c).getLast();
-                }
+    public static <V> V nth(Iterable<? extends V> c, int n) {
+	return nth(c, Element.NTH, Arguments.notNegative(n, "n"));
+    }
+    
+    /**
+     * Returns the <tt>nth</tt> element from the given {@link Iterable}.
+     */
+    private static <V> V nth(Iterable<? extends V> c, Element element, int n) {
+	if (c instanceof List<?>) {
+            return ((List<? extends V>)c).get(element.convert(c, n));
+        } else if (c instanceof SortedSet<?>) {
+            if (element == Element.FIRST) {
+                return ((SortedSet<? extends V>)c).first();
+            } else if (element == Element.LAST) {
+                return ((SortedSet<? extends V>)c).last();
             }
-            
-            for (V element : c) {
-        	if (n == 0) {
-        	    return element;
-        	}
-        	
-        	--n;
+        } else if (c instanceof Deque<?>) {
+            if (element == Element.FIRST) {
+    	    	return ((Deque<? extends V>)c).getFirst();
+            } else if (element == Element.LAST) {
+                return ((Deque<? extends V>)c).getLast();
             }
         }
+        
+	Iterator<? extends V> it = c.iterator();
+	
+	V value = null;
+	while (it.hasNext()) {
+	    value = it.next();
+	    
+	    if (n == 0) {
+        	return value;
+            }
+	    
+            --n;
+	}
+	
+	if (element == Element.LAST) {
+	    return value;
+	}
         
         throw new IndexOutOfBoundsException("n=" + n);
     }
