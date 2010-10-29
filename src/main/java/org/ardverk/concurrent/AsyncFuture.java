@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
  * 
  * @see Future
  */
-public interface AsyncFuture<V> extends Future<V>, Cancellable {
+public interface AsyncFuture<V> extends AsyncFutureListenerService<V>, Future<V>, Cancellable {
     
     /**
      * Sets the value of the {@link AsyncFuture}
@@ -50,19 +50,4 @@ public interface AsyncFuture<V> extends Future<V>, Cancellable {
      * an {@link Exception}.
      */
     public boolean isCompletedAbnormally();
-    
-    /**
-     * Adds the given {@link AsyncFutureListener}.
-     */
-    public void addAsyncFutureListener(AsyncFutureListener<V> listener);
-    
-    /**
-     * Removes the given {@link AsyncFutureListener}.
-     */
-    public void removeAsyncFutureListener(AsyncFutureListener<V> listener);
-    
-    /**
-     * Returns all {@link AsyncFutureListener}s.
-     */
-    public AsyncFutureListener<V>[] getAsyncFutureListeners();
 }
