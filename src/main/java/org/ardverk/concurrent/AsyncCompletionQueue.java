@@ -16,19 +16,146 @@
 
 package org.ardverk.concurrent;
 
+import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.CompletionService;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+
+import org.ardverk.collection.IdentityHashSet;
+import org.ardverk.lang.Arguments;
 
 /**
  * @see CompletionService
  */
-public interface AsyncCompletionQueue<V> extends AsyncFutureListenerService<V> {
+public class AsyncCompletionQueue<V> implements AsyncFutureListenerService<V>, Closeable {
     
-    public boolean offer(AsyncFuture<V> future);
+    private final AsyncFutureListener<V> completionListener 
+            = new AsyncFutureListener<V>() {
+        @Override
+        public void operationComplete(AsyncFuture<V> future) {
+            AsyncCompletionQueue.this.operationComplete(future);
+        }
+    };
     
-    public AsyncFuture<V> take() throws InterruptedException;
+    private final List<AsyncFutureListener<V>> listeners 
+        = new CopyOnWriteArrayList<AsyncFutureListener<V>>();
+    
+    private final Set<AsyncFuture<V>> futures 
+        = new IdentityHashSet<AsyncFuture<V>>();
+    
+    private final List<AsyncFuture<V>> complete 
+        = new ArrayList<AsyncFuture<V>>();
+    
+    private boolean open = true;
+    
+    @Override
+    public synchronized void close() {
+        open = false;
+        
+        cancelAll(true);
+        notifyAll();
+    }
+    
+    /**
+     * 
+     */
+    public synchronized int cancelAll(boolean mayInterruptIfRunning) {
+        for (AsyncFuture<V> future : futures) {
+            future.cancel(mayInterruptIfRunning);
+        }
+        
+        return futures.size();
+    }
+    
+    /**
+     * 
+     */
+    public synchronized boolean offer(AsyncFuture<V> future) 
+            throws RejectedExecutionException {
+        
+        if (!open) {
+            throw new RejectedExecutionException();
+        }
+        
+        boolean success = futures.add(future);
+        if (success) {
+            future.addAsyncFutureListener(completionListener);
+        }
+        return success;
+    }
+    
+    /**
+     * 
+     */
+    private synchronized void operationComplete(AsyncFuture<V> future) {
+        boolean success = futures.remove(future);
+        if (success) {
+            future.removeAsyncFutureListener(completionListener);
+            
+            for (AsyncFutureListener<V> listener : listeners) {
+                listener.operationComplete(future);
+            }
+            
+            complete.add(future);
+            notifyAll();
+        }
+    }
+    
+    /**
+     * 
+     */
+    public synchronized AsyncFuture<V> take() throws InterruptedException {
+        while (open && complete.isEmpty()) {
+            wait();
+        }
+        
+        if (!open && complete.isEmpty()) {
+            throw new NoSuchElementException("closed");
+        }
+        
+        return complete.remove(0);
+    }
 
-    public AsyncFuture<V> poll();
+    /**
+     * 
+     */
+    public synchronized AsyncFuture<V> poll() {
+        if (!complete.isEmpty()) {
+            return complete.remove(0);
+        }
+        return null;
+    }
 
-    public AsyncFuture<V> poll(long timeout, TimeUnit unit) throws InterruptedException;
+    /**
+     * 
+     */
+    public synchronized AsyncFuture<V> poll(long timeout, TimeUnit unit) 
+            throws InterruptedException {
+        if (complete.isEmpty()) {
+            unit.timedWait(this, timeout);
+        }
+        
+        return poll();
+    }
+
+    @Override
+    public void addAsyncFutureListener(AsyncFutureListener<V> listener) {
+        listeners.add(Arguments.notNull(listener, "listener"));
+    }
+
+    @Override
+    public void removeAsyncFutureListener(AsyncFutureListener<V> listener) {
+        listeners.remove(listener);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public AsyncFutureListener<V>[] getAsyncFutureListeners() {
+        return listeners.toArray(new AsyncFutureListener[0]);
+    }
 }
