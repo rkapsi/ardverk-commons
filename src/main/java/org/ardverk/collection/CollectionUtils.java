@@ -84,47 +84,86 @@ public class CollectionUtils {
     }
 
     /**
+     * Returns the first element of the given object which is assumed to
+     * be either an array or an instance of {@link Iterable}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <V> V first(V values) {
+        if (values instanceof Object[]) {
+            return first((V[])values);
+        }
+        
+        return first((Iterable<V>)values);
+    }
+    
+    /**
+     * Returns the last element of the given object which is assumed to
+     * be either an array or an instance of {@link Iterable}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <V> V last(V values) {
+        if (values instanceof Object[]) {
+            return last((V[])values);
+        }
+        
+        return last((Iterable<V>)values);
+    }
+    
+    /**
+     * Returns the nth element of the given object which is assumed to
+     * be either an array or an instance of {@link Iterable}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <V> V nth(V values, int n) {
+        if (values instanceof Object[]) {
+            return nth((V[])values, n);
+        }
+        
+        return nth((Iterable<V>)values, n);
+    }
+    
+    /**
      * Returns the first element from the given {@link Iterable}.
      */
-    public static <V> V first(Iterable<? extends V> c) {
-        return nth(c, Element.FIRST, 0);
+    public static <V> V first(Iterable<? extends V> values) {
+        return nth(values, Element.FIRST, 0);
     }
 
     /**
      * Returns the last element from the given {@link Iterable}.
      */
-    public static <V> V last(Iterable<? extends V> c) {
-        return nth(c, Element.LAST, -1);
+    public static <V> V last(Iterable<? extends V> values) {
+        return nth(values, Element.LAST, -1);
     }
 
     /**
      * Returns the <tt>nth</tt> element from the given {@link Iterable}.
      */
-    public static <V> V nth(Iterable<? extends V> c, int n) {
-        return nth(c, Element.NTH, Arguments.notNegative(n, "n"));
+    public static <V> V nth(Iterable<? extends V> values, int n) {
+        return nth(values, Element.NTH, Arguments.notNegative(n, "n"));
     }
-
+    
     /**
      * Returns the <tt>nth</tt> element from the given {@link Iterable}.
      */
-    private static <V> V nth(Iterable<? extends V> c, Element element, int n) {
-        if (c instanceof List<?>) {
-            return ((List<? extends V>) c).get(element.convert(c, n));
-        } else if (c instanceof SortedSet<?>) {
+    private static <V> V nth(Iterable<? extends V> values, Element element, int n) {
+        if (values instanceof List<?>) {
+            return ((List<? extends V>) values).get(element.convert(values, n));
+        } else if (values instanceof SortedSet<?>) {
             if (element == Element.FIRST) {
-                return ((SortedSet<? extends V>) c).first();
+                return ((SortedSet<? extends V>) values).first();
             } else if (element == Element.LAST) {
-                return ((SortedSet<? extends V>) c).last();
+                return ((SortedSet<? extends V>) values).last();
             }
-        } else if (c instanceof Deque<?>) {
+        } else if (values instanceof Deque<?>) {
             if (element == Element.FIRST) {
-                return ((Deque<? extends V>) c).getFirst();
+                return ((Deque<? extends V>) values).getFirst();
             } else if (element == Element.LAST) {
-                return ((Deque<? extends V>) c).getLast();
+                return ((Deque<? extends V>) values).getLast();
             }
         }
 
-        Iterator<? extends V> it = c.iterator();
+        Iterator<? extends V> it = values.iterator();
         if (it.hasNext()) {
             
             int counter = n;
@@ -146,5 +185,26 @@ public class CollectionUtils {
         }
 
         throw new IndexOutOfBoundsException("element=" + element + ", n=" + n);
+    }
+    
+    /**
+     * Returns the first element of the given array.
+     */
+    public static <V> V first(V[] values) {
+        return nth(values, 0);
+    }
+    
+    /**
+     * Returns the last element of the given array.
+     */
+    public static <V> V last(V[] values) {
+        return nth(values, values.length-1);
+    }
+   
+    /**
+     * Returns the nth element of the given array.
+     */
+    public static <V> V nth(V[] values, int n) {
+        return values[n];
     }
 }
