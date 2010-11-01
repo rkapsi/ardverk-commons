@@ -145,7 +145,7 @@ public class DeadlockScanner {
         long[] deadlocks = bean.findDeadlockedThreads();
         
         // Any deadlocks found?
-        if (deadlocks.length == 0) {
+        if (deadlocks == null || deadlocks.length == 0) {
             return;
         }
         
