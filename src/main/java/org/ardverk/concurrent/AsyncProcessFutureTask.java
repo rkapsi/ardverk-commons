@@ -176,7 +176,8 @@ public class AsyncProcessFutureTask<V> extends AsyncFutureTask<V>
     }
     
     /**
-     * Called by {@link #done()}.
+     * Called by {@link #done()}. Please read the documentation 
+     * of {@link #done()} for further information.
      */
     protected void done0() {
         

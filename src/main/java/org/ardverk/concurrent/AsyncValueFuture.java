@@ -233,6 +233,10 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     /**
      * Called when the {@link AsyncValueFuture} is done. You may
      * override this method.
+     * 
+     * <p>NOTE: This method is being called from the same {@link Thread}
+     * that is calling the {@link #setValue(Object)}, {@link #setException(Throwable)}
+     * or {@link #cancel(boolean)} methods.
      */
     protected void done() {
         

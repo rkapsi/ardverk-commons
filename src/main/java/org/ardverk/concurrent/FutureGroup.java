@@ -36,7 +36,6 @@ import org.ardverk.lang.NullArgumentException;
  * queued tasks are running in parallel.
  */
 public class FutureGroup extends AbstractExecutorQueue<AsyncRunnableFuture<?>> {
-
     
     private final AsyncFutureListener<Object> listener
             = new AsyncFutureListener<Object>() {    
@@ -157,8 +156,8 @@ public class FutureGroup extends AbstractExecutorQueue<AsyncRunnableFuture<?>> {
             }
             
             try {
-                executor.execute(future);
                 future.addAsyncFutureListener(listener);
+                executor.execute(future);
                 ++active;
             } catch (RejectedExecutionException err) {
                 handleRejection(future, err);

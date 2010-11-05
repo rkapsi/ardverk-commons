@@ -29,30 +29,10 @@ import org.ardverk.lang.Arguments;
 
 public class CollectionUtils {
 
-    private static enum Element {
-        FIRST {
-            public int convert(Iterable<?> src, int index) {
-                return 0;
-            }
-        },
-
-        LAST {
-            public int convert(Iterable<?> src, int index) {
-                if (src instanceof Collection<?>) {
-                    return ((Collection<?>) src).size() - 1;
-                } else {
-                    return -1;
-                }
-            }
-        },
-
-        NTH {
-            public int convert(Iterable<?> src, int index) {
-                return index;
-            }
-        };
-
-        public abstract int convert(Iterable<?> src, int index);
+    private static enum Position {
+        FIRST,
+        LAST,
+        NTH;
     }
 
     private CollectionUtils() {
@@ -62,7 +42,7 @@ public class CollectionUtils {
      * Makes a copy of src and returns it.
      */
     public static <K, V> Map<K, V> copy(Map<? extends K, ? extends V> src) {
-        return copyTo(src, Collections.<K, V> emptyMap());
+        return copyTo(src, null);
     }
 
     /**
@@ -73,7 +53,7 @@ public class CollectionUtils {
             Map<K, V> dst) {
 
         if (src != null && !src.isEmpty()) {
-            if (dst == null || dst.equals(Collections.EMPTY_MAP)) {
+            if (dst == null) {
                 dst = new HashMap<K, V>(src);
             } else {
                 dst.putAll(src);
@@ -126,40 +106,51 @@ public class CollectionUtils {
      * Returns the first element from the given {@link Iterable}.
      */
     public static <V> V first(Iterable<? extends V> values) {
-        return nth(values, Element.FIRST, 0);
+        return nth(values, Position.FIRST, 0);
     }
 
     /**
      * Returns the last element from the given {@link Iterable}.
      */
     public static <V> V last(Iterable<? extends V> values) {
-        return nth(values, Element.LAST, -1);
+        return nth(values, Position.LAST, -1);
     }
 
     /**
      * Returns the <tt>nth</tt> element from the given {@link Iterable}.
      */
     public static <V> V nth(Iterable<? extends V> values, int n) {
-        return nth(values, Element.NTH, Arguments.notNegative(n, "n"));
+        return nth(values, Position.NTH, Arguments.notNegative(n, "n"));
     }
     
     /**
      * Returns the <tt>nth</tt> element from the given {@link Iterable}.
      */
-    private static <V> V nth(Iterable<? extends V> values, Element element, int n) {
-        if (values instanceof List<?>) {
-            return ((List<? extends V>) values).get(element.convert(values, n));
-        } else if (values instanceof SortedSet<?>) {
-            if (element == Element.FIRST) {
-                return ((SortedSet<? extends V>) values).first();
-            } else if (element == Element.LAST) {
-                return ((SortedSet<? extends V>) values).last();
-            }
-        } else if (values instanceof Deque<?>) {
-            if (element == Element.FIRST) {
-                return ((Deque<? extends V>) values).getFirst();
-            } else if (element == Element.LAST) {
-                return ((Deque<? extends V>) values).getLast();
+    private static <V> V nth(Iterable<? extends V> values, Position position, int n) {
+        
+        // We can take shortcuts for some types of Collections.
+        if (values instanceof Collection<?>) {
+            Collection<? extends V> c = (Collection<? extends V>)values;
+            
+            if (c instanceof List<?>) {
+                if (isFirst(c, position, n)) {
+                    return ((List<? extends V>)c).get(0);
+                } else if (isLast(c, position, n)) {
+                    return ((List<? extends V>)c).get(c.size()-1);
+                }
+                return ((List<? extends V>)c).get(n);
+            } else if (c instanceof SortedSet<?>) {
+                if (isFirst(c, position, n)) {
+                    return ((SortedSet<? extends V>) c).first();
+                } else if (isLast(c, position, n)) {
+                    return ((SortedSet<? extends V>) c).last();
+                }
+            } else if (c instanceof Deque<?>) {
+                if (isFirst(c, position, n)) {
+                    return ((Deque<? extends V>) c).getFirst();
+                } else if (isLast(c, position, n)) {
+                    return ((Deque<? extends V>) c).getLast();
+                }
             }
         }
 
@@ -179,12 +170,12 @@ public class CollectionUtils {
                 --counter;
             }
     
-            if (element == Element.LAST) {
+            if (position == Position.LAST) {
                 return value;
             }
         }
 
-        throw new IndexOutOfBoundsException("element=" + element + ", n=" + n);
+        throw new IndexOutOfBoundsException("position=" + position + ", n=" + n);
     }
     
     /**
@@ -206,5 +197,21 @@ public class CollectionUtils {
      */
     public static <V> V nth(V[] values, int n) {
         return values[n];
+    }
+    
+    /**
+     * Returns true if the first element needs to be retrieved 
+     * from the given {@link Collection}.
+     */
+    private static boolean isFirst(Collection<?> c, Position position, int n) {
+        return position == Position.FIRST || n == 0;
+    }
+    
+    /**
+     * Returns true if the last element needs to be retrieved 
+     * from the given {@link Collection}.
+     */
+    private static boolean isLast(Collection<?> c, Position position, int n) {
+        return position == Position.LAST || n == (c.size()-1);
     }
 }
