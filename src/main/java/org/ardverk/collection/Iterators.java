@@ -16,7 +16,6 @@
 
 package org.ardverk.collection;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -54,32 +53,6 @@ public class Iterators {
     @SuppressWarnings("unchecked")
     public static <T> Iterator<T> empty() {
         return (Iterator<T>)EMPTY;
-    }
-    
-    /**
-     * Creates and returns an {@link Iterator} for the given {@link Enumeration}.
-     */
-    public static <T> Iterator<T> fromEnumeration(final Enumeration<T> e) {
-        if (!e.hasMoreElements()) {
-            return empty();
-        }
-        
-        return new Iterator<T>() {
-            @Override
-            public boolean hasNext() {
-                return e.hasMoreElements();
-            }
-
-            @Override
-            public T next() {
-                return e.nextElement();
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
     }
     
     /**

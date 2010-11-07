@@ -16,7 +16,6 @@
 
 package org.ardverk.collection;
 
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,29 +43,6 @@ public class Iterables {
     @SuppressWarnings("unchecked")
     public static <T> Iterable<T> empty() {
         return (Iterable<T>)EMPTY;
-    }
-    
-    /**
-     * Creates and returns an {@link Iterable} for an {@link Iterable}.
-     */
-    public static <T> Iterable<T> fromIterator(final Iterator<T> it) {
-        if (!it.hasNext()) {
-            return empty();
-        }
-        
-        return new Iterable<T>() {
-            @Override
-            public Iterator<T> iterator() {
-                return it;
-            }
-        };
-    }
-    
-    /**
-     * Creates and returns an {@link Iterable} for an {@link Enumeration}.
-     */
-    public static <T> Iterable<T> fromEnumeration(Enumeration<T> e) {
-        return fromIterator(Iterators.fromEnumeration(e));
     }
     
     /**
@@ -107,6 +83,22 @@ public class Iterables {
                     }
                 };
         }
+    }
+    
+    /**
+     * Creates and returns an {@link Iterable} for an {@link Iterator}.
+     */
+    public static <T> Iterable<T> fromIterator(final Iterator<T> it) {
+        if (!it.hasNext()) {
+            return empty();
+        }
+        
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return it;
+            }
+        };
     }
     
     /**
