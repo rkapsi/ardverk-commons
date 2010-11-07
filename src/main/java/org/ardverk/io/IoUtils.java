@@ -109,10 +109,10 @@ public class IoUtils {
      * Closes the given array of {@link Closeable}s
      */
     public static boolean closeAll(Closeable... closeables) {
-        boolean success = false;
+        boolean success = true;
         if (closeables != null) {
             for (Closeable c : closeables) {
-                success |= close(c);
+                success &= close(c);
             }
         }
         return success;
@@ -122,10 +122,10 @@ public class IoUtils {
      * Closes the given {@link Iterable} of {@link Closeable}s
      */
     public static boolean closeAll(Iterable<? extends Closeable> closeables) {
-        boolean success = false;
+        boolean success = true;
         if (closeables != null) {
             for (Closeable c : closeables) {
-                success |= close(c);
+                success &= close(c);
             }
         }
         return success;
@@ -150,10 +150,10 @@ public class IoUtils {
      * Flushes the given array of {@link Flushable}s.
      */
     public static boolean flushAll(Flushable... flushables) {
-        boolean success = false;
+        boolean success = true;
         if (flushables != null) {
             for (Flushable c : flushables) {
-                success |= flush(c);
+                success &= flush(c);
             }
         }
         return success;
@@ -163,10 +163,10 @@ public class IoUtils {
      * Flushes the given {@link Iterable} of {@link Flushable}s
      */
     public static boolean flushAll(Iterable<? extends Flushable> flushables) {
-        boolean success = false;
+        boolean success = true;
         if (flushables != null) {
             for (Flushable c : flushables) {
-                success |= flush(c);
+                success &= flush(c);
             }
         }
         return success;

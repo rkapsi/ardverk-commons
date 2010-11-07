@@ -53,10 +53,10 @@ public class FutureUtils {
      */
     public static boolean cancelAll(Iterable<? extends Future<?>> futures, 
             boolean mayInterruptIfRunning) {
-        boolean success = false;
+        boolean success = true;
         if (futures != null) {
             for (Future<?> future : futures) {
-                success |= cancel(future, mayInterruptIfRunning);
+                success &= cancel(future, mayInterruptIfRunning);
             }
         }
         return success;
