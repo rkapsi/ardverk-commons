@@ -87,6 +87,23 @@ public class Iterables {
     
     /**
      * Creates and returns a composed {@link Iterable} view from 
+     * an array of {@link Iterator}s.
+     */
+    public static <T> Iterable<T> fromIterators(Iterator<T>... values) {
+        return fromIterators(values, 0, values.length);
+    }
+    
+    /**
+     * Creates and returns a composed {@link Iterable} view from 
+     * an array of {@link Iterator}s.
+     */
+    public static <T> Iterable<T> fromIterators(Iterator<T>[] values, 
+            int offset, final int length) {
+        return fromIterators(create(values, offset, length));
+    }
+    
+    /**
+     * Creates and returns a composed {@link Iterable} view from 
      * an {@link Iterable} of {@link Iterator}s.
      */
     public static <T> Iterable<T> fromIterators(final Iterable<? extends Iterator<T>> values) {
@@ -96,6 +113,23 @@ public class Iterables {
                 return Iterators.fromIterators(values.iterator());
             }
         };
+    }
+    
+    /**
+     * Creates and returns a composed {@link Iterable} view from 
+     * an array of {@link Iterable}s such as {@link List}s.
+     */
+    public static <T> Iterable<T> fromIterables(Iterable<T>... values) {
+        return fromIterables(values, 0, values.length);
+    }
+    
+    /**
+     * Creates and returns a composed {@link Iterable} view from 
+     * an array of {@link Iterable}s such as {@link List}s.
+     */
+    public static <T> Iterable<T> fromIterables(Iterable<T>[] values, 
+            int offset, int length) {
+        return fromIterables(create(values, offset, length));
     }
     
     /**
