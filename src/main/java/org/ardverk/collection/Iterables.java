@@ -16,6 +16,7 @@
 
 package org.ardverk.collection;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +47,29 @@ public class Iterables {
     }
     
     /**
+     * Creates and returns an {@link Iterable} for an {@link Iterable}.
+     */
+    public static <T> Iterable<T> fromIterator(final Iterator<T> it) {
+        if (!it.hasNext()) {
+            return empty();
+        }
+        
+        return new Iterable<T>() {
+            @Override
+            public Iterator<T> iterator() {
+                return it;
+            }
+        };
+    }
+    
+    /**
+     * Creates and returns an {@link Iterable} for an {@link Enumeration}.
+     */
+    public static <T> Iterable<T> fromEnumeration(Enumeration<T> e) {
+        return fromIterator(Iterators.fromEnumeration(e));
+    }
+    
+    /**
      * Creates an {@link Iterable} view for the value.
      */
     public static <T> Iterable<T> singleton(final T value) {
@@ -60,14 +84,14 @@ public class Iterables {
     /**
      * Creates an {@link Iterable} view for the given array.
      */
-    public static <T> Iterable<T> create(T... values) {
-        return create(values, 0, values.length);
+    public static <T> Iterable<T> fromArray(T... values) {
+        return fromArray(values, 0, values.length);
     }
     
     /**
      * Creates an {@link Iterable} view for the given array.
      */
-    public static <T> Iterable<T> create(final T[] values, 
+    public static <T> Iterable<T> fromArray(final T[] values, 
             final int offset, final int length) {
         
         switch (length) {
@@ -79,7 +103,7 @@ public class Iterables {
                 return new Iterable<T>() {
                     @Override
                     public Iterator<T> iterator() {
-                        return Iterators.create(values, offset, length);
+                        return Iterators.fromArray(values, offset, length);
                     }
                 };
         }
@@ -103,7 +127,7 @@ public class Iterables {
             return empty();
         }
         
-        return fromIterators(create(values, offset, length));
+        return fromIterators(fromArray(values, offset, length));
     }
     
     /**
@@ -138,7 +162,7 @@ public class Iterables {
             return empty();
         }
         
-        return fromIterables(create(values, offset, length));
+        return fromIterables(fromArray(values, offset, length));
     }
     
     /**

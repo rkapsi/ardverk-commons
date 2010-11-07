@@ -16,6 +16,7 @@
 
 package org.ardverk.collection;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -56,6 +57,32 @@ public class Iterators {
     }
     
     /**
+     * Creates and returns an {@link Iterator} for the given {@link Enumeration}.
+     */
+    public static <T> Iterator<T> fromEnumeration(final Enumeration<T> e) {
+        if (!e.hasMoreElements()) {
+            return empty();
+        }
+        
+        return new Iterator<T>() {
+            @Override
+            public boolean hasNext() {
+                return e.hasMoreElements();
+            }
+
+            @Override
+            public T next() {
+                return e.nextElement();
+            }
+
+            @Override
+            public void remove() {
+                throw new UnsupportedOperationException();
+            }
+        };
+    }
+    
+    /**
      * Creates an {@link Iterator} view for the value.
      */
     public static <T> Iterator<T> singleton(T value) {
@@ -65,14 +92,14 @@ public class Iterators {
     /**
      * Creates an {@link Iterator} view for the given array.
      */
-    public static <T> Iterator<T> create(T... values) {
-        return create(values, 0, values.length);
+    public static <T> Iterator<T> fromArray(T... values) {
+        return fromArray(values, 0, values.length);
     }
     
     /**
      * Creates an {@link Iterator} view for the given array.
      */
-    public static <T> Iterator<T> create(T[] values, int offset, int length) {
+    public static <T> Iterator<T> fromArray(T[] values, int offset, int length) {
         switch (length) {
             case 0:
                 return empty();
@@ -95,7 +122,7 @@ public class Iterators {
      */
     public static <T> Iterator<T> fromIterators(Iterator<T>[] values, 
             int offset, int length) {
-        return fromIterators(create(values, offset, length));
+        return fromIterators(fromArray(values, offset, length));
     }
     
     /**
@@ -123,7 +150,7 @@ public class Iterators {
      */
     public static <T> Iterator<T> fromIterables(Iterable<T>[] values, 
             int offset, int length) {
-        return fromIterables(create(values, offset, length));
+        return fromIterables(fromArray(values, offset, length));
     }
     
     /**
