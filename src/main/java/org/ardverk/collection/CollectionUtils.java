@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
-import org.ardverk.lang.Arguments;
-
 public class CollectionUtils {
 
     private static enum Position {
@@ -120,7 +118,7 @@ public class CollectionUtils {
      * Returns the <tt>nth</tt> element from the given {@link Iterable}.
      */
     public static <V> V nth(Iterable<? extends V> values, int n) {
-        return nth(values, Position.NTH, Arguments.notNegative(n, "n"));
+        return nth(values, Position.NTH, n);
     }
     
     /**
@@ -128,9 +126,19 @@ public class CollectionUtils {
      */
     private static <V> V nth(Iterable<? extends V> values, Position position, int n) {
         
-        // We can take shortcuts for some types of Collections.
+        // Fail fast for negative N values.
+        if (position != Position.LAST && n < 0) {
+            throw new IndexOutOfBoundsException("n=" + n);
+        }
+        
+        // We can take shortcuts for some types of Collections
         if (values instanceof Collection<?>) {
             Collection<? extends V> c = (Collection<? extends V>)values;
+            
+            // Fail fast for out of bounds N values
+            if (n >= c.size()) {
+                throw new IndexOutOfBoundsException("n=" + n);
+            }
             
             if (c instanceof List<?>) {
                 if (isFirst(c, position, n)) {
@@ -154,6 +162,7 @@ public class CollectionUtils {
             }
         }
 
+        // For everything else we've to use an Iterator which will take O(n) time 
         Iterator<? extends V> it = values.iterator();
         if (it.hasNext()) {
             
