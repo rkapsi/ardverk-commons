@@ -93,7 +93,8 @@ public class Iterators {
     /**
      * Creates and returns an {@link Iterator} from a composed view of {@link Iterator}s.
      */
-    public static <T> Iterator<T> fromIterators(Iterator<T>[] values, int offset, int length) {
+    public static <T> Iterator<T> fromIterators(Iterator<T>[] values, 
+            int offset, int length) {
         return fromIterators(create(values, offset, length));
     }
     
@@ -120,7 +121,8 @@ public class Iterators {
      * Creates and returns an {@link Iterator} from a composed view of 
      * {@link Iterable}s such as {@link List}s.
      */
-    public static <T> Iterator<T> fromIterables(Iterable<T>[] values, int offset, int length) {
+    public static <T> Iterator<T> fromIterables(Iterable<T>[] values, 
+            int offset, int length) {
         return fromIterables(create(values, offset, length));
     }
     

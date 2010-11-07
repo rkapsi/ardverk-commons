@@ -99,6 +99,10 @@ public class Iterables {
      */
     public static <T> Iterable<T> fromIterators(Iterator<T>[] values, 
             int offset, final int length) {
+        if (length == 0) {
+            return empty();
+        }
+        
         return fromIterators(create(values, offset, length));
     }
     
@@ -129,6 +133,11 @@ public class Iterables {
      */
     public static <T> Iterable<T> fromIterables(Iterable<T>[] values, 
             int offset, int length) {
+        
+        if (length == 0) {
+            return empty();
+        }
+        
         return fromIterables(create(values, offset, length));
     }
     
