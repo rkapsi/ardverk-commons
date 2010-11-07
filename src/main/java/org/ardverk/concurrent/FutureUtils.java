@@ -61,4 +61,18 @@ public class FutureUtils {
         }
         return success;
     }
+    
+    /**
+     * Cancels the given array of {@link Future}s.
+     */
+    public static boolean cancelAll(Future<?>[] futures, 
+            boolean mayInterruptIfRunning) {
+        boolean success = true;
+        if (futures != null) {
+            for (Future<?> future : futures) {
+                success &= cancel(future, mayInterruptIfRunning);
+            }
+        }
+        return success;
+    }
 }

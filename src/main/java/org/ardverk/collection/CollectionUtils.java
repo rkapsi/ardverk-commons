@@ -60,7 +60,7 @@ public class CollectionUtils {
 
         return dst;
     }
-
+    
     /**
      * Returns the first element of the given object which is assumed to
      * be either an array or an instance of {@link Iterable}.

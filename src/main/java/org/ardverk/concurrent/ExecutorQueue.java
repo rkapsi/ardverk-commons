@@ -22,7 +22,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 
+ * An {@link ExecutorQueue} is a special purpose {@link Executor}
  */
 public interface ExecutorQueue<T extends Runnable> {
 

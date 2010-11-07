@@ -41,7 +41,7 @@ import org.ardverk.utils.ExceptionUtils;
  * For example there could be a Connection class that has the ability to
  * send messages. The requirement is to send messages in sequential order
  * but off-load the operation to a different {@link Thread} and at the same
- * time utilize more one {@link Thread}.
+ * time utilize more than one {@link Thread}.
  * 
  * static Executor EXECUTOR = Executors.newFixedThreadPool(16);
  * 
