@@ -49,4 +49,21 @@ public class StringUtils {
             throw new IllegalArgumentException("encoding=" + encoding, e);
         }
     }
+    
+    /**
+     * Returns true if the given {@link String} is {@code null}, is an
+     * empty string or is just a bunch of whitespace characters as defined
+     * by {@link Character#isWhitespace(char)}.
+     */
+    public static boolean isEmpty(String data) {
+        if (data != null && !data.isEmpty()) {
+            for (int i = data.length()-1; i >= 0; --i) {
+                if (!Character.isWhitespace(data.charAt(i))) {
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
 }
