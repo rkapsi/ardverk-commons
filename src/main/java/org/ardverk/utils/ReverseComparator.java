@@ -16,6 +16,7 @@
 
 package org.ardverk.utils;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.ardverk.lang.Arguments;
@@ -25,7 +26,9 @@ import org.ardverk.lang.Arguments;
  * the {@link Comparator}'s output. It's useful for changing the sorting order
  * for example.
  */
-public class ReverseComparator<T> implements Comparator<T> {
+public class ReverseComparator<T> implements Comparator<T>, Serializable {
+    
+    private static final long serialVersionUID = 563094817278176159L;
     
     private final Comparator<? super T> comparator;
     
