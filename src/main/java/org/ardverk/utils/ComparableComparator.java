@@ -19,6 +19,9 @@ package org.ardverk.utils;
 import java.io.Serializable;
 import java.util.Comparator;
 
+/**
+ * A {@link Comparator} to compare {@link Comparable} objects.
+ */
 public class ComparableComparator<T extends Comparable<T>> 
         implements Comparator<T>, Serializable {
     
@@ -27,8 +30,11 @@ public class ComparableComparator<T extends Comparable<T>>
     private static final ComparableComparator<String> COMPARATOR 
         = new ComparableComparator<String>();
     
+    /**
+     * Returns a {@link Comparator} for compare {@link Comparable} objects.
+     */
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> Comparator<T> create() {
+    public static <T extends Comparable<T>> Comparator<T> get() {
         return (Comparator<T>)COMPARATOR;
     }
     
