@@ -16,6 +16,8 @@
 
 package org.ardverk.utils;
 
+import java.lang.reflect.Array;
+import java.util.Comparator;
 import java.util.Random;
 
 import org.ardverk.security.SecurityUtils;
@@ -59,5 +61,523 @@ public class ArrayUtils {
             swap(elements, offset + i, offset + random.nextInt(length));
         }
         return elements;
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static byte min(byte... values) {
+        return min(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static byte min(byte[] values, int offset, int length) {
+        return mm(values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static byte max(byte... values) {
+        return max(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static byte max(byte[] values, int offset, int length) {
+        return mm(values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static byte[] mm(byte... values) {
+        return mm(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static byte[] mm(byte[] values, int offset, int length) {
+        checkBounds(values, offset, length);
+        
+        byte min = values[offset];
+        byte max = min;
+        
+        int end = offset + length;
+        while (++offset < end) {
+            byte value = values[offset];
+            if (value < min) {
+                min = value;
+            } else if (max < value) {
+                max = value;
+            }
+        }
+        
+        return new byte[] { min, max };
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static short min(short... values) {
+        return min(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static short min(short[] values, int offset, int length) {
+        return mm(values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static short max(short... values) {
+        return max(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static short max(short[] values, int offset, int length) {
+        return mm(values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static short[] mm(short... values) {
+        return mm(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static short[] mm(short[] values, int offset, int length) {
+        checkBounds(values, offset, length);
+        
+        short min = values[offset];
+        short max = min;
+        
+        int end = offset + length;
+        while (++offset < end) {
+            short value = values[offset];
+            if (value < min) {
+                min = value;
+            } else if (max < value) {
+                max = value;
+            }
+        }
+        
+        return new short[] { min, max };
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static char min(char... values) {
+        return min(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static char min(char[] values, int offset, int length) {
+        return mm(values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static char max(char... values) {
+        return max(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static char max(char[] values, int offset, int length) {
+        return mm(values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static char[] mm(char... values) {
+        return mm(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static char[] mm(char[] values, int offset, int length) {
+        checkBounds(values, offset, length);
+        
+        char min = values[offset];
+        char max = min;
+        
+        int end = offset + length;
+        while (++offset < end) {
+            char value = values[offset];
+            if (value < min) {
+                min = value;
+            } else if (max < value) {
+                max = value;
+            }
+        }
+        
+        return new char[] { min, max };
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static int min(int... values) {
+        return min(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static int min(int[] values, int offset, int length) {
+        return mm(values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static int max(int... values) {
+        return max(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static int max(int[] values, int offset, int length) {
+        return mm(values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static int[] mm(int... values) {
+        return mm(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static int[] mm(int[] values, int offset, int length) {
+        checkBounds(values, offset, length);
+        
+        int min = values[offset];
+        int max = min;
+        
+        int end = offset + length;
+        while (++offset < end) {
+            int value = values[offset];
+            if (value < min) {
+                min = value;
+            } else if (max < value) {
+                max = value;
+            }
+        }
+        
+        return new int[] { min, max };
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static float min(float... values) {
+        return min(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static float min(float[] values, int offset, int length) {
+        return mm(values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static float max(float... values) {
+        return max(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static float max(float[] values, int offset, int length) {
+        return mm(values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static float[] mm(float... values) {
+        return mm(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static float[] mm(float[] values, int offset, int length) {
+        checkBounds(values, offset, length);
+        
+        float min = values[offset];
+        float max = min;
+        
+        int end = offset + length;
+        while (++offset < end) {
+            float value = values[offset];
+            if (value < min) {
+                min = value;
+            } else if (max < value) {
+                max = value;
+            }
+        }
+        
+        return new float[] { min, max };
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static long min(long... values) {
+        return min(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static long min(long[] values, int offset, int length) {
+        return mm(values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static long max(long... values) {
+        return max(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static long max(long[] values, int offset, int length) {
+        return mm(values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static long[] mm(long... values) {
+        return mm(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static long[] mm(long[] values, int offset, int length) {
+        checkBounds(values, offset, length);
+        
+        long min = values[offset];
+        long max = min;
+        
+        int end = offset + length;
+        while (++offset < end) {
+            long value = values[offset];
+            if (value < min) {
+                min = value;
+            } else if (max < value) {
+                max = value;
+            }
+        }
+        
+        return new long[] { min, max };
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static double min(double... values) {
+        return min(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static double min(double[] values, int offset, int length) {
+        return mm(values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static double max(double... values) {
+        return max(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static double max(double[] values, int offset, int length) {
+        return mm(values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static double[] mm(double... values) {
+        return mm(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static double[] mm(double[] values, int offset, int length) {
+        checkBounds(values, offset, length);
+        
+        double min = values[offset];
+        double max = min;
+        
+        int end = offset + length;
+        while (++offset < end) {
+            double value = values[offset];
+            if (value < min) {
+                min = value;
+            } else if (max < value) {
+                max = value;
+            }
+        }
+        
+        return new double[] { min, max };
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static <T extends Number & Comparable<T>> T min(T... values) {
+        return min(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static <T extends Number & Comparable<T>> T min(T[] values, int offset, int length) {
+        return mm(values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static <T extends Number & Comparable<T>> T max(T... values) {
+        return max(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static <T extends Number & Comparable<T>> T max(T[] values, int offset, int length) {
+        return mm(values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static <T extends Number & Comparable<T>> T[] mm(T... values) {
+        return mm(values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static <T extends Number & Comparable<T>> T[] mm(T[] values, int offset, int length) {
+        Comparator<T> comparator = ComparableComparator.create();
+        return mm(comparator, values, offset, length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static <T> T min(Comparator<T> comparator, T... values) {
+        return min(comparator, values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min value in the given array.
+     */
+    public static <T> T min(Comparator<T> comparator, T[] values, int offset, int length) {
+        return mm(comparator, values, 0, values.length)[0];
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static <T> T max(Comparator<T> comparator, T... values) {
+        return max(comparator, values, 0, values.length);
+    }
+    
+    /**
+     * Returns the max value in the given array.
+     */
+    public static <T> T max(Comparator<T> comparator, T[] values, int offset, int length) {
+        return mm(comparator, values, 0, values.length)[1];
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static <T> T[] mm(Comparator<T> comparator, T... values) {
+        return mm(comparator, values, 0, values.length);
+    }
+    
+    /**
+     * Returns the min and max value in the given array.
+     */
+    public static <T> T[] mm(Comparator<T> comparator, 
+            T[] values, int offset, int length) {
+        
+        checkBounds(values, offset, length);
+        
+        T min = values[offset];
+        T max = min;
+        
+        int end = offset + length;
+        while (++offset < end) {
+            T value = values[offset];
+            
+            if (comparator.compare(value, min) < 0) {
+                min = value;
+            } else if (0 < comparator.compare(value, max)) {
+                max = value;
+            }
+        }
+        
+        Class<?> clazz = values.getClass();
+        Class<?> componentType = clazz.getComponentType();
+        @SuppressWarnings("unchecked")
+        T[] dst = (T[]) Array.newInstance(componentType, 2);
+        dst[0] = min;
+        dst[1] = max;
+        return dst;
+    }
+    
+    /**
+     * Checks if the array's bounds are correct.
+     */
+    private static void checkBounds(Object values, int offset, int length) {
+        if (offset < 0 || length <= 0 || Array.getLength(values) < (offset+length)) {
+            throw new IllegalArgumentException(
+                    "offset=" + offset + ", length=" + length);
+        }
     }
 }
