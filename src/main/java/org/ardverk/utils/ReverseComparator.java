@@ -39,7 +39,7 @@ public class ReverseComparator<T> implements Comparator<T>, Serializable {
     /**
      * Returns the {@link ReverseComparator}'s parent {@link Comparator}.
      */
-    public Comparator<? super T> getComparator() {
+    public Comparator<? super T> comparator() {
         return comparator;
     }
 

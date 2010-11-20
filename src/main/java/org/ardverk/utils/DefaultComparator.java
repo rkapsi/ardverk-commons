@@ -20,21 +20,24 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- * A {@link Comparator} to compare {@link Comparable} objects.
+ * A {@link Comparator} for {@link Comparable} objects.
  */
-public class ComparableComparator<T extends Comparable<T>> 
+public class DefaultComparator<T extends Comparable<T>> 
         implements Comparator<T>, Serializable {
     
     private static final long serialVersionUID = 2605636601980606082L;
 
-    private static final ComparableComparator<String> COMPARATOR 
-        = new ComparableComparator<String>();
+    // NOTE: We're using String just as a place holder to fool
+    // the compiler. Any Class that implements the Comparable
+    // interface would be sufficient.
+    private static final DefaultComparator<String> COMPARATOR 
+        = new DefaultComparator<String>();
     
     /**
      * Returns a {@link Comparator} for compare {@link Comparable} objects.
      */
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> Comparator<T> get() {
+    public static <T extends Comparable<T>> Comparator<T> create() {
         return (Comparator<T>)COMPARATOR;
     }
     

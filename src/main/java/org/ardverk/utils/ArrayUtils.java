@@ -501,7 +501,7 @@ public class ArrayUtils {
      * Returns the min and max value in the given array.
      */
     public static <T extends Number & Comparable<T>> T[] mm(T[] values, int offset, int length) {
-        Comparator<T> comparator = ComparableComparator.get();
+        Comparator<T> comparator = DefaultComparator.create();
         return mm(comparator, values, offset, length);
     }
     
