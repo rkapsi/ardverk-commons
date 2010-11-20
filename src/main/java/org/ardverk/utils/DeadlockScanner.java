@@ -38,7 +38,7 @@ public class DeadlockScanner {
      * The default frequency to scan for deadlocks.
      */
     private static final long FREQUENCY 
-        = SystemUtils.getLong(DeadlockScanner.class, 
+        = PropertiesUtils.getLong(DeadlockScanner.class, 
                 "frequency", 3L * 1000L);
     
     /**

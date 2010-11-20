@@ -23,7 +23,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.ardverk.utils.SystemUtils;
+import org.ardverk.utils.PropertiesUtils;
 
 /**
  * A utility class to create {@link ScheduledThreadPoolExecutor}s and
@@ -31,7 +31,7 @@ import org.ardverk.utils.SystemUtils;
  */
 public class ExecutorUtils {
 
-    private static final long PURGE_FREQUENCY = SystemUtils.getLong(
+    private static final long PURGE_FREQUENCY = PropertiesUtils.getLong(
             ExecutorUtils.class, "purgeFrequency", 30L * 1000L);
     
     private ExecutorUtils() {}

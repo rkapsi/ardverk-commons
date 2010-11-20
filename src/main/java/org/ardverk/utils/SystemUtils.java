@@ -19,28 +19,4 @@ package org.ardverk.utils;
 public class SystemUtils {
 
     private SystemUtils() {}
-    
-    public static String createKey(Class<?> clazz, String name) {
-        return clazz.getCanonicalName() + "." + name;
-    }
-    
-    public static int getInteger(Class<?> clazz, String name, int defaultValue) {
-        return getInteger(createKey(clazz, name), defaultValue);
-    }
-    
-    public static int getInteger(String key, int defaultValue) {
-        return Integer.parseInt(getProperty(key, Integer.toString(defaultValue)));
-    }
-    
-    public static long getLong(Class<?> clazz, String name, long defaultValue) {
-        return getLong(createKey(clazz, name), defaultValue);
-    }
-    
-    public static long getLong(String key, long defaultValue) {
-        return Long.parseLong(getProperty(key, Long.toString(defaultValue)));
-    }
-    
-    public static String getProperty(String key, String defaultValue) {
-        return System.getProperty(key, defaultValue);
-    }
 }
