@@ -23,6 +23,8 @@ import javax.swing.SwingUtilities;
  * all {@link #operationComplete(AsyncFuture)} events to the Swing Event
  * Dispatcher Thread (EDT).
  * 
+ * See also {@link AsyncSwingFutureTask} for an alternative implementation.
+ * 
  * @see SwingUtilities#invokeLater(Runnable)
  */
 public abstract class AsyncSwingFutureListener<V> implements AsyncFutureListener<V> {

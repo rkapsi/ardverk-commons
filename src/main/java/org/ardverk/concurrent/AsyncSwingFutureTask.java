@@ -24,6 +24,8 @@ import javax.swing.SwingUtilities;
  * An {@link AsyncFutureTask} that fires its events on the Swing 
  * Event Dispatcher Thread (EDT).
  * 
+ * See also {@link AsyncSwingFutureListener} for an alternative implementation.
+ * 
  * @see SwingUtilities#isEventDispatchThread()
  * @see SwingUtilities#invokeLater(Runnable)
  */
