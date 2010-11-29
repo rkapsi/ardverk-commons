@@ -24,6 +24,8 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+import org.ardverk.lang.NumberUtils;
+
 /**
  * An implementation of {@link Compressor} that uses Java's 
  * {@link GZIPInputStream} and {@link GZIPOutputStream}.
@@ -44,7 +46,7 @@ public class GzipCompressor extends AbstractCompressor {
         OutputStream out = null;
         
         try {
-            baos = new ByteArrayOutputStream(length);
+            baos = new ByteArrayOutputStream(NumberUtils.nextPowOfTwo(length));
             out = new GZIPOutputStream(baos);   
             out.write(value, offset, length);
         } finally {
@@ -59,7 +61,7 @@ public class GzipCompressor extends AbstractCompressor {
             throws IOException {
         ByteArrayOutputStream baos = null;
         try {
-            baos = new ByteArrayOutputStream(capacity(2 * length));
+            baos = new ByteArrayOutputStream(NumberUtils.nextPowOfTwo(2 * length));
             
             ByteArrayInputStream bais = null;
             InputStream in = null;

@@ -72,4 +72,25 @@ public class CodingUtils {
     public static String encodeBase16(byte[] data, int offset, int length) {
         return StringUtils.toString(Base16.encodeBase16(data, offset, length));
     }
+    
+    /**
+     * Decodes a Base-16 (hex) encoded {@link String}.
+     */
+    public static byte[] decodeBase16(String data) {
+        return decodeBase16(StringUtils.getBytes(data));
+    }
+    
+    /**
+     * Decodes a Base-16 (hex) encoded value.
+     */
+    public static byte[] decodeBase16(byte[] data) {
+        return decodeBase16(data, 0, data.length);
+    }
+    
+    /**
+     * Decodes a Base-16 (hex) encoded value.
+     */
+    public static byte[] decodeBase16(byte[] data, int offset, int length) {
+        return Base16.decodeBase16(data, offset, length);
+    }
 }

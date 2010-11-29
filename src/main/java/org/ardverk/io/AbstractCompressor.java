@@ -48,16 +48,4 @@ public abstract class AbstractCompressor implements Compressor {
     public String toString() {
         return getAlgorithm();
     }
-    
-    /**
-     * Computes and returns the closest power-of-two capacity 
-     * for the given argument.
-     */
-    static int capacity(int initialCapacity) {
-        int capacity = 1;
-        while (capacity < initialCapacity) {
-            capacity <<= 1;
-        }
-        return capacity;
-    }
 }

@@ -166,4 +166,16 @@ public class NumberUtils {
         
         throw new IllegalArgumentException("value=" + value);
     }
+
+    /**
+     * Returns the closest power of two value that's greater or 
+     * equal to the given argument.
+     */
+    public static int nextPowOfTwo(int expected) {
+        int value = 1;
+        while (value < expected) {
+            value <<= 1;
+        }
+        return value;
+    }
 }
