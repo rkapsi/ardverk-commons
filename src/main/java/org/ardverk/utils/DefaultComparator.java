@@ -26,12 +26,9 @@ public class DefaultComparator<T extends Comparable<T>>
         implements Comparator<T>, Serializable {
     
     private static final long serialVersionUID = 2605636601980606082L;
-
-    // NOTE: We're using String just as a place holder to fool
-    // the compiler. Any Class that implements the Comparable
-    // interface would be sufficient.
-    private static final DefaultComparator<String> COMPARATOR 
-        = new DefaultComparator<String>();
+    
+    @SuppressWarnings("rawtypes")
+    private static final DefaultComparator COMPARATOR = new DefaultComparator();
     
     /**
      * Returns a {@link Comparator} for compare {@link Comparable} objects.

@@ -1,0 +1,60 @@
+<project name="ardverk-base" default="dist" basedir=".">
+	
+	<property name="library" value="ardverk-base"/>
+	<property name="version" value="0.1"/>
+	<property name="library.name" value="${library}-${version}"/>
+	
+	<property name="build" location="build"/>
+	<property name="dist" location="dist/${library.name}"/>
+	
+	<property name="src" location="src/main/java"/>
+	<property name="rsrc" location="resources/main/java"/>
+	
+	<property name="build.classes" location="${build}/classes"/>
+	<property name="build.resources" location="${build}/resources"/>
+	<property name="build.lib" location="${build}/lib"/>
+	
+	<property name="library.jar" location="${build.lib}/${library.name}.jar"/>
+	
+	<target name="init">
+		<tstamp/>
+	</target>
+	
+	<target name="build" depends="init">
+		<mkdir dir="${build.classes}"/>
+		<javac srcdir="${src}" 
+			destdir="${build.classes}"
+			source="1.6"
+			target="1.6"/>
+		
+		<mkdir dir="${build.resources}"/>
+		<copy todir="${build.resources}" failonerror="false">
+    		<fileset dir="${rsrc}"/>
+	  	</copy>
+	</target>
+	
+	<target name="jar" depends="clean, build">
+		<mkdir dir="${build.lib}"/>
+		
+		<jar jarfile="${library.jar}">
+			<fileset dir="${build.classes}"/>
+	    	<fileset dir="${build.resources}"/>
+			
+			<manifest>
+				<attribute name="Built-By" value="${user.name}"/>
+				<attribute name="Implementation-Title" value="${library.name}"/>
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="dist" depends="jar">
+		<mkdir dir="${dist}"/>
+		<copy file="LICENSE-2.0.txt" todir="${dist}"/>
+		<copy file="${library.jar}" todir="${dist}"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+	</target>
+</project>
