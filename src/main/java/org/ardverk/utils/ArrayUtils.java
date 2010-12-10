@@ -572,6 +572,48 @@ public class ArrayUtils {
     }
     
     /**
+     * Returns {@code true} if the given element is in the array.
+     */
+    public static boolean contains(Object element, Object[] elements) {
+        return contains(element, elements, 0, elements.length);
+    }
+    
+    /**
+     * Returns {@code true} if the given element is in the array.
+     */
+    public static boolean contains(Object element, Object[] elements, 
+            int offset, int length) {
+        return indexOf(element, elements, offset, length) != -1;
+    }
+    
+    /**
+     * Returns the element's index in the given array or -1
+     * if the array doesn't contain the given element.
+     */
+    public static int indexOf(Object element, Object[] elements) {
+        return indexOf(element, elements, 0, elements.length);
+    }
+    
+    /**
+     * Returns the element's index in the given array or -1
+     * if the array doesn't contain the given element.
+     */
+    public static int indexOf(Object element, Object[] elements, 
+            int offset, int length) {
+        
+        checkBounds(elements, offset, length);
+        
+        for (int i = 0; i < length; i++) {
+            int index = offset + i;
+            Object other = elements[index];
+            if (element == other || element.equals(other)) {
+                return index;
+            }
+        }
+        return -1;
+    }
+    
+    /**
      * Checks if the array's bounds are correct.
      */
     private static void checkBounds(Object values, int offset, int length) {
