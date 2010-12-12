@@ -26,6 +26,7 @@ import java.net.SocketAddress;
 import java.util.Arrays;
 
 import org.ardverk.io.Writable;
+import org.ardverk.lang.Bytes;
 import org.ardverk.utils.ByteArrayComparator;
 
 /**
@@ -40,7 +41,7 @@ public class NetworkMask implements Comparable<NetworkMask>,
      * A {@link NetworkMask} that does nothing
      */
     public static final NetworkMask NOP 
-        = new NetworkMask(new byte[0]);
+        = new NetworkMask(Bytes.EMPTY);
     
     /**
      * A {@link NetworkMask} for a Class-A network
