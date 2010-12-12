@@ -171,4 +171,45 @@ public class IoUtils {
         }
         return success;
     }
+    
+    /**
+     * Unbinds the given {@link Bindable}.
+     */
+    public static boolean unbind(Bindable<?> bindable) {
+        if (bindable != null) {
+            try {
+                bindable.unbind();
+                return true;
+            } catch (IOException err) {
+                ExceptionUtils.exceptionCaught(err);
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Unbinds the given array of {@link Bindable}s.
+     */
+    public static boolean unbindAll(Bindable<?>... bindables) {
+        boolean success = true;
+        if (bindables != null) {
+            for (Bindable<?> c : bindables) {
+                success &= unbind(c);
+            }
+        }
+        return success;
+    }
+    
+    /**
+     * Unbinds the given {@link Iterable} of {@link Bindable}s
+     */
+    public static boolean unbindAll(Iterable<? extends Bindable<?>> bindables) {
+        boolean success = true;
+        if (bindables != null) {
+            for (Bindable<?> c : bindables) {
+                success &= unbind(c);
+            }
+        }
+        return success;
+    }
 }
