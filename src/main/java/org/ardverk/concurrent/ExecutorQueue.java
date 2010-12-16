@@ -16,15 +16,13 @@
 
 package org.ardverk.concurrent;
 
-import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * An {@link ExecutorQueue} is a special purpose {@link Executor}
  */
-public interface ExecutorQueue<T extends Runnable> {
+public interface ExecutorQueue<T extends Runnable> extends Shutdownable<T> {
 
     /**
      * Returns the {@link ExecutorQueue}'s {@link Executor}.
@@ -45,35 +43,6 @@ public interface ExecutorQueue<T extends Runnable> {
      * Returns true if the {@link ExecutorQueue} is empty.
      */
     public boolean isEmpty();
-    
-    /**
-     * Returns true if the {@link ExecutorQueue} is shutdown.
-     */
-    public boolean isShutdown();
-    
-    /**
-     * Returns true if the {@link ExecutorQueue} is terminated.
-     */
-    public boolean isTerminated();
-    
-    /**
-     * Shuts down the {@link ExecutorQueue}. Queued tasks continue to 
-     * be executed but no new tasks will be accepted.
-     */
-    public void shutdown();
-    
-    /**
-     * Shuts down the {@link ExecutorQueue}, clears the queue and returns
-     * all tasks that were in the queue.
-     */
-    public List<T> shutdownNow();
-    
-    /**
-     * Waits for the {@link ExecutorQueue} to terminate. Returns true if 
-     * the {@link ExecutorQueue} is terminated and false if it isn't.
-     */
-    public boolean awaitTermination(long timeout, TimeUnit unit) 
-            throws InterruptedException;
     
     /**
      * Executes the given task.

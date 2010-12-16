@@ -27,7 +27,8 @@ import java.util.concurrent.ExecutorService;
  * @see AsyncExecutor
  * @see ExecutorService
  */
-public interface AsyncExecutorService extends AsyncExecutor, ExecutorService {
+public interface AsyncExecutorService extends AsyncExecutor, 
+        ExecutorService, Shutdownable<Runnable> {
     
     /*
      * Overridden to return an AsyncFuture
