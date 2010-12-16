@@ -22,11 +22,59 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-import org.ardverk.lang.NullArgumentException;
-
 public class NetworkUtils {
 
     private NetworkUtils() {}
+    
+    /**
+     * Creates and returns an unresolved {@link InetSocketAddress}.
+     * 
+     * @see InetSocketAddress#createUnresolved(String, int).
+     */
+    public static InetSocketAddress createUnresolved(String host, int port) {
+        return InetSocketAddress.createUnresolved(host, port);
+    }
+    
+    /**
+     * Creates and returns a resolved {@link InetSocketAddress}.
+     */
+    public static InetSocketAddress createResolved(String host, int port) {
+        return new InetSocketAddress(host, port);
+    }
+    
+    /**
+     * Creates and returns a resolved {@link InetSocketAddress}.
+     */
+    public static InetSocketAddress createResolved(InetAddress address, int port) {
+        return new InetSocketAddress(address, port);
+    }
+    
+    /**
+     * Resolves (if necessary) the given {@link SocketAddress} and returns it.
+     */
+    public static InetSocketAddress getResolved(SocketAddress address) {
+        InetSocketAddress isa = (InetSocketAddress)address;
+        if (isa.isUnresolved()) {
+            return new InetSocketAddress(isa.getHostName(), isa.getPort());
+        }
+        
+        return isa;
+    }
+    
+    /**
+     * An utility method to get the {@link InetAddress} from the
+     * {@link SocketAddress}.
+     */
+    public static InetAddress getAddress(SocketAddress address) {
+        return getResolved(address).getAddress();
+    }
+    
+    /**
+     * An utility method to get the {@link InetSocketAddress#getHostName()}.
+     */
+    public static String getHostName(SocketAddress address) {
+        return ((InetSocketAddress)address).getHostName();
+    }
     
     /**
      * Returns the port number.
@@ -36,31 +84,37 @@ public class NetworkUtils {
     }
     
     /**
-     * Returns true if both {@link SocketAddress}es have the same {@link InetAddress}
+     * Returns {@code true} if the given {@link SocketAddress} is unresolved.
      */
-    public static boolean isSameAddress(SocketAddress a1, SocketAddress a2) {
-        if (a1 == null) {
-            throw new NullArgumentException("address1");
-        }
-        
-        if (a2 == null) {
-            throw new NullArgumentException("address2");
-        }
-        
-        return ((InetSocketAddress)a1).getAddress().equals(
-                ((InetSocketAddress)a2).getAddress());
+    public static boolean isUnresolved(SocketAddress address) {
+        return ((InetSocketAddress)address).isUnresolved();
     }
     
     /**
-     * Returns true if the given port is valid. A valid (usable) port number
-     * must be greater than zero and less than 0xFFFF.
+     * Returns {@code true} if both {@link SocketAddress}es have 
+     * the same {@link InetAddress}
+     */
+    public static boolean isSameAddress(SocketAddress a1, SocketAddress a2) {
+        if (isUnresolved(a1) && isUnresolved(a2)) {
+            if (getHostName(a1).equals(getHostName(a2))) {
+                return true;
+            }
+        }
+        
+        return getResolved(a1).getAddress().equals(
+                getResolved(a2).getAddress());
+    }
+    
+    /**
+     * Returns {@code true} if the given port is valid. A valid (usable) 
+     * port number must be greater than zero and less than 0xFFFF.
      */
     public static boolean isValidPort(int port) {
         return PortRange.isUsable(port);
     }
     
     /**
-     * Returns true if the given {@link SocketAddress} has a valid port 
+     * Returns {@code true} if the given {@link SocketAddress} has a valid port 
      * number. A valid (usable) port number must be greater than zero and 
      * less than 0xFFFF.
      */
@@ -69,7 +123,15 @@ public class NetworkUtils {
     }
     
     /**
-     * Returns true if the given {@link InetAddress} is a non-publicly
+     * Returns {@code true} if the given {@link SocketAddress} is a 
+     * non-publicly routable IP-Address. 
+     */
+    public static boolean isPrivateAddress(SocketAddress address) {
+        return isPrivateAddress(getAddress(address));
+    }
+    
+    /**
+     * Returns {@code true} if the given {@link InetAddress} is a non-publicly
      * routable IP-Address. 
      */
     public static boolean isPrivateAddress(InetAddress address) {
@@ -77,7 +139,7 @@ public class NetworkUtils {
     }
     
     /**
-     * Returns true if the given address is a non-publicly
+     * Returns {@code true} if the given address is a non-publicly
      * routable IP-Address. 
      */
     public static boolean isPrivateAddress(byte[] address) {
@@ -302,17 +364,5 @@ public class NetworkUtils {
         }
         
         return false;  
-    }
-
-    /**
-     * An utility method to get the {@link InetAddress} from the
-     * {@link SocketAddress}.
-     */
-    public static InetAddress getAddress(SocketAddress address) {
-        if (address == null) {
-            return null;
-        }
-        
-        return ((InetSocketAddress)address).getAddress();
     }
 }
