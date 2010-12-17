@@ -16,6 +16,8 @@
 
 package org.ardverk.concurrent;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.SynchronousQueue;
@@ -130,5 +132,46 @@ public class ExecutorUtils {
      */
     public static ThreadFactory defaultThreadFactory(String name) {
         return new DefaultThreadFactory(name);
+    }
+    
+    /**
+     * Tries to shutdown the given {@link Executor}.
+     */
+    public static boolean shutdown(Executor executor) {
+        if (executor != null) {
+            if (executor instanceof ExecutorService) {
+                ((ExecutorService)executor).shutdown();
+            } else if (executor instanceof Shutdownable<?>) {
+                ((Shutdownable<?>)executor).shutdown();
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * Tries to shutdown the given {@link Executor}s.
+     */
+    public static boolean shutdownAll(Executor... executors) {
+        boolean success = true;
+        if (executors != null) {
+            for (Executor executor : executors) {
+                success &= shutdown(executor);
+            }
+        }
+        return success;
+    }
+    
+    /**
+     * Tries to shutdown the given {@link Executor}s.
+     */
+    public static boolean shutdownAll(Iterable<? extends Executor> executors) {
+        boolean success = true;
+        if (executors != null) {
+            for (Executor executor : executors) {
+                success &= shutdown(executor);
+            }
+        }
+        return success;
     }
 }
