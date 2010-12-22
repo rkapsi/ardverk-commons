@@ -33,7 +33,8 @@ import org.ardverk.lang.NullArgumentException;
 import org.ardverk.utils.ByteArrayComparator;
 
 /**
- * A counter for Networks.
+ * A special purpose counter that counts {@link InetAddress}es 
+ * by their network class.
  */
 public class NetworkCounter implements Serializable {
     
@@ -131,11 +132,14 @@ public class NetworkCounter implements Serializable {
      */
     private synchronized int removeKey(byte[] key) {
         AtomicInteger value = map.get(key);
-        if (value != null && value.decrementAndGet() <= 0) {
-            map.remove(key);
-            return 0;
+        if (value != null) {
+            int current = value.decrementAndGet();
+            if (current == 0) {
+                map.remove(key);
+            }
+            return current;
         }
-        return value.get();
+        return 0;
     }
     
     /**
