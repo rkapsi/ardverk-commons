@@ -29,14 +29,36 @@ import javax.swing.SwingUtilities;
  */
 public abstract class AsyncSwingFutureListener<V> implements AsyncFutureListener<V> {
 
+    private final boolean ivokeLater;
+    
+    /**
+     * Creates an {@link AsyncSwingFutureListener}.
+     * 
+     * @see SwingUtilities#invokeLater(Runnable)
+     */
+    public AsyncSwingFutureListener() {
+        this(true);
+    }
+    
+    /**
+     * Creates an {@link AsyncSwingFutureListener}.
+     */
+    public AsyncSwingFutureListener(boolean invokeLater) {
+        this.ivokeLater = invokeLater;
+    }
+    
     @Override
     public final void operationComplete(final AsyncFuture<V> future) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                operationCompleteEDT(future);
-            }
-        });
+        if (!ivokeLater && SwingUtilities.isEventDispatchThread()) {
+            operationCompleteEDT(future);
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    operationCompleteEDT(future);
+                }
+            });
+        }
     }
     
     /**

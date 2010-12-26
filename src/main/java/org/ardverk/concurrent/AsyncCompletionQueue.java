@@ -34,7 +34,7 @@ import org.ardverk.lang.Arguments;
  */
 public class AsyncCompletionQueue<V> implements AsyncFutureListenerService<V>, Closeable {
     
-    private final AsyncFutureListener<V> completionListener 
+    private final AsyncFutureListener<V> listener 
             = new AsyncFutureListener<V>() {
         @Override
         public void operationComplete(AsyncFuture<V> future) {
@@ -61,19 +61,25 @@ public class AsyncCompletionQueue<V> implements AsyncFutureListenerService<V>, C
         notifyAll();
     }
     
+    
     /**
-     * 
+     * Cancels all {@link AsyncFuture}s and returns the number of tasks
+     * that were successfully cancelled.
      */
     public synchronized int cancelAll(boolean mayInterruptIfRunning) {
+        int count = 0;
         for (AsyncFuture<V> future : futures) {
-            future.cancel(mayInterruptIfRunning);
+            boolean success = future.cancel(mayInterruptIfRunning);
+            if (success) {
+                ++count;
+            }
         }
         
-        return futures.size();
+        return count;
     }
     
     /**
-     * 
+     * Offers the given {@link AsyncFuture} to the given {@link AsyncCompletionQueue}.
      */
     public synchronized boolean offer(AsyncFuture<V> future) 
             throws RejectedExecutionException {
@@ -84,30 +90,40 @@ public class AsyncCompletionQueue<V> implements AsyncFutureListenerService<V>, C
         
         boolean success = futures.add(future);
         if (success) {
-            future.addAsyncFutureListener(completionListener);
+            future.addAsyncFutureListener(listener);
         }
         return success;
     }
     
     /**
-     * 
+     * A callback method. This method is called for each {@link AsyncFuture}
+     * that was offered through the {@link #offer(AsyncFuture)} method and
+     * completed.
      */
     private synchronized void operationComplete(AsyncFuture<V> future) {
         boolean success = futures.remove(future);
         if (success) {
-            future.removeAsyncFutureListener(completionListener);
+            future.removeAsyncFutureListener(listener);
             
-            for (AsyncFutureListener<V> listener : listeners) {
-                listener.operationComplete(future);
+            try {
+                
+                if (futures.isEmpty()) {
+                    complete();
+                }
+                
+                for (AsyncFutureListener<V> listener : listeners) {
+                    listener.operationComplete(future);
+                }
+            } finally {
+                complete.add(future);
+                notifyAll();
             }
-            
-            complete.add(future);
-            notifyAll();
         }
     }
     
     /**
-     * 
+     * Removes and returns the next completed {@link AsyncFuture} from 
+     * the {@link AsyncCompletionQueue}.
      */
     public synchronized AsyncFuture<V> take() throws InterruptedException {
         while (open && complete.isEmpty()) {
@@ -122,7 +138,8 @@ public class AsyncCompletionQueue<V> implements AsyncFutureListenerService<V>, C
     }
 
     /**
-     * 
+     * Removes and returns the next completed {@link AsyncFuture} from 
+     * the {@link AsyncCompletionQueue}.
      */
     public synchronized AsyncFuture<V> poll() {
         if (!complete.isEmpty()) {
@@ -132,7 +149,8 @@ public class AsyncCompletionQueue<V> implements AsyncFutureListenerService<V>, C
     }
 
     /**
-     * 
+     * Removes and returns the next completed {@link AsyncFuture} from 
+     * the {@link AsyncCompletionQueue}.
      */
     public synchronized AsyncFuture<V> poll(long timeout, TimeUnit unit) 
             throws InterruptedException {
@@ -157,5 +175,14 @@ public class AsyncCompletionQueue<V> implements AsyncFutureListenerService<V>, C
     @Override
     public AsyncFutureListener<V>[] getAsyncFutureListeners() {
         return listeners.toArray(new AsyncFutureListener[0]);
+    }
+    
+    /**
+     * Called if all offered {@link AsyncFuture}s have completed.
+     * 
+     * NOTE: In order to make this work you must hold a lock on the
+     * {@link AsyncCompletionQueue} while adding all {@link AsyncFuture}s.
+     */
+    protected void complete() {
     }
 }

@@ -21,6 +21,9 @@ import java.util.concurrent.Executor;
 
 import org.ardverk.lang.Arguments;
 
+/**
+ * An abstract implementation of {@link ExecutorQueue}.
+ */
 abstract class AbstractExecutorQueue<T extends Runnable> implements ExecutorQueue<T> {
 
     protected final Executor executor;
