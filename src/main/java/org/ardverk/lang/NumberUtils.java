@@ -42,21 +42,21 @@ public class NumberUtils {
     }
     
     /**
-     * 
+     * Returns the {@code boolean} value of the given {@link Object}.
      */
     public static boolean getBoolean(Object value) {
         return getBoolean(value, false, false);
     }
     
     /**
-     * 
+     * Returns the {@code boolean} value of the given {@link Object}.
      */
     public static boolean getBoolean(Object value, boolean defaultValue) {
         return getBoolean(value, defaultValue, true);
     }
     
     /**
-     * 
+     * Returns the {@code boolean} value of the given {@link Object}.
      */
     private static boolean getBoolean(Object value, 
             boolean defaultValue, boolean hasDefault) {
@@ -75,21 +75,21 @@ public class NumberUtils {
     }
     
     /**
-     * 
+     * Returns the {@code int} value of the given {@link Object}.
      */
     public static int getInteger(Object value) {
         return getInteger(value, -1, false);
     }
     
     /**
-     * 
+     * Returns the {@code int} value of the given {@link Object}.
      */
     public static int getInteger(Object value, int defaultValue) {
         return getInteger(value, defaultValue, true);
     }
     
     /**
-     * 
+     * Returns the {@code int} value of the given {@link Object}.
      */
     private static int getInteger(Object value, 
             int defaultValue, boolean hasDefault) {
@@ -106,21 +106,21 @@ public class NumberUtils {
     }
     
     /**
-     * 
+     * Returns the {@code float} value of the given {@link Object}.
      */
     public static float getFloat(Object value) {
         return getFloat(value, Float.NaN, false);
     }
     
     /**
-     * 
+     * Returns the {@code float} value of the given {@link Object}.
      */
     public static float getFloat(Object value, float defaultValue) {
         return getFloat(value, defaultValue, true);
     }
     
     /**
-     * 
+     * Returns the {@code float} value of the given {@link Object}.
      */
     private static float getFloat(Object value, 
             float defaultValue, boolean hasDefault) {
@@ -137,21 +137,21 @@ public class NumberUtils {
     }
     
     /**
-     * 
+     * Returns the {@code double} value of the given {@link Object}.
      */
     public static double getDouble(Object value) {
         return getDouble(value, Double.NaN, false);
     }
     
     /**
-     * 
+     * Returns the {@code double} value of the given {@link Object}.
      */
     public static double getDouble(Object value, double defaultValue) {
         return getDouble(value, defaultValue, true);
     }
     
     /**
-     * 
+     * Returns the {@code double} value of the given {@link Object}.
      */
     private static double getDouble(Object value, 
             double defaultValue, boolean hasDefault) {
