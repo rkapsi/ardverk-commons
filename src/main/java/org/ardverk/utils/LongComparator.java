@@ -19,6 +19,8 @@ package org.ardverk.utils;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.ardverk.lang.Longs;
+
 /**
  * A {@link Comparator} for long values.
  */
@@ -30,18 +32,6 @@ public class LongComparator implements Comparator<Long>, Serializable {
     
     @Override
     public int compare(Long o1, Long o2) {
-        return compare(o1.longValue(), o2.longValue());
-    }
-    
-    /**
-     * Compares the given long values.
-     */
-    public static int compare(long l1, long l2) {
-        if (l1 < l2) {
-            return -1;
-        } else if (l2 < l1) {
-            return 1;
-        }
-        return 0;
+        return Longs.compare(o1.longValue(), o2.longValue());
     }
 }

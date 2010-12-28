@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.ardverk.utils.LongComparator;
 
 /**
  * A {@link TimeStamp} is a relative point in the JVM's time. It's based on
@@ -86,7 +85,7 @@ public class TimeStamp implements Epoch, Age, Comparable<TimeStamp>, Serializabl
     
     @Override
     public int compareTo(TimeStamp other) {
-        return LongComparator.compare(timeStamp, other.timeStamp);
+        return Longs.compare(timeStamp, other.timeStamp);
     }
     
     @Override

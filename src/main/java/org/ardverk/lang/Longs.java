@@ -18,25 +18,20 @@ package org.ardverk.lang;
 
 import java.util.Comparator;
 
-public class Bytes {
-
-    /**
-     * An empty byte array.
-     */
-    public static final byte[] EMPTY = new byte[0];
-
-    private Bytes() {}
+public class Longs {
     
+    private Longs() {}
+
     /**
-     * Compares the given byte values.
+     * Compares the given long values.
      * 
      * @see Comparable
      * @see Comparator
      */
-    public static int compare(byte b1, byte b2) {
-        if (b1 < b2) {
+    public static int compare(long l1, long l2) {
+        if (l1 < l2) {
             return -1;
-        } else if (b2 < b1) {
+        } else if (l2 < l1) {
             return 1;
         }
         return 0;
