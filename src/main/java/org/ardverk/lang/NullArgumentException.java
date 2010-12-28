@@ -16,6 +16,10 @@
 
 package org.ardverk.lang;
 
+/**
+ * The {@link NullArgumentException} is thrown if a constructor or method
+ * argument is {@code null}.
+ */
 public class NullArgumentException extends NullPointerException {
     
     private static final long serialVersionUID = 8784890523282411156L;

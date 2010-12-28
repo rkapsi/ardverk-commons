@@ -21,14 +21,14 @@ import java.util.Comparator;
 public class Bytes {
 
     /**
-     * An empty byte array.
+     * An empty {@code byte} array.
      */
     public static final byte[] EMPTY = new byte[0];
 
     private Bytes() {}
     
     /**
-     * Compares the given byte values.
+     * Compares the given {@code byte} values.
      * 
      * @see Comparable
      * @see Comparator
@@ -40,5 +40,15 @@ public class Bytes {
             return 1;
         }
         return 0;
+    }
+    
+    /**
+     * Compares the given {@code byte}s as unsigned values.
+     * 
+     * @see Comparable
+     * @see Comparator
+     */
+    public static int compareUnsigned(byte b1, byte b2) {
+        return (int)(b1 & 0xFF) - (int)(b2 & 0xFF);
     }
 }

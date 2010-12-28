@@ -19,6 +19,8 @@ package org.ardverk.utils;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import org.ardverk.lang.Bytes;
+
 /**
  * A {@link Comparator} for byte-arrays.
  */
@@ -35,7 +37,7 @@ public class ByteArrayComparator implements Comparator<byte[]>, Serializable {
         }
         
         for (int i = 0; i < o1.length; i++) {
-            int diff = (o1[i] & 0xFF) - (o2[i] & 0xFF);
+            int diff = Bytes.compareUnsigned(o1[i], o2[i]);
             if (diff != 0) {
                 return diff;
             }

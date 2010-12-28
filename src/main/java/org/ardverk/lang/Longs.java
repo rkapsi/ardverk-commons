@@ -23,7 +23,7 @@ public class Longs {
     private Longs() {}
 
     /**
-     * Compares the given long values.
+     * Compares the given {@code long} values.
      * 
      * @see Comparable
      * @see Comparator
