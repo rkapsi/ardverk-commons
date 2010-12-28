@@ -20,28 +20,60 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-
 /**
- * A {@link TimeStamp} is a relative point in the JVM's time. It's based on
- * {@link System#nanoTime()} and like nano time it's only good for measuring 
- * elapsed time. It's not related to any other notion of system or wall-clock 
- * time.
+ * The {@link TimeStamp} represents a point in time. It's main purpose is to 
+ * provide methods to measure elapsed time and fix various problems we're 
+ * seeing with {@link System#currentTimeMillis()} and {@link System#nanoTime()}.
+ * 
+ * <p><ol>
+ * <li>The system time as returned by {@link System#currentTimeMillis()} may 
+ * jump back and forth if the user or a system such as the Network Time Protocol
+ * (NTP) messes with the computer's clock.
+ * 
+ * <li>The time as returned by {@link System#nanoTime()} is prone to race 
+ * conditions because modern multi-core CPUs may have a high precision clock 
+ * for each core and they're not 100% in-sync with each other.
+ * </ol>
+ * 
+ * I'm not sure if the first issue is immune to the second problem and both 
+ * issues may lead to negative time measurements which is something that we're 
+ * usually not expecting at all when working time. The following two examples 
+ * demonstrate the problems.
+ * 
+ * <pre>
+ * long startTime = System.currentTimeMillis();
+ * // Do something and the computer's clock changes in the mean time
+ * long elapsedTime = System.currentTimeMillis() - startTime;
+ * assert (elapsedTime >= 0L);
+ * </pre>
+ * 
+ * <pre>
+ * final long startTime = System.nanoTime();
+ * new Thread(new Runnable() {
+ *      @Override
+ *      public void run() {
+ *          // Do something and this is hopefully running on a different
+ *          // CPU core than the one that captured the startTime.
+ *          long elapsedTime = System.nanoTime() - startTime;
+ *          assert (elapsedTime >= 0L);
+ *      }
+ * }).start();
+ * </pre>
+ * 
+ * We fix the problem by ignoring it and letting {@link #getAge(TimeUnit)}
+ * always return a non-negative value. The returned value is maybe inaccurate
+ * but it's at least not negative.
  */
 public class TimeStamp implements Epoch, Age, Comparable<TimeStamp>, Serializable {
     
     private static final long serialVersionUID = -981788126324372167L;
 
     /**
-     * The initial system time (UTC). We use/need it to terminate the 
-     * {@link TimeStamp}'s creation time.
+     * Weather not {@link #getAge(TimeUnit)} will return the absolute time.
+     * 
+     * @see Math#abs(long)
      */
-    private static final long INIT_SYSTEM_TIME = System.currentTimeMillis();
-    
-    /**
-     * The initial JVM time. We use/need it to terminate the {@link TimeStamp}'s
-     * creation time.
-     */
-    private static final long INIT_TIME_STAMP = System.nanoTime();
+    private static final boolean ABSOLUTE = true;
     
     /**
      * Creates and returns a {@link TimeStamp}.
@@ -50,42 +82,19 @@ public class TimeStamp implements Epoch, Age, Comparable<TimeStamp>, Serializabl
         return new TimeStamp();
     }
     
-    /**
-     * The JVM time when this {@link TimeStamp} was created. We must store it
-     * as a relative value to enable serialization because the time as returned
-     * by {@link System#nanoTime()} is some fixed but arbitrary time.
-     */
-    private final long timeStamp = System.nanoTime() - INIT_TIME_STAMP;
+    private final long timeStamp = System.currentTimeMillis();
     
     private TimeStamp() {}
     
-    /**
-     * Returns the {@link TimeStamp}'s value
-     * 
-     * @see System#nanoTime()
-     */
-    public long getTimeStamp() {
-        return INIT_TIME_STAMP + timeStamp;
-    }
-    
     @Override
     public long getCreationTime() {
-        return INIT_SYSTEM_TIME + TimeUnit.NANOSECONDS.toMillis(timeStamp);
-    }
-    
-    /**
-     * Returns the {@link TimeStamp}'s age in nanoseconds.
-     * 
-     * <p>NOTE: This is the internal/native representation of the
-     * {@link TimeStamp}'s age.
-     */
-    public long getAgeInNanos() {
-        return System.nanoTime() - getTimeStamp();
+        return timeStamp;
     }
     
     @Override
     public long getAge(TimeUnit unit) {
-        return unit.convert(getAgeInNanos(), TimeUnit.NANOSECONDS);
+        long time = System.currentTimeMillis() - timeStamp;
+        return unit.convert(check(time), TimeUnit.MILLISECONDS);
     }
     
     @Override
@@ -121,5 +130,13 @@ public class TimeStamp implements Epoch, Age, Comparable<TimeStamp>, Serializabl
         buffer.append("Creation Time: ").append(new Date(getCreationTime()))
             .append(", Age=").append(getAgeInMillis()).append("ms");
         return buffer.toString();
+    }
+    
+    /**
+     * Checks if {@link #ABSOLUTE} is {@code true} and returns the 
+     * {@link Math#abs(long)} value of the given argument.
+     */
+    private static long check(long value) {
+        return ABSOLUTE ? Math.abs(value) : value;
     }
 }
