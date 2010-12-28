@@ -27,11 +27,7 @@ public class Arguments {
      * Makes sure the given argument is not {@code null}.
      */
     public static <T> T notNull(T t, String message) {
-        if (t == null) {
-            throw new NullArgumentException(message);
-        }
-        
-        return t;
+        return NullArgumentException.notNull(t, message);
     }
     
     /**
