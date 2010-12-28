@@ -73,9 +73,19 @@ public class TimeStamp implements Epoch, Age, Comparable<TimeStamp>, Serializabl
         return INIT_SYSTEM_TIME + TimeUnit.NANOSECONDS.toMillis(timeStamp);
     }
     
+    /**
+     * Returns the {@link TimeStamp}'s age in nanoseconds.
+     * 
+     * <p>NOTE: This is the internal/native representation of the
+     * {@link TimeStamp}'s age.
+     */
+    public long getAgeInNanos() {
+        return System.nanoTime() - getTimeStamp();
+    }
+    
     @Override
     public long getAge(TimeUnit unit) {
-        return unit.convert(System.nanoTime() - getTimeStamp(), TimeUnit.NANOSECONDS);
+        return unit.convert(getAgeInNanos(), TimeUnit.NANOSECONDS);
     }
     
     @Override
