@@ -22,7 +22,6 @@ import java.nio.ByteBuffer;
 
 import org.ardverk.collection.FixedSizeHashSet;
 import org.ardverk.lang.NullArgumentException;
-import org.ardverk.net.NetworkMask;
 
 /**
  * The {@link AddressTracker} helps us to determinate our external/public 
@@ -71,6 +70,23 @@ public class AddressTracker {
         this.current = address;
         this.mask = mask;
         this.history = new FixedSizeHashSet<ByteBuffer>(count);
+    }
+    
+    /**
+     * Sets the current {@link InetAddress}.
+     */
+    public synchronized void set(SocketAddress address) {
+        set(NetworkUtils.getAddress(address));
+    }
+    
+    /**
+     * Sets the current {@link InetAddress}.
+     */
+    public synchronized void set(InetAddress address) {
+        this.current = address;
+        
+        temporary = null;
+        history.clear();
     }
     
     /**
@@ -146,7 +162,7 @@ public class AddressTracker {
     }
     
     /**
-     * Returns the current {@link InetAddress} or null if it's 
+     * Returns the current {@link InetAddress} or {@code null} if it's 
      * not known yet.
      */
     public synchronized InetAddress get() {
