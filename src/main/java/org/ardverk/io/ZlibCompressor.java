@@ -23,7 +23,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 import java.util.zip.InflaterOutputStream;
 
-import org.ardverk.lang.NumberUtils;
+import org.ardverk.lang.MathUtils;
 
 /**
  * An implementation of {@link Compressor} that uses Java's 
@@ -45,7 +45,7 @@ public class ZlibCompressor extends AbstractCompressor {
         OutputStream out = null;
         
         try {
-            baos = new ByteArrayOutputStream(NumberUtils.nextPowOfTwo(length));
+            baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(length));
             out = new DeflaterOutputStream(baos);   
             out.write(value, offset, length);
         } finally {
@@ -61,7 +61,7 @@ public class ZlibCompressor extends AbstractCompressor {
         ByteArrayOutputStream baos = null;
         OutputStream out = null;
         try {
-            baos = new ByteArrayOutputStream(NumberUtils.nextPowOfTwo(2 * length));
+            baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(2 * length));
             out = new InflaterOutputStream(baos);
             out.write(value, offset, length);
         } finally {
