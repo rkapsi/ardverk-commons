@@ -25,7 +25,7 @@ import java.util.zip.CRC32;
  * 
  * <p>NOTE: A {@link CRC32} is not a cryptographic hash!
  */
-public class MessageDigestCRC32 extends MessageDigest {
+public class MessageDigestCRC32 extends MessageDigest implements Hash {
 
     /**
      * The name of the algorithm.
@@ -72,5 +72,15 @@ public class MessageDigestCRC32 extends MessageDigest {
     @Override
     protected void engineUpdate(byte[] input, int offset, int len) {
         crc.update(input, offset, len);
+    }
+
+    @Override
+    public int getLength() {
+        return getDigestLength();
+    }
+
+    @Override
+    public byte[] doFinal() {
+        return digest();
     }
 }
