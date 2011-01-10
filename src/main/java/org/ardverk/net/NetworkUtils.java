@@ -365,4 +365,25 @@ public class NetworkUtils {
         
         return false;  
     }
+    
+    /**
+     * Returns the given {@link SocketAddress} as a {@code byte[]}.
+     */
+    public static byte[] toBytes(SocketAddress address) {
+        return toBytes(getAddress(address), getPort(address));
+    }
+    
+    /**
+     * Returns the given {@link InetAddress} and port as a {@code byte[]}.
+     */
+    public static byte[] toBytes(InetAddress address, int port) {
+        byte[] addr = address.getAddress();
+        byte[] dst = new byte[addr.length + 2];
+        
+        System.arraycopy(addr, 0, dst, 0, addr.length);
+        dst[dst.length-2] = (byte)((port >> 8) & 0xFF);
+        dst[dst.length-1] = (byte)((port     ) & 0xFF);
+        
+        return dst;
+    }
 }
