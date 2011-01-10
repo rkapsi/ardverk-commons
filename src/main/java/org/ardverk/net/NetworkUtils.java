@@ -50,6 +50,18 @@ public class NetworkUtils {
     }
     
     /**
+     * Creates and returns an {@link InetSocketAddress} where the IP-address
+     * is the wildcard address and the port number is the specified value.
+     */
+    public static InetSocketAddress createAny(int port) {
+        if (!isValidPort(port)) {
+            throw new IllegalArgumentException("port=" + port);
+        }
+        
+        return new InetSocketAddress(port);
+    }
+    
+    /**
      * Resolves (if necessary) the given {@link SocketAddress} and returns it.
      */
     public static InetSocketAddress getResolved(SocketAddress address) {
