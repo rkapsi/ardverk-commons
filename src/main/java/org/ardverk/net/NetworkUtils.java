@@ -119,7 +119,7 @@ public class NetworkUtils {
      * less than 0xFFFF.
      */
     public static boolean isValidPort(SocketAddress address) {
-        return isValidPort(((InetSocketAddress)address).getPort());
+        return isValidPort(getPort(address));
     }
     
     /**
