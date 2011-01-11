@@ -37,13 +37,17 @@ public class DefaultSecurityToken extends AbstractSecurityToken implements Close
     
     private static final Random RANDOM = SecurityUtils.createSecureRandom();
     
+    private final Object messageDigestLock = new Object();
+    
     private final MessageDigest messageDigest;
     
     private final ScheduledFuture<?> future;
     
-    private volatile byte[] current = null;
+    private final Object keyLock = new Object();
     
-    private volatile byte[] previous = null;
+    private byte[] current = null;
+    
+    private byte[] previous = null;
     
     public DefaultSecurityToken(MessageDigest messageDigest, 
             long frequency, TimeUnit unit) {
@@ -65,7 +69,7 @@ public class DefaultSecurityToken extends AbstractSecurityToken implements Close
             Runnable task = new Runnable() {
                 @Override
                 public void run() {
-                    synchronized (DefaultSecurityToken.this) {
+                    synchronized (keyLock) {
                         previous = current;
                         
                         // Create a new byte[] of the same length
@@ -89,17 +93,26 @@ public class DefaultSecurityToken extends AbstractSecurityToken implements Close
     
     @Override
     public byte[] create(byte[] data, int offset, int length) {
+        
+        byte[] current = null;
+        synchronized (keyLock) {
+            current = this.current;
+        }
+        
         return create(current, data, offset, length);
     }
     
-    private synchronized byte[] create(byte[] key, byte[] data, 
+    private byte[] create(byte[] key, byte[] data, 
             int offset, int length) {
-        messageDigest.reset();
         
-        messageDigest.update(key);
-        messageDigest.update(data, offset, length);
-        
-        return messageDigest.digest();
+        synchronized (messageDigestLock) {
+            messageDigest.reset();
+            
+            messageDigest.update(key);
+            messageDigest.update(data, offset, length);
+            
+            return messageDigest.digest();
+        }
     }
     
     @Override
@@ -109,7 +122,7 @@ public class DefaultSecurityToken extends AbstractSecurityToken implements Close
         byte[] current = null;
         byte[] previous = null;
         
-        synchronized (this) {
+        synchronized (keyLock) {
             current = this.current;
             previous = this.previous;
         }
