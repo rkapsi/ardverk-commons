@@ -19,15 +19,14 @@ package org.ardverk.concurrent;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.ardverk.concurrent.AsyncProcess.Delay;
 
 /**
- * A cancellable asynchronous computation. This class provides a base
- * implementation of {@link AsyncFuture}, with methods to start and 
- * cancel a computation, query to see if the computation is complete, 
- * and retrieve the result of the computation.
+ * A {@link Cancellable} asynchronous computation. This class provides a 
+ * base implementation of {@link AsyncFuture}, with methods to start and 
+ * cancel a computation, query to see if the computation is complete, and 
+ * retrieve the result of the computation.
  * 
  * @see AsyncFutureTask
  */
@@ -41,7 +40,7 @@ public class AsyncProcessFutureTask<V> extends AsyncFutureTask<V>
             = new AsyncProcess<Object>() {        
         @Override
         public void start(AsyncProcessFuture<Object> future) {
-            throw new IllegalStateException();
+            throw new IllegalStateException("Overwrite #start() or provide an AsyncProcess");
         }
     };
     
@@ -142,10 +141,10 @@ public class AsyncProcessFutureTask<V> extends AsyncFutureTask<V>
     /**
      * Called by the watchdog when a timeout occurred. The default
      * implementation will simply call {@link #setException(Throwable)}
-     * with a {@link TimeoutException}.
+     * with a {@link AsyncTimeoutException}.
      */
     protected synchronized boolean handleTimeout(long time, TimeUnit unit) {
-        return setException(new TimeoutException("Watchdog: " + time + " " + unit));
+        return setException(new AsyncTimeoutException("Watchdog", time, unit));
     }
     
     @Override
