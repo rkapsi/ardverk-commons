@@ -48,7 +48,7 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
     private List<AsyncFutureListener<V>> before = null;
     
     /**
-     * All {@link FooListener}s that were added *after* the 
+     * All {@link AsyncFutureListener}s that were added *after* the 
      * {@link FooFuture} completed.
      */
     private List<AsyncFutureListener<V>> after = null;
@@ -57,7 +57,6 @@ public class AsyncValueFuture<V> implements AsyncFuture<V> {
      * Creates an {@link AsyncValueFuture}.
      */
     public AsyncValueFuture() {
-        
     }
     
     /**
