@@ -21,6 +21,7 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.net.UnknownHostException;
 
 public class NetworkUtils {
 
@@ -397,5 +398,32 @@ public class NetworkUtils {
         dst[dst.length-1] = (byte)((port     ) & 0xFF);
         
         return dst;
+    }
+    
+    /**
+     * Creates and returns an {@link InetAddress} from the given {@code byte[]}.
+     * 
+     * @see InetAddress#getByAddress(byte[])
+     */
+    public static InetAddress getByAddress(byte[] addr) {
+        try {
+            return InetAddress.getByAddress(addr);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("UnknownHostException", e);
+        }
+    }
+    
+    /**
+     * Creates and returns an {@link InetAddress} from the given {@code byte[]}
+     * and hostname.
+     * 
+     * @see InetAddress#getByAddress(String, byte[])
+     */
+    public static InetAddress getByAddress(String host, byte[] addr) {
+        try {
+            return InetAddress.getByAddress(host, addr);
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("UnknownHostException", e);
+        }
     }
 }
