@@ -16,48 +16,27 @@
 
 package org.ardverk.concurrent;
 
-import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A simple {@link CountDown}.
  */
-public class CountDown implements Serializable {
+public class CountDown extends AtomicInteger {
     
-    private static final long serialVersionUID = 2884657259566757243L;
+    private static final long serialVersionUID = -4789846820544350132L;
 
-    private final int value;
-    
-    private final AtomicInteger countdown;
-    
-    public CountDown(int value) {
-        if (value < 0) {
-            throw new IllegalArgumentException("value=" + value);
-        }
-        
-        this.value = value;
-        this.countdown = new AtomicInteger(value);
+    public CountDown() {
     }
     
-    /**
-     * Returns the {@link CountDown}'s initial value.
-     */
-    public int getInitialValue() {
-        return value;
-    }
-    
-    /**
-     * Returns the {@link CountDown}'s current value.
-     */
-    public int getCurrentValue() {
-        return countdown.get();
+    public CountDown(int initialValue) {
+        super(initialValue);
     }
     
     /**
      * Decrements the {@link CountDown} by 1 and returns {@code true}
-     * if the {@link CountDown} has reached zero or less.
+     * if the {@link CountDown} has reached zero.
      */
     public boolean countDown() {
-        return countdown.decrementAndGet() <= 0;
+        return decrementAndGet() == 0;
     }
 }
