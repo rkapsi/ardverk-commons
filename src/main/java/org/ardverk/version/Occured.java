@@ -16,7 +16,8 @@
 
 package org.ardverk.version;
 
-public interface Version<T> {
-
-    public Occured compareTo(T other);
+public enum Occured {
+    BEFORE,
+    AFTER,
+    CONCURRENTLY;
 }

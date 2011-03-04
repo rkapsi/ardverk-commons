@@ -1,3 +1,19 @@
+/*
+ * Copyright 2010-2011 Roger Kapsi
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package org.ardverk.version;
 
 import java.io.Serializable;
@@ -11,25 +27,40 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
     
     private final Map<K, Value> map = new HashMap<K, Value>();
     
-    public synchronized int increment(K key) {
-        Value clock = map.get(key);
-        if (clock == null) {
-            clock = new Value();
-            map.put(key, clock);
+    public VectorClock() {
+    }
+    
+    public VectorClock(K key) {
+        map.put(key, new Value(1));
+    }
+    
+    public int add(K key) {
+        Value value = map.get(key);
+        if (value == null) {
+            value = new Value();
+            map.put(key, value);
         }
-        return clock.tick();
+        return value.tick();
     }
     
-    public synchronized int get(K key) {
-        Value clock = map.get(key);
-        return clock != null ? clock.get() : 0;
+    public int get(K key) {
+        Value value = map.get(key);
+        return value != null ? value.get() : 0;
     }
     
-    public synchronized boolean contains(K key) {
+    public boolean contains(K key) {
         return map.containsKey(key);
     }
     
-    private Value entry(K key) {
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+    
+    public int size() {
+        return map.size();
+    }
+    
+    private Value lookup(K key) {
         return map.get(key);
     }
     
@@ -42,62 +73,94 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
     }
     
     @Override
-    public synchronized Occured compareTo(VectorClock<K> other) {
+    public Occured compareTo(VectorClock<K> other) {
+        boolean bigger1 = false;
+        boolean bigger2 = false;
         
-        boolean equal = true;
-        boolean before = true;
-        boolean after = true;
+        int size1 = size();
+        int size2 = other.size();
         
-        for (Map.Entry<K, Value> entry : entrySet()) {
-            K key = entry.getKey();
-            Value value = entry.getValue();
+        if (size1 < size2) {
+            bigger2 = true;
             
-            Value otherValue = other.entry(key);
-            if (otherValue != null) {
-                int diff = value.compareTo(otherValue);
-                if (diff < 0) {
-                    equal = false;
-                    after = false;
-                } else if (0 < diff) {
-                    equal = false;
-                    before = false;
+        } else if (size2 < size1) {
+            bigger1 = true;
+            
+        } else {
+            for (Map.Entry<K, Value> entry : entrySet()) {
+                Value value = other.lookup(entry.getKey());
+                if (value == null) {
+                    bigger1 = true;
+                    
+                    for (K key : other.keySet()) {
+                        if (!contains(key)) {
+                            bigger2 = true;
+                            break;
+                        }
+                    }
+                    
+                    break;
                 }
-            } else {
-                equal = false;
-                before = false;
+                
+                int diff = entry.getValue().compareTo(value);
+                if (diff < 0) {
+                    bigger2 = true;
+                    break;
+                } else if (0 < diff) {
+                    bigger1 = true;
+                    break;
+                }
             }
         }
         
-        for (K key : other.keySet()) {
-            if (!contains(key)) {
-                equal = false;
-                after = false;
-                break;
-            }
-        }
-
-        if (equal) {
-            return Occured.EQUAL;
-        } else if (before && !after) {
+        if (!bigger1 && !bigger2) {
+            // Both VectorClocks are the same.
             return Occured.BEFORE;
-        } else if (!before && after) {
+        } else if (bigger1 && !bigger2) {
+            // This VectorClock represents an event that
+            // happened after the other other one.
             return Occured.AFTER;
+        } else if (!bigger1 && bigger2) {
+            // This VectorClock represents an event that
+            // happened before the other other one.
+            return Occured.BEFORE;
         }
         
+        // Conflict!!! ;-(
         return Occured.CONCURRENTLY;
     }
 
-    @Override
-    public synchronized VectorClock<K> clone() {
-        VectorClock<K> dst = new VectorClock<K>();
-        for (Map.Entry<K, Value> entry : entrySet()) {
-            dst.map.put(entry.getKey(), entry.getValue().clone());
+    public VectorClock<K> merge(VectorClock<? extends K> other) {
+        VectorClock<K> dst = clone();
+        
+        for (Map.Entry<? extends K, Value> entry : other.entrySet()) {
+            K key = entry.getKey();
+            Value value = entry.getValue();
+            
+            Value existing = dst.lookup(key);
+            if (existing == null) {
+                dst.map.put(key, value.clone());
+            } else {
+                existing.merge(value);
+            }
         }
+        
         return dst;
     }
     
     @Override
-    public synchronized String toString() {
+    public VectorClock<K> clone() {
+        VectorClock<K> dst = new VectorClock<K>();
+        
+        for (Map.Entry<K, Value> entry : entrySet()) {
+            dst.map.put(entry.getKey(), entry.getValue().clone());
+        }
+        
+        return dst;
+    }
+    
+    @Override
+    public String toString() {
         return map.toString();
     }
     
@@ -105,10 +168,22 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
         
         private static final long serialVersionUID = 4596735614527205911L;
         
-        private int value = 0;
+        private int value;
+        
+        public Value() {
+            this(0);
+        }
+        
+        public Value(int value) {
+            this.value = value;
+        }
         
         public int get() {
             return value;
+        }
+        
+        public void merge(Value other) {
+            this.value = Math.max(value, other.value);
         }
         
         public int tick() {
@@ -119,12 +194,11 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
         public int compareTo(Value o) {
             return value - o.value;
         }
-
+        
+        
         @Override
         public Value clone() {
-            Value dst = new Value();
-            dst.value = value;
-            return dst;
+            return new Value(value);
         }
         
         @Override
