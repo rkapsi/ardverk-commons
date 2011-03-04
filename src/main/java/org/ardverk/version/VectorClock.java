@@ -9,19 +9,19 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
     
     private static final long serialVersionUID = -1530003204298636637L;
     
-    private final Map<K, Clock> map = new HashMap<K, Clock>();
+    private final Map<K, Value> map = new HashMap<K, Value>();
     
     public synchronized int increment(K key) {
-        Clock clock = map.get(key);
+        Value clock = map.get(key);
         if (clock == null) {
-            clock = new Clock();
+            clock = new Value();
             map.put(key, clock);
         }
         return clock.tick();
     }
     
     public synchronized int get(K key) {
-        Clock clock = map.get(key);
+        Value clock = map.get(key);
         return clock != null ? clock.get() : 0;
     }
     
@@ -29,11 +29,11 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
         return map.containsKey(key);
     }
     
-    private Clock entry(K key) {
+    private Value entry(K key) {
         return map.get(key);
     }
     
-    private Set<Map.Entry<K, Clock>> entrySet() {
+    private Set<Map.Entry<K, Value>> entrySet() {
         return map.entrySet();
     }
     
@@ -48,13 +48,23 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
         boolean before = true;
         boolean after = true;
         
-        for (Map.Entry<K, Clock> entry : entrySet()) {
+        for (Map.Entry<K, Value> entry : entrySet()) {
             K key = entry.getKey();
-            Clock value = entry.getValue();
+            Value value = entry.getValue();
             
-            Clock otherValue = other.entry(key);
+            Value otherValue = other.entry(key);
             if (otherValue != null) {
-                
+                int diff = value.compareTo(otherValue);
+                if (diff < 0) {
+                    equal = false;
+                    after = false;
+                } else if (0 < diff) {
+                    equal = false;
+                    before = false;
+                }
+            } else {
+                equal = false;
+                before = false;
             }
         }
         
@@ -78,11 +88,20 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
     }
 
     @Override
-    public VectorClock<K> clone() {
-        return null;
+    public synchronized VectorClock<K> clone() {
+        VectorClock<K> dst = new VectorClock<K>();
+        for (Map.Entry<K, Value> entry : entrySet()) {
+            dst.map.put(entry.getKey(), entry.getValue().clone());
+        }
+        return dst;
     }
     
-    private static class Clock implements Cloneable, Serializable {
+    @Override
+    public synchronized String toString() {
+        return map.toString();
+    }
+    
+    private static class Value implements Comparable<Value>, Cloneable, Serializable {
         
         private static final long serialVersionUID = 4596735614527205911L;
         
@@ -97,10 +116,20 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
         }
         
         @Override
-        public Clock clone() {
-            Clock clock = new Clock();
-            clock.value = value;
-            return clock;
+        public int compareTo(Value o) {
+            return value - o.value;
+        }
+
+        @Override
+        public Value clone() {
+            Value dst = new Value();
+            dst.value = value;
+            return dst;
+        }
+        
+        @Override
+        public String toString() {
+            return Integer.toString(value);
         }
     }
 }
