@@ -37,6 +37,11 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         return clock.append(key);
     }
     
+    public static <K> VectorClock<K> create(long creationTime, 
+            Map<? extends K, ? extends Value> map) {
+        return new VectorClock<K>(creationTime, map);
+    }
+    
     private final long creationTime;
     
     private final Map<? extends K, ? extends Value> map;
@@ -175,46 +180,5 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     @Override
     public String toString() {
         return creationTime + ", " + map.toString();
-    }
-    
-    public static class Value implements Comparable<Value>, Serializable {
-        
-        private static final long serialVersionUID = -1915316363583960219L;
-
-        static final Value INIT = new Value(0);
-        
-        private final long creationTime = System.currentTimeMillis();
-        
-        private final int value;
-        
-        private Value(int value) {
-            this.value = value;
-        }
-        
-        public long getCreationTime() {
-            return creationTime;
-        }
-        
-        public int get() {
-            return value;
-        }
-        
-        Value increment() {
-            return new Value(value + 1);
-        }
-
-        Value merge(Value other) {
-            return new Value(Math.max(value, other.value));
-        }
-        
-        @Override
-        public int compareTo(Value o) {
-            return value - o.value;
-        }
-        
-        @Override
-        public String toString() {
-            return Integer.toString(value);
-        }
     }
 }
