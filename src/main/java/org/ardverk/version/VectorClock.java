@@ -17,59 +17,82 @@
 package org.ardverk.version;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Serializable {
+public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     
-    private static final long serialVersionUID = -1530003204298636637L;
-    
-    private final Map<K, Value> map = new HashMap<K, Value>();
-    
-    public VectorClock() {
+    private static final long serialVersionUID = 8061383748163285648L;
+
+    public static <K> VectorClock<K> create() {
+        return new VectorClock<K>(System.currentTimeMillis(), 
+                Collections.<K, Value>emptyMap());
     }
     
-    public VectorClock(K key) {
-        map.put(key, new Value(1));
+    public static <K> VectorClock<K> create(K key) {
+        VectorClock<K> clock = create();
+        return clock.append(key);
     }
     
-    public int add(K key) {
-        Value value = map.get(key);
-        if (value == null) {
-            value = new Value();
-            map.put(key, value);
+    private final long creationTime;
+    
+    private final Map<? extends K, ? extends Value> map;
+    
+    private VectorClock(long creationTime, 
+            Map<? extends K, ? extends Value> map) {
+        this.creationTime = creationTime;
+        this.map = map;
+    }
+    
+    public long getCreationTime() {
+        return creationTime;
+    }
+    
+    public VectorClock<K> append(K key) {
+        if (key == null) {
+            throw new IllegalArgumentException("key=null");
         }
-        return value.tick();
-    }
-    
-    public int get(K key) {
-        Value value = map.get(key);
-        return value != null ? value.get() : 0;
+        
+        Map<K, Value> dst = new HashMap<K, Value>(map);
+        
+        Value value = dst.get(key);
+        if (value == null) {
+            value = Value.INIT;
+        }
+        
+        dst.put(key, value.increment());
+        return new VectorClock<K>(creationTime, dst);
     }
     
     public boolean contains(K key) {
         return map.containsKey(key);
     }
     
-    public boolean isEmpty() {
-        return map.isEmpty();
-    }
-    
     public int size() {
         return map.size();
     }
     
-    private Value lookup(K key) {
+    public boolean isEmpty() {
+        return map.isEmpty();
+    }
+    
+    public Value get(K key) {
         return map.get(key);
     }
     
-    private Set<Map.Entry<K, Value>> entrySet() {
+    public Set<? extends Map.Entry<? extends K, ? extends Value>> entrySet() {
         return map.entrySet();
     }
     
-    private Set<K> keySet() {
+    public Set<? extends K> keySet() {
         return map.keySet();
+    }
+    
+    public Collection<? extends Value> values() {
+        return map.values();
     }
     
     @Override
@@ -87,8 +110,8 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
             bigger1 = true;
             
         } else {
-            for (Map.Entry<K, Value> entry : entrySet()) {
-                Value value = other.lookup(entry.getKey());
+            for (Map.Entry<? extends K, ? extends Value> entry : entrySet()) {
+                Value value = other.get(entry.getKey());
                 if (value == null) {
                     bigger1 = true;
                     
@@ -115,7 +138,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
         
         if (!bigger1 && !bigger2) {
             // Both VectorClocks are the same.
-            return Occured.BEFORE;
+            return Occured.IDENTICAL;
         } else if (bigger1 && !bigger2) {
             // This VectorClock represents an event that
             // happened after the other other one.
@@ -131,74 +154,62 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Cloneable, Seria
     }
 
     public VectorClock<K> merge(VectorClock<? extends K> other) {
-        VectorClock<K> dst = clone();
+        Map<K, Value> dst = new HashMap<K, Value>(map);
         
-        for (Map.Entry<? extends K, Value> entry : other.entrySet()) {
+        for (Map.Entry<? extends K, ? extends Value> entry : other.entrySet()) {
             K key = entry.getKey();
             Value value = entry.getValue();
             
-            Value existing = dst.lookup(key);
-            if (existing == null) {
-                dst.map.put(key, value.clone());
-            } else {
-                existing.merge(value);
+            Value existing = dst.get(key);
+            if (existing != null) {
+                value = existing.merge(value);
             }
+            
+            dst.put(key, value);
         }
         
-        return dst;
-    }
-    
-    @Override
-    public VectorClock<K> clone() {
-        VectorClock<K> dst = new VectorClock<K>();
-        
-        for (Map.Entry<K, Value> entry : entrySet()) {
-            dst.map.put(entry.getKey(), entry.getValue().clone());
-        }
-        
-        return dst;
+        long creationTime = Math.min(getCreationTime(), other.getCreationTime());
+        return new VectorClock<K>(creationTime, dst);
     }
     
     @Override
     public String toString() {
-        return map.toString();
+        return creationTime + ", " + map.toString();
     }
     
-    private static class Value implements Comparable<Value>, Cloneable, Serializable {
+    public static class Value implements Comparable<Value>, Serializable {
         
-        private static final long serialVersionUID = 4596735614527205911L;
+        private static final long serialVersionUID = -1915316363583960219L;
+
+        static final Value INIT = new Value(0);
         
-        private int value;
+        private final long creationTime = System.currentTimeMillis();
         
-        public Value() {
-            this(0);
+        private final int value;
+        
+        private Value(int value) {
+            this.value = value;
         }
         
-        public Value(int value) {
-            this.value = value;
+        public long getCreationTime() {
+            return creationTime;
         }
         
         public int get() {
             return value;
         }
         
-        public void merge(Value other) {
-            this.value = Math.max(value, other.value);
+        Value increment() {
+            return new Value(value + 1);
         }
-        
-        public int tick() {
-            return ++value;
+
+        Value merge(Value other) {
+            return new Value(Math.max(value, other.value));
         }
         
         @Override
         public int compareTo(Value o) {
             return value - o.value;
-        }
-        
-        
-        @Override
-        public Value clone() {
-            return new Value(value);
         }
         
         @Override

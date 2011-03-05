@@ -18,6 +18,7 @@ package org.ardverk.version;
 
 public enum Occured {
     BEFORE,
+    IDENTICAL,
     AFTER,
     CONCURRENTLY;
 }
