@@ -167,7 +167,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
             
             Value existing = dst.get(key);
             if (existing != null) {
-                value = existing.merge(value);
+                value = existing.max(value);
             }
             
             dst.put(key, value);

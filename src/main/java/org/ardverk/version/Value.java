@@ -49,8 +49,11 @@ public class Value implements Comparable<Value>, Serializable {
         return new Value(value + 1);
     }
 
-    public Value merge(Value other) {
-        return new Value(Math.max(value, other.value));
+    public Value max(Value other) {
+        if (value < other.value) {
+            return other;
+        }
+        return this;
     }
     
     @Override
