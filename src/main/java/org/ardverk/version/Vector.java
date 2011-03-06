@@ -18,38 +18,42 @@ package org.ardverk.version;
 
 import java.io.Serializable;
 
-public class Value implements Comparable<Value>, Serializable {
+public class Vector implements Comparable<Vector>, Serializable {
     
     private static final long serialVersionUID = -1915316363583960219L;
 
-    public static final Value INIT = new Value(0);
+    public static final Vector INIT = new Vector(0);
     
-    private final long creationTime;
+    private final long timeStamp;
     
     private final int value;
     
-    public Value(int value) {
+    public Vector(int value) {
         this(System.currentTimeMillis(), value);
     }
     
-    public Value(long creationTime, int value) {
-        this.creationTime = creationTime;
+    public Vector(long timeStamp, int value) {
+        this.timeStamp = timeStamp;
         this.value = value;
     }
     
-    public long getCreationTime() {
-        return creationTime;
+    public long getTimeStamp() {
+        return timeStamp;
     }
     
-    public int get() {
+    public int getValue() {
         return value;
     }
     
-    public Value increment() {
-        return new Value(value + 1);
+    public boolean isEmpty() {
+        return value == 0;
+    }
+    
+    public Vector increment() {
+        return new Vector(value + 1);
     }
 
-    public Value max(Value other) {
+    public Vector max(Vector other) {
         if (value < other.value) {
             return other;
         }
@@ -57,7 +61,7 @@ public class Value implements Comparable<Value>, Serializable {
     }
     
     @Override
-    public int compareTo(Value o) {
+    public int compareTo(Vector o) {
         return value - o.value;
     }
     

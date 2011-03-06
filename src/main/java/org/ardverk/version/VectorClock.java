@@ -29,7 +29,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
 
     public static <K> VectorClock<K> create() {
         return new VectorClock<K>(System.currentTimeMillis(), 
-                Collections.<K, Value>emptyMap());
+                Collections.<K, Vector>emptyMap());
     }
     
     public static <K> VectorClock<K> create(K key) {
@@ -38,16 +38,16 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     }
     
     public static <K> VectorClock<K> create(long creationTime, 
-            Map<? extends K, ? extends Value> map) {
+            Map<? extends K, ? extends Vector> map) {
         return new VectorClock<K>(creationTime, map);
     }
     
     private final long creationTime;
     
-    private final Map<? extends K, ? extends Value> map;
+    private final Map<? extends K, ? extends Vector> map;
     
     private VectorClock(long creationTime, 
-            Map<? extends K, ? extends Value> map) {
+            Map<? extends K, ? extends Vector> map) {
         this.creationTime = creationTime;
         this.map = map;
     }
@@ -61,14 +61,14 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
             throw new IllegalArgumentException("key=null");
         }
         
-        Map<K, Value> dst = new HashMap<K, Value>(map);
+        Map<K, Vector> dst = new HashMap<K, Vector>(map);
         
-        Value value = dst.get(key);
-        if (value == null) {
-            value = Value.INIT;
+        Vector vector = dst.get(key);
+        if (vector == null) {
+            vector = Vector.INIT;
         }
         
-        dst.put(key, value.increment());
+        dst.put(key, vector.increment());
         return new VectorClock<K>(creationTime, dst);
     }
     
@@ -84,11 +84,11 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         return map.isEmpty();
     }
     
-    public Value get(K key) {
+    public Vector get(K key) {
         return map.get(key);
     }
     
-    public Set<? extends Map.Entry<? extends K, ? extends Value>> entrySet() {
+    public Set<? extends Map.Entry<? extends K, ? extends Vector>> entrySet() {
         return map.entrySet();
     }
     
@@ -96,7 +96,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         return map.keySet();
     }
     
-    public Collection<? extends Value> values() {
+    public Collection<? extends Vector> values() {
         return map.values();
     }
     
@@ -115,9 +115,9 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
             bigger1 = true;
             
         } else {
-            for (Map.Entry<? extends K, ? extends Value> entry : entrySet()) {
-                Value value = other.get(entry.getKey());
-                if (value == null) {
+            for (Map.Entry<? extends K, ? extends Vector> entry : entrySet()) {
+                Vector vector = other.get(entry.getKey());
+                if (vector == null) {
                     bigger1 = true;
                     
                     for (K key : other.keySet()) {
@@ -130,7 +130,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
                     break;
                 }
                 
-                int diff = entry.getValue().compareTo(value);
+                int diff = entry.getValue().compareTo(vector);
                 if (diff < 0) {
                     bigger2 = true;
                     break;
@@ -159,18 +159,18 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     }
 
     public VectorClock<K> merge(VectorClock<? extends K> other) {
-        Map<K, Value> dst = new HashMap<K, Value>(map);
+        Map<K, Vector> dst = new HashMap<K, Vector>(map);
         
-        for (Map.Entry<? extends K, ? extends Value> entry : other.entrySet()) {
+        for (Map.Entry<? extends K, ? extends Vector> entry : other.entrySet()) {
             K key = entry.getKey();
-            Value value = entry.getValue();
+            Vector vector = entry.getValue();
             
-            Value existing = dst.get(key);
+            Vector existing = dst.get(key);
             if (existing != null) {
-                value = existing.max(value);
+                vector = existing.max(vector);
             }
             
-            dst.put(key, value);
+            dst.put(key, vector);
         }
         
         long creationTime = Math.min(getCreationTime(), other.getCreationTime());
