@@ -23,10 +23,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * An implementation of a Vector Clock. This class is immutable!
+ * 
+ * @see http://en.wikipedia.org/wiki/Vector_clock
+ */
 public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     
     private static final long serialVersionUID = 8061383748163285648L;
-
+    
     public static <K> VectorClock<K> create() {
         return new VectorClock<K>(System.currentTimeMillis(), 
                 Collections.<K, Vector>emptyMap());
@@ -89,15 +94,15 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     }
     
     public Set<? extends Map.Entry<? extends K, ? extends Vector>> entrySet() {
-        return map.entrySet();
+        return Collections.unmodifiableSet(map.entrySet());
     }
     
     public Set<? extends K> keySet() {
-        return map.keySet();
+        return Collections.unmodifiableSet(map.keySet());
     }
     
     public Collection<? extends Vector> values() {
-        return map.values();
+        return Collections.unmodifiableCollection(map.values());
     }
     
     @Override

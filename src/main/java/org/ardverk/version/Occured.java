@@ -16,6 +16,9 @@
 
 package org.ardverk.version;
 
+/**
+ * The {@link Occured} enum is returned by {@link VectorClock}.
+ */
 public enum Occured {
     BEFORE,
     IDENTICAL,

@@ -16,7 +16,13 @@
 
 package org.ardverk.version;
 
-public interface Version<T> {
+/**
+ * An interface for versioned objects.
+ */
+interface Version<T> {
 
+    /**
+     * Returns in which order two events occurred.
+     */
     public Occured compareTo(T other);
 }

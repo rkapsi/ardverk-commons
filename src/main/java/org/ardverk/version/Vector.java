@@ -18,6 +18,9 @@ package org.ardverk.version;
 
 import java.io.Serializable;
 
+/**
+ * A {@link Vector} is an entry in a {@link VectorClock}. This class is immutable.
+ */
 public class Vector implements Comparable<Vector>, Serializable {
     
     private static final long serialVersionUID = -1915316363583960219L;
@@ -37,22 +40,37 @@ public class Vector implements Comparable<Vector>, Serializable {
         this.value = value;
     }
     
+    /**
+     * Returns the {@link Vector}'s time stamp.
+     */
     public long getTimeStamp() {
         return timeStamp;
     }
     
+    /**
+     * Returns the {@link Vector}'s value
+     */
     public int getValue() {
         return value;
     }
     
+    /**
+     * Returns {@code true} if the {@link Vector} is empty.
+     */
     public boolean isEmpty() {
         return value == 0;
     }
     
+    /**
+     * Increments the {@link Vector} by 1 and returns it.
+     */
     public Vector increment() {
         return new Vector(value + 1);
     }
 
+    /**
+     * Returns the bigger of the two {@link Vector}s.
+     */
     public Vector max(Vector other) {
         if (value < other.value) {
             return other;
@@ -66,7 +84,23 @@ public class Vector implements Comparable<Vector>, Serializable {
     }
     
     @Override
+    public int hashCode() {
+        return value;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (!(o instanceof Vector)) {
+            return false;
+        }
+        
+        return compareTo((Vector)o) == 0;
+    }
+    
+    @Override
     public String toString() {
-        return Integer.toString(value);
+        return timeStamp + ":" + Integer.toString(value);
     }
 }
