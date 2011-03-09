@@ -173,6 +173,20 @@ public class NetworkUtils {
     /**
      * @see InetAddress#isAnyLocalAddress()
      */
+    public static boolean isAnyLocalAddress(SocketAddress address) {
+        return isAnyLocalAddress(getAddress(address));
+    }
+    
+    /**
+     * @see InetAddress#isAnyLocalAddress()
+     */
+    public static boolean isAnyLocalAddress(InetAddress address) {
+        return isAnyLocalAddress(address.getAddress());
+    }
+    
+    /**
+     * @see InetAddress#isAnyLocalAddress()
+     */
     public static boolean isAnyLocalAddress(byte[] address) {
         for (int i = 0; i < address.length; i++) {
             if (address[i] != 0x00) {
@@ -180,6 +194,20 @@ public class NetworkUtils {
             }
         }
         return true;
+    }
+    
+    /**
+     * @see InetAddress#isLoopbackAddress()
+     */
+    public static boolean isLoopbackAddress(SocketAddress address) {
+        return isLoopbackAddress(getAddress(address));
+    }
+    
+    /**
+     * @see InetAddress#isLoopbackAddress()
+     */
+    public static boolean isLoopbackAddress(InetAddress address) {
+        return isLoopbackAddress(address.getAddress());
     }
     
     /**
@@ -208,6 +236,20 @@ public class NetworkUtils {
     /**
      * @see InetAddress#isLinkLocalAddress()
      */
+    public static boolean isLinkLocalAddress(SocketAddress address) {
+        return isLinkLocalAddress(getAddress(address));
+    }
+    
+    /**
+     * @see InetAddress#isLinkLocalAddress()
+     */
+    public static boolean isLinkLocalAddress(InetAddress address) {
+        return isLinkLocalAddress(address.getAddress());
+    }
+    
+    /**
+     * @see InetAddress#isLinkLocalAddress()
+     */
     public static boolean isLinkLocalAddress(byte[] address) {
         if (isClassicAddress(address)) {
             // link-local unicast in IPv4 (169.254.0.0/16)
@@ -220,6 +262,20 @@ public class NetworkUtils {
         
         return ((address[0] & 0xFF) == 0xFE 
                 && (address[1] & 0xC0) == 0x80);
+    }
+    
+    /**
+     * @see InetAddress#isSiteLocalAddress()
+     */
+    public static boolean isSiteLocalAddress(SocketAddress address) {
+        return isSiteLocalAddress(getAddress(address));
+    }
+    
+    /**
+     * @see InetAddress#isSiteLocalAddress()
+     */
+    public static boolean isSiteLocalAddress(InetAddress address) {
+        return isSiteLocalAddress(address.getAddress());
     }
     
     /**
@@ -240,6 +296,16 @@ public class NetworkUtils {
         
         return ((address[0] & 0xFF) == 0xFE 
                 && (address[1] & 0xC0) == 0xC0);
+    }
+    
+    /**
+     * An IPv6 address for non-Internet connected devices.
+     * 
+     * <p>http://tools.ietf.org/html/rfc4193
+     * <p>http://en.wikipedia.org/wiki/Unique_local_address
+     */
+    public static boolean isUniqueLocalUnicastAddress(SocketAddress address) {
+        return isUniqueLocalUnicastAddress(getAddress(address));
     }
     
     /**
@@ -274,6 +340,15 @@ public class NetworkUtils {
      * 
      * <p>http://tools.ietf.org/html/rfc919
      */
+    public static boolean isBroadcastAddress(SocketAddress address) {
+        return isBroadcastAddress(getAddress(address));
+    }
+    
+    /**
+     * A IPv4 Broadcast Address
+     * 
+     * <p>http://tools.ietf.org/html/rfc919
+     */
     public static boolean isBroadcastAddress(InetAddress address) {
         return isBroadcastAddress(address.getAddress());
     }
@@ -292,6 +367,13 @@ public class NetworkUtils {
     }
 
     /**
+     * Returns true if the given {@link SocketAddress} is invalid.
+     */
+    public static boolean isInvalidAddress(SocketAddress address) {
+        return isInvalidAddress(getAddress(address));
+    }
+    
+    /**
      * Returns true if the given {@link InetAddress} is invalid.
      */
     public static boolean isInvalidAddress(InetAddress address) {
@@ -307,6 +389,15 @@ public class NetworkUtils {
             return address[/* 0 */ address.length - 4] == 0x00;
         }
         return false;
+    }
+    
+    /**
+     * An IPv6 documentation address.
+     * 
+     * <p>http://tools.ietf.org/html/rfc3849
+     */
+    public static boolean isDocumentationAddress(SocketAddress address) {
+        return isDocumentationAddress(getAddress(address));
     }
     
     /**
@@ -338,6 +429,13 @@ public class NetworkUtils {
     }
     
     /**
+     * Returns true if the given {@link SocketAddress} is an IPv4 address
+     */
+    public static boolean isClassicAddress(SocketAddress address) {
+        return isClassicAddress(getAddress(address));
+    }
+    
+    /**
      * Returns true if the given {@link InetAddress} is an IPv4 address
      */
     public static boolean isClassicAddress(InetAddress address) {
@@ -351,6 +449,15 @@ public class NetworkUtils {
         return address.length == 4;
     }
 
+    /**
+     * Returns true if the given {@link SocketAddress} is an IPv4 address
+     * that is embedded into a IPv6 frame. In other words if it's an IPv6
+     * address in IPv4 address space.
+     */
+    public static boolean isClassicMappedAddress(SocketAddress address) {
+        return isClassicMappedAddress(getAddress(address));
+    }
+    
     /**
      * Returns true if the given {@link InetAddress} is an IPv4 address
      * that is embedded into a IPv6 frame. In other words if it's an IPv6
