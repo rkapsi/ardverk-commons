@@ -533,4 +533,36 @@ public class NetworkUtils {
             throw new IllegalArgumentException("UnknownHostException", e);
         }
     }
+    
+    /**
+     * Creates and returns an unresolved {@link SocketAddress}.
+     */
+    public static SocketAddress createUnresolved(String host, SocketAddress port) {
+        return createUnresolved(host, getPort(port));
+    }
+    
+    /**
+     * Creates and returns an resolved {@link SocketAddress}.
+     */
+    public static SocketAddress createResolved(String host, SocketAddress port) {
+        return createResolved(host, getPort(port));
+    }
+    
+    /**
+     * Creates and returns an resolved {@link SocketAddress}.
+     */
+    public static SocketAddress createResolved(InetAddress address, SocketAddress port) {
+        return createResolved(address, getPort(port));
+    }
+    
+    /**
+     * Creates and returns a {@link SocketAddress}.
+     */
+    public static SocketAddress create(SocketAddress address, SocketAddress port) {
+        if (isUnresolved(address)) {
+            return createUnresolved(getHostName(address), getPort(port));
+        } else {
+            return createResolved(getAddress(address), getPort(port));
+        }
+    }
 }
