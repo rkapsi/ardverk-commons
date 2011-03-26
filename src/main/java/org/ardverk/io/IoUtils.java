@@ -23,7 +23,7 @@ import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.ardverk.utils.ExceptionUtils;
+import org.ardverk.lang.ExceptionUtils;
 
 /**
  * An utility class for I/O operations.
