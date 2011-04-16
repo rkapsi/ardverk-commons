@@ -18,6 +18,7 @@ package org.ardverk.collection;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An utility class to create light-weight instances of {@link Iterable}s.
@@ -93,9 +94,9 @@ public class Iterables {
             return empty();
         }
         
-        return new Iterable<T>() {
+        return new OneTimeIterable<T>() {
             @Override
-            public Iterator<T> iterator() {
+            protected Iterator<T> iterator0() {
                 return it;
             }
         };
@@ -127,9 +128,9 @@ public class Iterables {
      * an {@link Iterable} of {@link Iterator}s.
      */
     public static <T> Iterable<T> fromIterators(final Iterable<? extends Iterator<T>> values) {
-        return new Iterable<T>() {
+        return new OneTimeIterable<T>() {
             @Override
-            public Iterator<T> iterator() {
+            protected Iterator<T> iterator0() {
                 return Iterators.fromIterators(values.iterator());
             }
         };
@@ -168,5 +169,24 @@ public class Iterables {
                 return Iterators.fromIterables(values.iterator());
             }
         };
+    }
+    
+    private static abstract class OneTimeIterable<T> implements Iterable<T> {
+        
+        private final AtomicBoolean state = new AtomicBoolean(false);
+
+        @Override
+        public Iterator<T> iterator() {
+            if (state.getAndSet(true)) {
+                throw new IllegalStateException();
+            }
+            
+            return iterator0();
+        }
+        
+        /**
+         * @see Iterable#iterator()
+         */
+        protected abstract Iterator<T> iterator0();
     }
 }

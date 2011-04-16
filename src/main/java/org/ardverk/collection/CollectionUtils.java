@@ -17,12 +17,10 @@
 package org.ardverk.collection;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Deque;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedSet;
 
 public class CollectionUtils {
@@ -32,33 +30,41 @@ public class CollectionUtils {
         LAST,
         NTH;
     }
-
+    
     private CollectionUtils() {
     }
 
     /**
-     * Makes a copy of src and returns it.
+     * Concatenates the {@link Collection} with the given value(s).
      */
-    public static <K, V> Map<K, V> copy(Map<? extends K, ? extends V> src) {
-        return copyTo(src, null);
+    public static <V, T extends Collection<V>> T concat(T dst, V... values) {
+        return concat(dst, Iterables.fromArray(values));
     }
-
+    
     /**
-     * Copies src to dst if src is not null and not empty. It will create and
-     * return a new Map if dst is either null or {@link Collections#EMPTY_MAP}.
+     * Concatenates the {@link Collection} with the given value(s).
      */
-    public static <K, V> Map<K, V> copyTo(Map<? extends K, ? extends V> src,
-            Map<K, V> dst) {
-
-        if (src != null && !src.isEmpty()) {
-            if (dst == null) {
-                dst = new HashMap<K, V>(src);
-            } else {
-                dst.putAll(src);
-            }
+    public static <V, T extends Collection<V>> T concat(T dst, 
+            V[] values, int index, int length) {
+        return concat(dst, Iterables.fromArray(values, index, length));
+    }
+    
+    /**
+     * Concatenates the {@link Collection} with the given {@link Iterable}.
+     */
+    public static <V, T extends Collection<V>> T concat(T dst, 
+            Iterable<? extends V> src) {
+        for (V value : src) {
+            dst.add(value);
         }
-
         return dst;
+    }
+    
+    /**
+     * Creates and returns a {@link HashSet} for the given value(s).
+     */
+    public static <T> HashSet<T> asHashSet(T... values) {
+        return concat(new HashSet<T>(), values);
     }
     
     /**
