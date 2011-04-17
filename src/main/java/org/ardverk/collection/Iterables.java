@@ -171,6 +171,9 @@ public class Iterables {
         };
     }
     
+    /**
+     * An {@link Iterable} that can be used only once.
+     */
     private static abstract class OneTimeIterable<T> implements Iterable<T> {
         
         private final AtomicBoolean state = new AtomicBoolean(false);

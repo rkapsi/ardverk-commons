@@ -21,7 +21,6 @@ import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 
 import org.ardverk.collection.FixedSizeHashSet;
-import org.ardverk.lang.NullArgumentException;
 
 /**
  * The {@link AddressTracker} helps us to determinate our external/public 
@@ -60,7 +59,7 @@ public class AddressTracker {
      */
     public AddressTracker(InetAddress address, NetworkMask mask, int count) {
         if (mask == null) {
-            throw new NullArgumentException("mask");
+            throw new NullPointerException("mask");
         }
         
         if (count < 0) {
@@ -119,11 +118,11 @@ public class AddressTracker {
      */
     public synchronized boolean set(InetAddress src, InetAddress address) {
         if (src == null) {
-            throw new NullArgumentException("src");
+            throw new NullPointerException("src");
         }
         
         if (address == null) {
-            throw new NullArgumentException("address");
+            throw new NullPointerException("address");
         }
         
         // Do nothing if both addresses are equal

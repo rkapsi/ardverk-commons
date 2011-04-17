@@ -24,8 +24,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
-import org.ardverk.lang.NullArgumentException;
-
 /**
  * A {@link Queue} that shares some properties of a {@link Set}.
  */
@@ -53,11 +51,11 @@ public class QueueSet<E> implements Queue<E>, Set<E>, Serializable {
      */
     public QueueSet(Queue<E> q, Set<E> s) {
         if (q == null) {
-            throw new NullArgumentException("q");
+            throw new NullPointerException("q");
         }
         
         if (s == null) {
-            throw new NullArgumentException("s");
+            throw new NullPointerException("s");
         }
         
         this.q = q;

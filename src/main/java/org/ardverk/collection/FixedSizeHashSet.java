@@ -20,8 +20,8 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class FixedSizeHashSet<E> implements Set<E>, FixedSize, Serializable {
     

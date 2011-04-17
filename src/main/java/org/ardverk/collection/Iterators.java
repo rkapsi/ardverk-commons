@@ -188,7 +188,7 @@ public class Iterators {
     
     /**
      * An implementation of {@link Composition} that iterates over
-     * instances of {@link Iterator}.
+     * instances of {@link Iterator}s.
      */
     private static class IteratorIterator<T> extends Composition<T> {
 
@@ -227,6 +227,40 @@ public class Iterators {
                     && values.hasNext()) {
                 current = values.next().iterator();
             }
+        }
+    }
+    
+    /**
+     * An {@link Iterator} for a single item.
+     */
+    private static class SingletonIterator<T> implements Iterator<T> {
+
+        private final T value;
+        
+        private boolean hasNext = true;
+        
+        public SingletonIterator(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return hasNext;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            
+            hasNext = false;
+            return value;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 }

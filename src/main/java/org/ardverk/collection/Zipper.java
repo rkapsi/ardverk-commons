@@ -21,6 +21,13 @@ import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * Insert: O(1)
+ * Remove: O(n)
+ * 
+ * http://en.wikipedia.org/wiki/Persistent_data_structure
+ * http://en.wikipedia.org/wiki/Zipper_(data_structure)
+ */
 public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     
     private static final long serialVersionUID = 8081213933323928016L;
@@ -37,6 +44,10 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         return empty();
     }
     
+    public static <E> Zipper<E> create(E... elements) {
+        return create(Iterables.fromArray(elements));
+    }
+    
     public static <E> Zipper<E> create(Iterable<? extends E> c) {
         Zipper<E> zipper = create();
         
@@ -51,7 +62,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     
     private final int size;
     
-    private volatile Zipper<E> tail;
+    private final Zipper<E> tail;
     
     private Zipper(E element, int size, Zipper<E> tail) {
         this.element = element;
@@ -75,7 +86,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         return new Zipper<E>(element, size+1, this);
     }
     
-    /*public Zipper<E> remove(Object o) {
+    public Zipper<E> remove(Object o) {
         Zipper<E> zipper = create();
         boolean modified = false;
         
@@ -92,39 +103,6 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         }
         
         return modified ? zipper : this;
-    }*/
-    
-    public Zipper<E> remove(Object o) {
-        Zipper<E> zipper = null;
-        Zipper<E> tail = null;
-        
-        boolean modified = false;
-        
-        int size = size();
-        for (Zipper<E> current = this; 
-                current != EMPTY; current = current.tail()) {
-            
-            E element = current.element();
-            if (!modified && equals(o, element)) {
-                modified = true;
-                continue;
-            }
-            
-            if (zipper == null) {
-                zipper = new Zipper<E>(element, --size, null);
-                tail = zipper;
-            } else {
-                tail.tail = new Zipper<E>(element, --size, null);
-                tail = tail.tail;
-            }
-        }
-        
-        if (modified && zipper != null) {
-            tail.tail = empty(); // EOF
-            return zipper;
-        }
-        
-        return this;
     }
     
     public boolean contains(Object o) {
@@ -150,6 +128,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         return zipper;
     }
     
+    @Override
     public Iterator<E> iterator() {
         return new ZipperItereator();
     }
@@ -202,7 +181,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
         }
         
         // Remove the last comma
-        if (buffer.length() >= 1) {
+        if (buffer.length() >= 2) {
             buffer.setLength(buffer.length()-2);
         }
         

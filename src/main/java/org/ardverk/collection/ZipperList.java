@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-import org.ardverk.lang.NullArgumentException;
-
 /**
  * Insert: O(1)
  * Remove: O(n)
@@ -43,7 +41,7 @@ public class ZipperList<E> implements List<E>, Cloneable, Serializable {
     
     public ZipperList(Collection<E> c) {
         if (c == null) {
-            throw new NullArgumentException("c");
+            throw new NullPointerException("c");
         }
         
         addAll(c);
@@ -51,7 +49,7 @@ public class ZipperList<E> implements List<E>, Cloneable, Serializable {
     
     private ZipperList(Zipper<E> zipper) {
         if (zipper == null) {
-            throw new NullArgumentException("zipper");
+            throw new NullPointerException("zipper");
         }
         
         this.zipper = zipper;

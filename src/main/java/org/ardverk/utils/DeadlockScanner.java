@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.ardverk.concurrent.DefaultThreadFactory;
 import org.ardverk.concurrent.ManagedRunnable;
-import org.ardverk.lang.NullArgumentException;
 
 /**
  * An utility class for Deadlock scanning.
@@ -94,7 +93,7 @@ public class DeadlockScanner {
             long frequency, TimeUnit unit) {
         
         if (callback == null) {
-            throw new NullArgumentException("callback");
+            throw new NullPointerException("callback");
         }
         
         if (frequency < 0L) {
@@ -102,7 +101,7 @@ public class DeadlockScanner {
         }
         
         if (unit == null) {
-            throw new NullArgumentException("unit");
+            throw new NullPointerException("unit");
         }
         
         if (FUTURE != null) {

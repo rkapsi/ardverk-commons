@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.Serializable;
 
 import org.ardverk.io.IoUtils;
-import org.ardverk.lang.NullArgumentException;
 
 public class Base2 extends AbstractBaseCoder implements Serializable {
     
@@ -46,7 +45,7 @@ public class Base2 extends AbstractBaseCoder implements Serializable {
     public byte[] encode(byte[] data, int offset, int length) {
         
         if (data == null) {
-            throw new NullArgumentException("data");
+            throw new NullPointerException("data");
         }
         
         if (offset < 0 || length < 0 || (offset+length) > data.length) {
