@@ -86,22 +86,26 @@ public class Iterators {
     /**
      * Creates and returns an {@link Iterator} from a composed view of {@link Iterator}s.
      */
-    public static <T> Iterator<T> fromIterators(Iterator<T>... values) {
+    public static <T> Iterator<T> fromIterators(Iterator<? extends T>... values) {
         return fromIterators(values, 0, values.length);
     }
     
     /**
      * Creates and returns an {@link Iterator} from a composed view of {@link Iterator}s.
      */
-    public static <T> Iterator<T> fromIterators(Iterator<T>[] values, 
+    public static <T> Iterator<T> fromIterators(Iterator<? extends T>[] values, 
             int offset, int length) {
-        return fromIterators(fromArray(values, offset, length));
+        
+        Iterator<? extends Iterator<? extends T>> iterators 
+            = fromArray(values, offset, length);
+        
+        return fromIterators(iterators);
     }
     
     /**
      * Creates and returns an {@link Iterator} from a composed view of {@link Iterator}s.
      */
-    public static <T> Iterator<T> fromIterators(Iterator<? extends Iterator<T>> values) {
+    public static <T> Iterator<T> fromIterators(Iterator<? extends Iterator<? extends T>> values) {
         if (!values.hasNext()) {
             return empty();
         }
@@ -113,7 +117,7 @@ public class Iterators {
      * Creates and returns an {@link Iterator} from a composed view of 
      * {@link Iterable}s such as {@link List}s.
      */
-    public static <T> Iterator<T> fromIterables(Iterable<T>... values) {
+    public static <T> Iterator<T> fromIterables(Iterable<? extends T>... values) {
         return fromIterables(values, 0, values.length);
     }
     
@@ -121,7 +125,7 @@ public class Iterators {
      * Creates and returns an {@link Iterator} from a composed view of 
      * {@link Iterable}s such as {@link List}s.
      */
-    public static <T> Iterator<T> fromIterables(Iterable<T>[] values, 
+    public static <T> Iterator<T> fromIterables(Iterable<? extends T>[] values, 
             int offset, int length) {
         return fromIterables(fromArray(values, offset, length));
     }
@@ -130,7 +134,7 @@ public class Iterators {
      * Creates and returns an {@link Iterator} from a composed view of 
      * {@link Iterables}s such as {@link List}s.
      */
-    public static <T> Iterator<T> fromIterables(Iterator<? extends Iterable<T>> values) {
+    public static <T> Iterator<T> fromIterables(Iterator<? extends Iterable<? extends T>> values) {
         if (!values.hasNext()) {
             return empty();
         }
@@ -143,9 +147,9 @@ public class Iterators {
      */
     private static abstract class Composition<T> implements Iterator<T> {
         
-        protected Iterator<T> current = null;
+        protected Iterator<? extends T> current = null;
         
-        protected Iterator<T> item = null;
+        protected Iterator<? extends T> item = null;
         
         @Override
         public boolean hasNext() {
@@ -192,9 +196,9 @@ public class Iterators {
      */
     private static class IteratorIterator<T> extends Composition<T> {
 
-        private final Iterator<? extends Iterator<T>> values;
+        private final Iterator<? extends Iterator<? extends T>> values;
         
-        public IteratorIterator(Iterator<? extends Iterator<T>> values) {
+        public IteratorIterator(Iterator<? extends Iterator<? extends T>> values) {
             this.values = values;
             advance();
         }
@@ -214,9 +218,9 @@ public class Iterators {
      */
     private static class ItarableIterator<T> extends Composition<T> {
 
-        private final Iterator<? extends Iterable<T>> values;
+        private final Iterator<? extends Iterable<? extends T>> values;
         
-        public ItarableIterator(Iterator<? extends Iterable<T>> values) {
+        public ItarableIterator(Iterator<? extends Iterable<? extends T>> values) {
             this.values = values;
             advance();
         }

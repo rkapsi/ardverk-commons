@@ -106,7 +106,7 @@ public class Iterables {
      * Creates and returns a composed {@link Iterable} view from 
      * an array of {@link Iterator}s.
      */
-    public static <T> Iterable<T> fromIterators(Iterator<T>... values) {
+    public static <T> Iterable<T> fromIterators(Iterator<? extends T>... values) {
         return fromIterators(values, 0, values.length);
     }
     
@@ -114,7 +114,7 @@ public class Iterables {
      * Creates and returns a composed {@link Iterable} view from 
      * an array of {@link Iterator}s.
      */
-    public static <T> Iterable<T> fromIterators(Iterator<T>[] values, 
+    public static <T> Iterable<T> fromIterators(Iterator<? extends T>[] values, 
             int offset, final int length) {
         if (length == 0) {
             return empty();
@@ -127,7 +127,7 @@ public class Iterables {
      * Creates and returns a composed {@link Iterable} view from 
      * an {@link Iterable} of {@link Iterator}s.
      */
-    public static <T> Iterable<T> fromIterators(final Iterable<? extends Iterator<T>> values) {
+    public static <T> Iterable<T> fromIterators(final Iterable<? extends Iterator<? extends T>> values) {
         return new OneTimeIterable<T>() {
             @Override
             protected Iterator<T> iterator0() {
@@ -155,14 +155,17 @@ public class Iterables {
             return empty();
         }
         
-        return fromIterables(fromArray(values, offset, length));
+        Iterable<? extends Iterable<? extends T>> iterables 
+            = fromArray(values, offset, length);
+        
+        return fromIterables(iterables);
     }
     
     /**
      * Creates and returns a composed {@link Iterable} view from 
      * an {@link Iterable} of {@link Iterable}s such as {@link List}s.
      */
-    public static <T> Iterable<T> fromIterables(final Iterable<? extends Iterable<T>> values) {
+    public static <T> Iterable<T> fromIterables(final Iterable<? extends Iterable<? extends T>> values) {
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
