@@ -140,7 +140,7 @@ public class Iterables {
      * Creates and returns a composed {@link Iterable} view from 
      * an array of {@link Iterable}s such as {@link List}s.
      */
-    public static <T> Iterable<T> fromIterables(Iterable<T>... values) {
+    public static <T> Iterable<T> fromIterables(Iterable<? extends T>... values) {
         return fromIterables(values, 0, values.length);
     }
     
@@ -148,7 +148,7 @@ public class Iterables {
      * Creates and returns a composed {@link Iterable} view from 
      * an array of {@link Iterable}s such as {@link List}s.
      */
-    public static <T> Iterable<T> fromIterables(Iterable<T>[] values, 
+    public static <T> Iterable<T> fromIterables(Iterable<? extends T>[] values, 
             int offset, int length) {
         
         if (length == 0) {
