@@ -235,7 +235,7 @@ public class CollectionUtils {
      * Turns the given {@link Collection} into an array.
      */
     @SuppressWarnings("unchecked")
-    public static <T> T[] toArray(Collection<? extends T> c, Class<? super T> componentType) {
+    public static <T> T[] toArray(Collection<? extends T> c, Class<? extends T> componentType) {
         return c.toArray((T[])Array.newInstance(componentType, c.size()));
     }
 }
