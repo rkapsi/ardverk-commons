@@ -16,6 +16,7 @@
 
 package org.ardverk.collection;
 
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
@@ -215,7 +216,7 @@ public class CollectionUtils {
     }
     
     /**
-     * Returns true if the first element needs to be retrieved 
+     * Returns {@code true} if the first element needs to be retrieved 
      * from the given {@link Collection}.
      */
     private static boolean isFirst(Collection<?> c, Position position, int n) {
@@ -223,10 +224,18 @@ public class CollectionUtils {
     }
     
     /**
-     * Returns true if the last element needs to be retrieved 
+     * Returns {@code true} if the last element needs to be retrieved 
      * from the given {@link Collection}.
      */
     private static boolean isLast(Collection<?> c, Position position, int n) {
         return position == Position.LAST || n == (c.size()-1);
+    }
+    
+    /**
+     * Turns the given {@link Collection} into an array.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] toArray(Collection<? extends T> c, Class<? super T> componentType) {
+        return c.toArray((T[])Array.newInstance(componentType, c.size()));
     }
 }
