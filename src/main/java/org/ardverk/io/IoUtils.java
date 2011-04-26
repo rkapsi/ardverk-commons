@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.ardverk.lang.ExceptionUtils;
 
@@ -45,6 +46,8 @@ public class IoUtils {
             return close((ServerSocket)o);
         } else if (o instanceof DatagramSocket) {
             return close((DatagramSocket)o);
+        } else if (o instanceof AtomicReference<?>) {
+            return close(((AtomicReference<?>)o).get());
         }
         return false;
     }
