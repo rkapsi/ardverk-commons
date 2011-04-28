@@ -27,12 +27,20 @@ public class StringUtils {
     private StringUtils() {}
     
     public static String toString(byte[] data) {
-        return toString(data, UTF_8);
+        return toString(data, 0, data.length);
+    }
+    
+    public static String toString(byte[] data, int offset, int length) {
+        return toString(data, offset, length, UTF_8);
     }
     
     public static String toString(byte[] data, String encoding) {
+        return toString(data, 0, data.length, encoding);
+    }
+    
+    public static String toString(byte[] data, int offset, int length, String encoding) {
         try {
-            return new String(data, encoding);
+            return new String(data, offset, length, encoding);
         } catch (UnsupportedEncodingException e) {
             throw new IllegalArgumentException("encoding=" + encoding, e);
         }
