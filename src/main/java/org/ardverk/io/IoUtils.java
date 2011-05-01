@@ -176,6 +176,21 @@ public class IoUtils {
     }
     
     /**
+     * Binds the {@link Bindable} to the given value.
+     */
+    public static <T> boolean bind(Bindable<? super T> bindable, T value) {
+        if (bindable != null) {
+            try {
+                bindable.bind(value);
+                return true;
+            } catch (IOException err) {
+                ExceptionUtils.exceptionCaught(err);
+            }
+        }
+        return false;
+    }
+    
+    /**
      * Unbinds the given {@link Bindable}.
      */
     public static boolean unbind(Bindable<?> bindable) {
