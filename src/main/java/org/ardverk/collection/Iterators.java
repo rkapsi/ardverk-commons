@@ -231,14 +231,4 @@ public class Iterators {
             }
         }
     }
-    
-    /*public static void main(String[] args) {
-        Iterator<String> a = Arrays.asList("a").iterator();
-        Iterator<String> b = Arrays.asList("b").iterator();
-        
-        Iterator<String> c = fromIterators(a, b);
-        while (c.hasNext()) {
-            System.out.println(c.next());
-        }
-    }*/
 }
