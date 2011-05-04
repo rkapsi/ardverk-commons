@@ -16,7 +16,6 @@
 
 package org.ardverk.collection;
 
-import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.HashSet;
@@ -234,8 +233,8 @@ public class CollectionUtils {
     /**
      * Turns the given {@link Collection} into an array.
      */
-    @SuppressWarnings("unchecked")
     public static <T> T[] toArray(Collection<? extends T> c, Class<? extends T> componentType) {
-        return c.toArray((T[])Array.newInstance(componentType, c.size()));
+        T[] dst = org.ardverk.utils.ArrayUtils.newInstance(componentType, c.size());
+        return c.toArray(dst);
     }
 }

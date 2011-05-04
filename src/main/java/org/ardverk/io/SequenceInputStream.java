@@ -20,6 +20,9 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
+import java.util.Iterator;
+
+import org.ardverk.collection.Iterators;
 
 /**
  * Same as {@link java.io.SequenceInputStream} but that's not using 
@@ -29,9 +32,7 @@ import java.util.Enumeration;
  */
 public class SequenceInputStream extends InputStream {
 
-    private final InputStream[] streams;
-    
-    private int index = 0;
+    private final Iterator<? extends InputStream> streams;
     
     private InputStream in = null;
     
@@ -40,14 +41,21 @@ public class SequenceInputStream extends InputStream {
     private boolean open = true;
     
     public SequenceInputStream(InputStream in, 
-            InputStream... streams) {
-        
-        if (in == null) {
+            InputStream[] streams) {
+        this(Iterators.iterator(in, streams));
+    }
+    
+    public SequenceInputStream(InputStream... streams) {
+        this(Iterators.iterator(streams));
+    }
+    
+    public SequenceInputStream(Iterator<? extends InputStream> streams) {
+        if (streams == null) {
             throw new NullPointerException();
         }
         
-        this.in = in;
         this.streams = streams;
+        this.in = next();
     }
 
     private void advance() throws IOException {
@@ -62,8 +70,8 @@ public class SequenceInputStream extends InputStream {
     
     private InputStream next() {
         InputStream in = null;
-        if (index < streams.length) {
-            in = streams[index++];
+        if (streams.hasNext()) {
+            in = streams.next();
             if (in == null) {
                 throw new NullPointerException();
             }

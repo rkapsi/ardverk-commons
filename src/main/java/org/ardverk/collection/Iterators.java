@@ -30,22 +30,8 @@ public class Iterators {
     /**
      * An {@link Iterator} that has no elements.
      */
-    public static final Iterator<Object> EMPTY = new Iterator<Object>() {
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public Object next() {
-            throw new NoSuchElementException();
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    };
+    public static final Iterator<Object> EMPTY 
+        = new ArrayIterator<Object>(new Object[0]);
     
     /**
      * Returns an empty {@link Iterator}.
@@ -59,28 +45,40 @@ public class Iterators {
      * Creates an {@link Iterator} view for the value.
      */
     public static <T> Iterator<T> singleton(T value) {
-        return new SingletonIterator<T>(value);
+        return new ArrayIterator<T>(value);
     }
     
     /**
      * Creates an {@link Iterator} view for the given array.
      */
-    public static <T> Iterator<T> fromArray(T... values) {
-        return fromArray(values, 0, values.length);
+    public static <T> Iterator<T> iterator(T... values) {
+        return iterator(values, 0, values.length);
     }
     
     /**
      * Creates an {@link Iterator} view for the given array.
      */
-    public static <T> Iterator<T> fromArray(T[] values, int offset, int length) {
+    public static <T> Iterator<T> iterator(T[] values, int offset, int length) {
         switch (length) {
             case 0:
                 return empty();
-            case 1:
-                return singleton(values[offset]);
             default:
                 return new ArrayIterator<T>(values, offset, length);
         }
+    }
+    
+    /**
+     * Creates an {@link Iterator} view for the given elements.
+     */
+    public static <T> Iterator<T> iterator(T first, T... others) {
+        return new ArrayIterator<T>(first, others);
+    }
+    
+    /**
+     * Creates an {@link Iterator} view for the given elements.
+     */
+    public static <T> Iterator<T> iterator(T first, T[] others, int offset, int length) {
+        return new ArrayIterator<T>(first, others, offset, length);
     }
     
     /**
@@ -97,7 +95,7 @@ public class Iterators {
             int offset, int length) {
         
         Iterator<? extends Iterator<? extends T>> iterators 
-            = fromArray(values, offset, length);
+            = iterator(values, offset, length);
         
         return fromIterators(iterators);
     }
@@ -127,7 +125,7 @@ public class Iterators {
      */
     public static <T> Iterator<T> fromIterables(Iterable<? extends T>[] values, 
             int offset, int length) {
-        return fromIterables(fromArray(values, offset, length));
+        return fromIterables(iterator(values, offset, length));
     }
     
     /**
@@ -234,37 +232,13 @@ public class Iterators {
         }
     }
     
-    /**
-     * An {@link Iterator} for a single item.
-     */
-    private static class SingletonIterator<T> implements Iterator<T> {
-
-        private final T value;
+    /*public static void main(String[] args) {
+        Iterator<String> a = Arrays.asList("a").iterator();
+        Iterator<String> b = Arrays.asList("b").iterator();
         
-        private boolean hasNext = true;
-        
-        public SingletonIterator(T value) {
-            this.value = value;
+        Iterator<String> c = fromIterators(a, b);
+        while (c.hasNext()) {
+            System.out.println(c.next());
         }
-
-        @Override
-        public boolean hasNext() {
-            return hasNext;
-        }
-
-        @Override
-        public T next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            
-            hasNext = false;
-            return value;
-        }
-
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-    }
+    }*/
 }

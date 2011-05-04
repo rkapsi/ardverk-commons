@@ -622,4 +622,12 @@ public class ArrayUtils {
                     "offset=" + offset + ", length=" + length);
         }
     }
+
+    /**
+     * Creates and returns an array of the given type and size.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] newInstance(Class<? extends T> componentType, int length) {
+        return (T[])Array.newInstance(componentType, length);
+    }
 }

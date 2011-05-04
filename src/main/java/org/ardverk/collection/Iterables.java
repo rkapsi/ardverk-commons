@@ -80,7 +80,7 @@ public class Iterables {
                 return new Iterable<T>() {
                     @Override
                     public Iterator<T> iterator() {
-                        return Iterators.fromArray(values, offset, length);
+                        return Iterators.iterator(values, offset, length);
                     }
                 };
         }
