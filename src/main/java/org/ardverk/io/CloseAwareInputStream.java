@@ -1,10 +1,3 @@
-package org.ardverk.io;
-
-import java.io.FilterInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 /*
  * Copyright 2010-2011 Roger Kapsi
  *
@@ -20,6 +13,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *   See the License for the specific language governing permissions and
  *   limitations under the License.
  */
+
+package org.ardverk.io;
+
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An implementation of {@link FilterInputStream} that is being notified 
