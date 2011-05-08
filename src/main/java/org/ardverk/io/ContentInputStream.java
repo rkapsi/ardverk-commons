@@ -127,7 +127,11 @@ public class ContentInputStream extends FilterInputStream {
         close(false);
     }
     
-    public void close(boolean skipRemaining) throws IOException {
+    public void close(boolean forceClose) throws IOException {
+        close(forceClose, false);
+    }
+    
+    public void close(boolean forceClose, boolean skipRemaining) throws IOException {
         if (open) {
             try {
                 if (length != -1L) {
@@ -138,7 +142,10 @@ public class ContentInputStream extends FilterInputStream {
                 }
             } finally {
                 open = false;
-                super.close();
+                
+                if (forceClose) {
+                    super.close();
+                }
             }
         }
     }
