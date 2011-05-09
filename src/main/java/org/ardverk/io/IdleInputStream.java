@@ -48,7 +48,9 @@ public class IdleInputStream extends FilterInputStream {
     
     private final ConcurrentHashMap<IdleListener, ScheduledFuture<?>> listeners 
         = new ConcurrentHashMap<IdleListener, ScheduledFuture<?>>();
-        
+    
+    private final long frequencyInMillis;
+    
     private boolean open = true;
     
     private boolean eof = false;
@@ -56,7 +58,13 @@ public class IdleInputStream extends FilterInputStream {
     private volatile long timeStamp;
     
     public IdleInputStream(InputStream in) {
+        this(in, 5L, TimeUnit.SECONDS);
+    }
+    
+    public IdleInputStream(InputStream in, long frequency, TimeUnit unit) {
         super(in);
+        
+        this.frequencyInMillis = unit.toMillis(frequency);
     }
     
     public boolean isOpen() {
@@ -170,7 +178,7 @@ public class IdleInputStream extends FilterInputStream {
                 };
                 
                 ScheduledFuture<?> future = EXECUTOR.scheduleWithFixedDelay(
-                        task, timeout, timeout, unit);
+                        task, frequencyInMillis, frequencyInMillis, TimeUnit.MILLISECONDS);
                 
                 ScheduledFuture<?> existing = listeners.put(l, future);
                 if (existing != null) {
