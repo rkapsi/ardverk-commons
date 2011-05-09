@@ -38,7 +38,7 @@ public class CollectionUtils {
      * Concatenates the {@link Collection} with the given value(s).
      */
     public static <V, T extends Collection<V>> T concat(T dst, V... values) {
-        return concat(dst, Iterables.fromArray(values));
+        return concat(dst, Iterables.iterable(values));
     }
     
     /**
@@ -46,7 +46,7 @@ public class CollectionUtils {
      */
     public static <V, T extends Collection<V>> T concat(T dst, 
             V[] values, int index, int length) {
-        return concat(dst, Iterables.fromArray(values, index, length));
+        return concat(dst, Iterables.iterable(values, index, length));
     }
     
     /**

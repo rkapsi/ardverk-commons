@@ -45,7 +45,7 @@ public class Zipper<E> implements Iterable<E>, Cloneable, Serializable {
     }
     
     public static <E> Zipper<E> create(E... elements) {
-        return create(Iterables.fromArray(elements));
+        return create(Iterables.iterable(elements));
     }
     
     public static <E> Zipper<E> create(Iterable<? extends E> c) {

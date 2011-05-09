@@ -61,21 +61,19 @@ public class Iterables {
     /**
      * Creates an {@link Iterable} view for the given array.
      */
-    public static <T> Iterable<T> fromArray(T... values) {
-        return fromArray(values, 0, values.length);
+    public static <T> Iterable<T> iterable(T... values) {
+        return iterable(values, 0, values.length);
     }
     
     /**
      * Creates an {@link Iterable} view for the given array.
      */
-    public static <T> Iterable<T> fromArray(final T[] values, 
+    public static <T> Iterable<T> iterable(final T[] values, 
             final int offset, final int length) {
         
         switch (length) {
             case 0:
                 return empty();
-            case 1:
-                return singleton(values[offset]);
             default:
                 return new Iterable<T>() {
                     @Override
@@ -120,7 +118,7 @@ public class Iterables {
             return empty();
         }
         
-        return fromIterators(fromArray(values, offset, length));
+        return fromIterators(iterable(values, offset, length));
     }
     
     /**
@@ -156,7 +154,7 @@ public class Iterables {
         }
         
         Iterable<? extends Iterable<? extends T>> iterables 
-            = fromArray(values, offset, length);
+            = iterable(values, offset, length);
         
         return fromIterables(iterables);
     }

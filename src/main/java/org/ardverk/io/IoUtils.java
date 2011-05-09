@@ -24,6 +24,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.ardverk.collection.Iterables;
 import org.ardverk.lang.ExceptionUtils;
 
 /**
@@ -34,8 +35,25 @@ public class IoUtils {
     private IoUtils() {}
     
     /**
-     * Closes the given {@code Object} if it's a {@link Closeable},
-     * {@link Socket}, {@link ServerSocket} or {@link DatagramSocket}.
+     * Closes the given {@code Object}. Returns {@code true} on success
+     * and {@code false} on failure. All {@link IOException}s will be
+     * caught and no error will be thrown if the Object isn't any of
+     * the supported types.
+     * 
+     * @see Closeable
+     * @see #close(Closeable)
+     * 
+     * @see Socket
+     * @see #close(Socket)
+     * 
+     * @see ServerSocket
+     * @see #close(ServerSocket)
+     * 
+     * @see DatagramSocket
+     * @see #close(DatagramSocket)
+     * 
+     * @see AtomicReference
+     * @see #close(AtomicReference)
      */
     public static boolean close(Object o) {
         if (o instanceof Closeable) {
@@ -47,7 +65,7 @@ public class IoUtils {
         } else if (o instanceof DatagramSocket) {
             return close((DatagramSocket)o);
         } else if (o instanceof AtomicReference<?>) {
-            return close(((AtomicReference<?>)o).get());
+            return close(((AtomicReference<?>)o));
         }
         return false;
     }
@@ -109,26 +127,44 @@ public class IoUtils {
     }
     
     /**
-     * Closes the given array of {@link Closeable}s
+     * Closes the given {@link AtomicReference}
      */
-    public static boolean closeAll(Closeable... closeables) {
-        boolean success = true;
-        if (closeables != null) {
-            for (Closeable c : closeables) {
-                success &= close(c);
-            }
+    public static boolean close(AtomicReference<?> closeable) {
+        if (closeable != null) {
+            return close(closeable.get());
         }
-        return success;
+        return false;
     }
     
     /**
-     * Closes the given {@link Iterable} of {@link Closeable}s
+     * Closes the given array of {@link Object}s.
+     * 
+     * @see #close(Object)
      */
-    public static boolean closeAll(Iterable<? extends Closeable> closeables) {
+    public static boolean closeAll(Object... closeables) {
+        return closeAll(closeables, 0, closeables != null ? closeables.length : 0);
+    }
+    
+    /**
+     * Closes the given array of {@link Object}s.
+     * 
+     * @see #close(Object)
+     */
+    public static boolean closeAll(Object[] closeables, int offset, int length) {
+        if (closeables != null) {
+            return closeAll(Iterables.iterable(closeables, offset, length));
+        }
+        return false;
+    }
+    
+    /**
+     * Closes the given {@link Iterable} of {@link Object}s.
+     */
+    public static boolean closeAll(Iterable<?> closeables) {
         boolean success = true;
         if (closeables != null) {
-            for (Closeable c : closeables) {
-                success &= close(c);
+            for (Object closeable : closeables) {
+                success &= close(closeable);
             }
         }
         return success;
