@@ -13,7 +13,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getShortBE(int value) {
-        return getShortBE(value, new byte[2], 0);
+        return getShortBE(value, new byte[2]);
+    }
+    
+    public static byte[] getShortBE(int value, byte[] dst) {
+        return getShortBE(value, dst, 0);
     }
     
     public static byte[] getShortBE(int value, byte[] dst, int offset) {
@@ -28,7 +32,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getShortLE(int value) {
-        return getShortLE(value, new byte[2], 0);
+        return getShortLE(value, new byte[2]);
+    }
+    
+    public static byte[] getShortLE(int value, byte[] dst) {
+        return getShortLE(value, dst, 0);
     }
     
     public static byte[] getShortLE(int value, byte[] dst, int offset) {
@@ -45,7 +53,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getIntBE(int value) {
-        return getIntBE(value, new byte[4], 0);
+        return getIntBE(value, new byte[4]);
+    }
+    
+    public static byte[] getIntBE(int value, byte[] dst) {
+        return getIntBE(value, dst, 0);
     }
     
     public static byte[] getIntBE(int value, byte[] dst, int offset) {
@@ -64,7 +76,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getIntLE(int value) {
-        return getIntLE(value, new byte[4], 0);
+        return getIntLE(value, new byte[4]);
+    }
+    
+    public static byte[] getIntLE(int value, byte[] dst) {
+        return getIntLE(value, dst, 0);
     }
     
     public static byte[] getIntLE(int value, byte[] dst, int offset) {
@@ -87,7 +103,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getLongBE(long value) {
-        return getLongBE(value, new byte[8], 0);
+        return getLongBE(value, new byte[8]);
+    }
+    
+    public static byte[] getLongBE(long value, byte[] dst) {
+        return getLongBE(value, dst, 0);
     }
     
     public static byte[] getLongBE(long value, byte[] dst, int offset) {
@@ -114,7 +134,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getLongLE(long value) {
-        return getLongLE(value, new byte[8], 0);
+        return getLongLE(value, new byte[8]);
+    }
+    
+    public static byte[] getLongLE(long value, byte[] dst) {
+        return getLongLE(value, dst, 0);
     }
     
     public static byte[] getLongLE(long value, byte[] dst, int offset) {
@@ -134,7 +158,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getFloatBE(float value) {
-        return getFloatBE(value, new byte[4], 0);
+        return getFloatBE(value, new byte[4]);
+    }
+    
+    public static byte[] getFloatBE(float value, byte[] dst) {
+        return getFloatBE(value, dst, 0);
     }
     
     public static byte[] getFloatBE(float value, byte[] dst, int offset) {
@@ -146,7 +174,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getFloatLE(float value) {
-        return getFloatLE(value, new byte[4], 0);
+        return getFloatLE(value, new byte[4]);
+    }
+    
+    public static byte[] getFloatLE(float value, byte[] dst) {
+        return getFloatLE(value, dst, 0);
     }
     
     public static byte[] getFloatLE(float value, byte[] dst, int offset) {
@@ -158,7 +190,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getDoubleBE(double value) {
-        return getDoubleBE(value, new byte[8], 0);
+        return getDoubleBE(value, new byte[8]);
+    }
+    
+    public static byte[] getDoubleBE(double value, byte[] dst) {
+        return getDoubleBE(value, dst, 0);
     }
     
     public static byte[] getDoubleBE(double value, byte[] dst, int offset) {
@@ -170,7 +206,11 @@ public class DataOutputUtils {
     }
     
     public static byte[] getDoubleLE(double value) {
-        return getDoubleLE(value, new byte[8], 0);
+        return getDoubleLE(value, new byte[8]);
+    }
+    
+    public static byte[] getDoubleLE(double value, byte[] dst) {
+        return getDoubleLE(value, dst, 0);
     }
     
     public static byte[] getDoubleLE(double value, byte[] dst, int offset) {
