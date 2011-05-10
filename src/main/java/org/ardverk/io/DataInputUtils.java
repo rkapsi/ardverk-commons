@@ -140,14 +140,14 @@ public class DataInputUtils {
     }
     
     public static long toLongBE(byte[] value, int offset) throws IOException {
-        return ((value[offset    ] & 0xFFL) << 56L) 
-            |  ((value[offset + 1] & 0xFFL) << 48L) 
-            |  ((value[offset + 2] & 0xFFL) << 40L) 
-            |  ((value[offset + 3] & 0xFFL) << 32L) 
-            |  ((value[offset + 4] & 0xFFL) << 24L) 
-            |  ((value[offset + 5] & 0xFFL) << 16L) 
-            |  ((value[offset + 6] & 0xFFL) <<  8L) 
-            |  ((value[offset + 7] & 0xFFL)       );
+        return ((value[offset    ] & 0xFF) << 56L) 
+            |  ((value[offset + 1] & 0xFF) << 48L) 
+            |  ((value[offset + 2] & 0xFF) << 40L) 
+            |  ((value[offset + 3] & 0xFF) << 32L) 
+            |  ((value[offset + 4] & 0xFF) << 24L) 
+            |  ((value[offset + 5] & 0xFF) << 16L) 
+            |  ((value[offset + 6] & 0xFF) <<  8L) 
+            |  ((value[offset + 7] & 0xFF)       );
     }
     
     public static long readLongLE(InputStream in) throws IOException {
@@ -162,14 +162,14 @@ public class DataInputUtils {
     }
     
     public static long toLongLE(byte[] value, int offset) throws IOException {
-        return ((value[offset + 7] & 0xFFL) << 56L) 
-            |  ((value[offset + 6] & 0xFFL) << 48L) 
-            |  ((value[offset + 5] & 0xFFL) << 40L) 
-            |  ((value[offset + 4] & 0xFFL) << 32L) 
-            |  ((value[offset + 3] & 0xFFL) << 24L) 
-            |  ((value[offset + 2] & 0xFFL) << 16L) 
-            |  ((value[offset + 1] & 0xFFL) <<  8L) 
-            |  ((value[offset    ] & 0xFFL)       );
+        return ((value[offset + 7] & 0xFF) << 56L) 
+            |  ((value[offset + 6] & 0xFF) << 48L) 
+            |  ((value[offset + 5] & 0xFF) << 40L) 
+            |  ((value[offset + 4] & 0xFF) << 32L) 
+            |  ((value[offset + 3] & 0xFF) << 24L) 
+            |  ((value[offset + 2] & 0xFF) << 16L) 
+            |  ((value[offset + 1] & 0xFF) <<  8L) 
+            |  ((value[offset    ] & 0xFF)       );
     }
     
     public static float readFloatBE(InputStream in) throws IOException {
