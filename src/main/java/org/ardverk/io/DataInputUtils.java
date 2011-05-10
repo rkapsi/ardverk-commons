@@ -3,7 +3,6 @@ package org.ardverk.io;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteOrder;
 
 public class DataInputUtils {
 
@@ -47,70 +46,59 @@ public class DataInputUtils {
         return (byte)readUnsignedByte(in);
     }
     
-    public static int readUnsignedShort(InputStream in) throws IOException {
-        return readUnsignedShort(in, ByteOrder.BIG_ENDIAN);
+    public static int readUnsignedShortBE(InputStream in) throws IOException {
+        return (r(in) << 8) | r(in);
     }
     
-    public static int readUnsignedShort(InputStream in, ByteOrder bo) throws IOException {
-        if (bo.equals(ByteOrder.BIG_ENDIAN)) {
-            return (r(in) << 8) | r(in);
-        }
+    public static int readUnsignedShortLE(InputStream in) throws IOException {
         return r(in) | (r(in) << 8);
     }
     
-    public static short readShort(InputStream in) throws IOException {
-        return (short)readUnsignedShort(in);
+    public static short readShortBE(InputStream in) throws IOException {
+        return (short)readUnsignedShortBE(in);
     }
     
-    public static short readShort(InputStream in, ByteOrder bo) throws IOException {
-        return (short)readUnsignedShort(in, bo);
+    public static short readShortLE(InputStream in) throws IOException {
+        return (short)readUnsignedShortLE(in);
     }
     
-    public static char readChar(InputStream in) throws IOException {
-        return (char)readUnsignedShort(in);
+    public static int readIntBE(InputStream in) throws IOException {
+        return (r(in) << 24) | (r(in) << 16) 
+            |  (r(in) <<  8) | (r(in)      );
     }
     
-    public static char readChar(InputStream in, ByteOrder bo) throws IOException {
-        return (char)readUnsignedShort(in, bo);
-    }
-    
-    public static int readInt(InputStream in) throws IOException {
-        return readInt(in, ByteOrder.BIG_ENDIAN);
-    }
-    
-    public static int readInt(InputStream in, ByteOrder bo) throws IOException {
-        if (bo.equals(ByteOrder.BIG_ENDIAN)) {
-            return (r(in) << 24) | (r(in) << 16) 
-                |  (r(in) <<  8) | (r(in)      );
-        }
-        
+    public static int readIntLE(InputStream in) throws IOException {
         return (r(in)      ) | (r(in) <<  8) 
             |  (r(in) << 16) | (r(in) << 24);
     }
     
-    public static long readLong(InputStream in) throws IOException {
-        return readLong(in, ByteOrder.BIG_ENDIAN);
+    public static long readLongBE(InputStream in) throws IOException {
+        return (r(in) << 56L) | (r(in) << 48L) 
+            |  (r(in) << 40L) | (r(in) << 32L) 
+            |  (r(in) << 24L) | (r(in) << 16L) 
+            |  (r(in) <<  8L) | (r(in)       );
     }
     
-    public static long readLong(InputStream in, ByteOrder bo) throws IOException {
-        if (bo.equals(ByteOrder.BIG_ENDIAN)) {
-            return (r(in) << 56L) | (r(in) << 48L) 
-                |  (r(in) << 40L) | (r(in) << 32L) 
-                |  (r(in) << 24L) | (r(in) << 16L) 
-                |  (r(in) <<  8L) | (r(in)       );
-        }
-        
+    public static long readLongLE(InputStream in) throws IOException {
         return (r(in)       ) | (r(in) <<  8L) 
             |  (r(in) << 16L) | (r(in) << 24L) 
             |  (r(in) << 32L) | (r(in) << 40L) 
             |  (r(in) << 48L) | (r(in) << 56L);
     }
     
-    public static float readFloat(InputStream in) throws IOException {
-        return Float.intBitsToFloat(readInt(in));
+    public static float readFloatBE(InputStream in) throws IOException {
+        return Float.intBitsToFloat(readIntBE(in));
     }
     
-    public static double readDouble(InputStream in) throws IOException {
-        return Double.longBitsToDouble(readLong(in));
+    public static float readFloatLE(InputStream in) throws IOException {
+        return Float.intBitsToFloat(readIntLE(in));
+    }
+    
+    public static double readDoubleBE(InputStream in) throws IOException {
+        return Double.longBitsToDouble(readLongBE(in));
+    }
+    
+    public static double readDoubleLE(InputStream in) throws IOException {
+        return Double.longBitsToDouble(readLongLE(in));
     }
 }
