@@ -141,7 +141,7 @@ public class IoUtils {
      * 
      * @see #close(Object)
      */
-    public static boolean closeAll(Object... closeables) {
+    public static <T> boolean closeAll(T... closeables) {
         return closeAll(closeables, 0, closeables != null ? closeables.length : 0);
     }
     
@@ -150,7 +150,7 @@ public class IoUtils {
      * 
      * @see #close(Object)
      */
-    public static boolean closeAll(Object[] closeables, int offset, int length) {
+    public static <T> boolean closeAll(T[] closeables, int offset, int length) {
         if (closeables != null) {
             return closeAll(Iterables.iterable(closeables, offset, length));
         }
