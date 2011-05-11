@@ -16,7 +16,13 @@
 
 package org.ardverk.utils;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+
+import org.ardverk.io.DataUtils;
+import org.ardverk.io.StreamUtils;
 
 public class StringUtils {
 
@@ -58,6 +64,42 @@ public class StringUtils {
         }
     }
     
+    /**
+     * Writes the {@link String} to the given {@link OutputStream}.
+     */
+    public static void writeString(String value, OutputStream out) throws IOException {
+        writeString(value, UTF_8, out);
+    }
+    
+    /**
+     * Writes the {@link String} to the given {@link OutputStream}.
+     */
+    public static void writeString(String value, String encoding, OutputStream out) throws IOException {
+        byte[] data = getBytes(value, encoding);
+        
+        DataUtils.int2beb(data.length, out);
+        out.write(data);
+    }
+    
+    /**
+     * Reads and returns a {@link String} from the given {@link InputStream}.
+     */
+    public static String readString(InputStream in) throws IOException {
+        return readString(in, UTF_8);
+    }
+    
+    /**
+     * Reads and returns a {@link String} from the given {@link InputStream}.
+     */
+    public static String readString(InputStream in, String encoding) throws IOException {
+        int length = DataUtils.beb2int(in);
+        
+        byte[] data = new byte[length];
+        StreamUtils.readFully(in, data);
+        
+        return toString(data, encoding);
+    }
+
     /**
      * Returns true if the given {@link String} is {@code null}, is an
      * empty string or is just a bunch of whitespace characters as defined
