@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class DataOutputUtils {
+public class DataUtils {
 
     /**
      * The size of a {@code byte} in bytes.
@@ -37,7 +37,7 @@ public class DataOutputUtils {
      */
     public static final int DOUBLE = Double.SIZE / Byte.SIZE;
     
-    private DataOutputUtils() {}
+    private DataUtils() {}
     
     private static int r(InputStream in) throws IOException {
         int value = in.read();
