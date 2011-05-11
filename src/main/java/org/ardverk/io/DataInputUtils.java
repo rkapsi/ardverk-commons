@@ -33,113 +33,101 @@ public class DataInputUtils {
             total += r;
         }
     }
-
-    public static boolean readBoolean(InputStream in) throws IOException {
-        return r(in) != 0;
-    }
     
-    public static int readUnsignedByte(InputStream in) throws IOException {
-        return r(in);
-    }
-    
-    public static byte readByte(InputStream in) throws IOException {
-        return (byte)readUnsignedByte(in);
-    }
-    
-    public static int readUnsignedShortBE(InputStream in) throws IOException {
+    public static int beb2ushort(InputStream in) throws IOException {
         return (r(in) << 8) | r(in);
     }
     
-    public static int toUnsignedShortBE(byte[] value) {
-        return toUnsignedShortBE(value, 0);
+    public static int beb2ushort(byte[] value) {
+        return beb2ushort(value, 0);
     }
     
-    public static int toUnsignedShortBE(byte[] value, int offset) {
+    public static int beb2ushort(byte[] value, int offset) {
         return ((value[offset    ] & 0xFF) << 8) 
             |  ((value[offset + 1] & 0xFF)     );
     }
     
-    public static int readUnsignedShortLE(InputStream in) throws IOException {
+    public static int leb2ushort(InputStream in) throws IOException {
         return r(in) | (r(in) << 8);
     }
     
-    public static int toUnsignedShortLE(byte[] value) {
-        return toUnsignedShortLE(value, 0);
+    public static int leb2ushort(byte[] value) {
+        return leb2ushort(value, 0);
     }
     
-    public static int toUnsignedShortLE(byte[] value, int offset) {
+    public static int leb2ushort(byte[] value, int offset) {
         return ((value[offset + 1] & 0xFF) << 8) 
             |  ((value[offset    ] & 0xFF)     );
     }
     
-    public static short readShortBE(InputStream in) throws IOException {
-        return (short)readUnsignedShortBE(in);
+    public static short beb2short(InputStream in) throws IOException {
+        return (short)beb2ushort(in);
     }
     
-    public static int toShortBE(byte[] value) {
-        return (short)toUnsignedShortBE(value);
+    public static short beb2short(byte[] value) {
+        return (short)beb2ushort(value);
     }
     
-    public static int toShortBE(byte[] value, int offset) {
-        return (short)toUnsignedShortBE(value, offset);
+    public static short beb2short(byte[] value, int offset) {
+        return (short)beb2ushort(value, offset);
     }
     
-    public static short readShortLE(InputStream in) throws IOException {
-        return (short)readUnsignedShortLE(in);
+    public static short leb2short(InputStream in) throws IOException {
+        return (short)leb2ushort(in);
     }
     
-    public static int toShortLE(byte[] value) {
-        return (short)toUnsignedShortLE(value);
+    public static short leb2short(byte[] value) {
+        return (short)leb2ushort(value);
     }
     
-    public static int toShortLE(byte[] value, int offset) {
-        return (short)toUnsignedShortLE(value, offset);
+    public static short leb2short(byte[] value, int offset) {
+        return (short)leb2ushort(value, offset);
     }
     
-    public static int readIntBE(InputStream in) throws IOException {
+    public static int beb2int(InputStream in) throws IOException {
         return (r(in) << 24) | (r(in) << 16) 
             |  (r(in) <<  8) | (r(in)      );
     }
     
-    public static int toIntBE(byte[] value) {
-        return toIntBE(value, 0);
+    public static int beb2int(byte[] value) {
+        return beb2int(value, 0);
     }
     
-    public static int toIntBE(byte[] value, int offset) {
+    public static int beb2int(byte[] value, int offset) {
         return ((value[offset    ] & 0xFF) << 24) 
             |  ((value[offset + 1] & 0xFF) << 16) 
             |  ((value[offset + 2] & 0xFF) <<  8) 
             |  ((value[offset + 3] & 0xFF)      );
     }
     
-    public static int readIntLE(InputStream in) throws IOException {
+    public static int leb2int(InputStream in) throws IOException {
         return (r(in)      ) | (r(in) <<  8) 
             |  (r(in) << 16) | (r(in) << 24);
     }
     
-    public static int toIntLE(byte[] value) {
-        return toIntLE(value, 0);
+    public static int leb2int(byte[] value) {
+        return leb2int(value, 0);
     }
     
-    public static int toIntLE(byte[] value, int offset) {
+    public static int leb2int(byte[] value, int offset) {
         return ((value[offset + 3] & 0xFF) << 24) 
             |  ((value[offset + 2] & 0xFF) << 16) 
             |  ((value[offset + 1] & 0xFF) <<  8) 
             |  ((value[offset    ] & 0xFF)      );
     }
     
-    public static long readLongBE(InputStream in) throws IOException {
+    public static long beb2long(InputStream in) throws IOException {
         return (r(in) << 56L) | (r(in) << 48L) 
             |  (r(in) << 40L) | (r(in) << 32L) 
             |  (r(in) << 24L) | (r(in) << 16L) 
             |  (r(in) <<  8L) | (r(in)       );
     }
     
-    public static long toLongBE(byte[] value) {
-        return toLongBE(value, 0);
+    public static long beb2long(byte[] value) {
+        return beb2long(value, 0);
     }
     
-    public static long toLongBE(byte[] value, int offset) {
+    public static long beb2long(byte[] value, int offset) {
         return ((value[offset    ] & 0xFFL) << 56L) 
             |  ((value[offset + 1] & 0xFFL) << 48L) 
             |  ((value[offset + 2] & 0xFFL) << 40L) 
@@ -150,18 +138,18 @@ public class DataInputUtils {
             |  ((value[offset + 7] & 0xFFL)       );
     }
     
-    public static long readLongLE(InputStream in) throws IOException {
+    public static long leb2long(InputStream in) throws IOException {
         return (r(in)       ) | (r(in) <<  8L) 
             |  (r(in) << 16L) | (r(in) << 24L) 
             |  (r(in) << 32L) | (r(in) << 40L) 
             |  (r(in) << 48L) | (r(in) << 56L);
     }
     
-    public static long toLongLE(byte[] value) {
-        return toLongLE(value, 0);
+    public static long leb2long(byte[] value) {
+        return leb2long(value, 0);
     }
     
-    public static long toLongLE(byte[] value, int offset) {
+    public static long leb2long(byte[] value, int offset) {
         return ((value[offset + 7] & 0xFFL) << 56L) 
             |  ((value[offset + 6] & 0xFFL) << 48L) 
             |  ((value[offset + 5] & 0xFFL) << 40L) 
@@ -172,51 +160,51 @@ public class DataInputUtils {
             |  ((value[offset    ] & 0xFFL)       );
     }
     
-    public static float readFloatBE(InputStream in) throws IOException {
-        return Float.intBitsToFloat(readIntBE(in));
+    public static float beb2float(InputStream in) throws IOException {
+        return Float.intBitsToFloat(beb2int(in));
     }
     
-    public static float toFloatBE(byte[] value) {
-        return toFloatBE(value, 0);
+    public static float beb2float(byte[] value) {
+        return beb2float(value, 0);
     }
     
-    public static float toFloatBE(byte[] value, int offset) {
-        return Float.intBitsToFloat(toIntBE(value, offset));
+    public static float beb2float(byte[] value, int offset) {
+        return Float.intBitsToFloat(beb2int(value, offset));
     }
     
-    public static float readFloatLE(InputStream in) throws IOException {
-        return Float.intBitsToFloat(readIntLE(in));
+    public static float leb2float(InputStream in) throws IOException {
+        return Float.intBitsToFloat(beb2int(in));
     }
     
-    public static float toFloatLE(byte[] value) {
-        return toFloatLE(value, 0);
+    public static float leb2float(byte[] value) {
+        return leb2float(value, 0);
     }
     
-    public static float toFloatLE(byte[] value, int offset) {
-        return Float.intBitsToFloat(toIntLE(value, offset));
+    public static float leb2float(byte[] value, int offset) {
+        return Float.intBitsToFloat(leb2int(value, offset));
     }
     
-    public static double readDoubleBE(InputStream in) throws IOException {
-        return Double.longBitsToDouble(readLongBE(in));
+    public static double beb2double(InputStream in) throws IOException {
+        return Double.longBitsToDouble(beb2long(in));
     }
     
-    public static double toDoubleBE(byte[] value) {
-        return toDoubleBE(value, 0);
+    public static double beb2double(byte[] value) {
+        return beb2double(value, 0);
     }
     
-    public static double toDoubleBE(byte[] value, int offset) {
-        return Double.longBitsToDouble(toLongBE(value, offset));
+    public static double beb2double(byte[] value, int offset) {
+        return Double.longBitsToDouble(beb2long(value, offset));
     }
     
-    public static double readDoubleLE(InputStream in) throws IOException {
-        return Double.longBitsToDouble(readLongLE(in));
+    public static double leb2double(InputStream in) throws IOException {
+        return Double.longBitsToDouble(leb2long(in));
     }
     
-    public static double toDoubleLE(byte[] value) {
-        return toDoubleLE(value, 0);
+    public static double leb2double(byte[] value) {
+        return leb2double(value, 0);
     }
     
-    public static double toDoubleLE(byte[] value, int offset) {
-        return Double.longBitsToDouble(toLongLE(value, offset));
+    public static double leb2double(byte[] value, int offset) {
+        return Double.longBitsToDouble(leb2long(value, offset));
     }
 }

@@ -21,6 +21,36 @@ import java.util.Comparator;
 public class Bytes {
 
     /**
+     * The size of a {@code byte} in bytes.
+     */
+    public static final int BYTE = Byte.SIZE / Byte.SIZE;
+    
+    /**
+     * The size of a {@code short} in bytes.
+     */
+    public static final int SHORT = Short.SIZE / Byte.SIZE;
+    
+    /**
+     * The size of a {@code int} in bytes.
+     */
+    public static final int INT = Integer.SIZE / Byte.SIZE;
+    
+    /**
+     * The size of a {@code float} in bytes.
+     */
+    public static final int FLOAT = Float.SIZE / Byte.SIZE;
+    
+    /**
+     * The size of a {@code long} in bytes.
+     */
+    public static final int LONG = Long.SIZE / Byte.SIZE;
+    
+    /**
+     * The size of a {@code double} in bytes.
+     */
+    public static final int DOUBLE = Double.SIZE / Byte.SIZE;
+    
+    /**
      * An empty {@code byte} array.
      */
     public static final byte[] EMPTY = new byte[0];
