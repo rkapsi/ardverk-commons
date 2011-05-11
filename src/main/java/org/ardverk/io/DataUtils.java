@@ -5,6 +5,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * A collection of binary operations.
+ * 
+ * Conventions:
+ * 
+ * beb = Big Endian Bytes
+ * leb = Little Endian Bytes
+ */
 public class DataUtils {
 
     /**
@@ -39,30 +47,17 @@ public class DataUtils {
     
     private DataUtils() {}
     
+    /**
+     * Reads a single {@code byte} from the given {@link InputStream}
+     * and returns it or throws an {@link EOFException} if the EOF has
+     * been reached.
+     */
     private static int r(InputStream in) throws IOException {
         int value = in.read();
         if (value == -1) {
             throw new EOFException();
         }
         return value;
-    }
-    
-    public static void readFully(InputStream in, byte[] b) throws IOException {
-        readFully(in, b, 0, b.length);
-    }
-    
-    public static void readFully(InputStream in, byte[] b, 
-            int offset, int length) throws IOException {
-        
-        int total = 0;
-        while (total < length) {
-            int r = in.read(b, offset + total, length - total);
-            if (r == -1) {
-                throw new EOFException();
-            }
-            
-            total += r;
-        }
     }
     
     public static int beb2ushort(InputStream in) throws IOException {
@@ -447,5 +442,17 @@ public class DataUtils {
     
     public static byte[] double2leb(double value, byte[] dst, int offset) {
         return long2leb(Double.doubleToLongBits(value), dst, offset);
+    }
+    
+    public static int ubyte2int(byte value) {
+        return value & 0xFF;
+    }
+    
+    public static int ushort2int(short value) {
+        return value & 0xFFFF;
+    }
+    
+    public static long uint2long(int value) {
+        return value & 0xFFFFFFFFL;
     }
 }
