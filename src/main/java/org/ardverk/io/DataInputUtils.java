@@ -173,7 +173,7 @@ public class DataInputUtils {
     }
     
     public static float leb2float(InputStream in) throws IOException {
-        return Float.intBitsToFloat(beb2int(in));
+        return Float.intBitsToFloat(leb2int(in));
     }
     
     public static float leb2float(byte[] value) {
