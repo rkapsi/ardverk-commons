@@ -21,8 +21,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 
-import org.ardverk.io.DataUtils;
-import org.ardverk.io.StreamUtils;
+import org.ardverk.io.ByteUtils;
 
 public class StringUtils {
 
@@ -76,9 +75,7 @@ public class StringUtils {
      */
     public static void writeString(String value, String encoding, OutputStream out) throws IOException {
         byte[] data = getBytes(value, encoding);
-        
-        DataUtils.int2beb(data.length, out);
-        out.write(data);
+        ByteUtils.writeBytes(data, out);
     }
     
     /**
@@ -92,11 +89,7 @@ public class StringUtils {
      * Reads and returns a {@link String} from the given {@link InputStream}.
      */
     public static String readString(InputStream in, String encoding) throws IOException {
-        int length = DataUtils.beb2int(in);
-        
-        byte[] data = new byte[length];
-        StreamUtils.readFully(in, data);
-        
+        byte[] data = ByteUtils.readBytes(in);
         return toString(data, encoding);
     }
 

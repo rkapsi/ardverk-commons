@@ -1,3 +1,19 @@
+/*
+ * Copyright 2010-2011 Roger Kapsi
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package org.ardverk.io;
 
 import java.io.EOFException;
@@ -234,9 +250,10 @@ public class DataUtils {
         return Double.longBitsToDouble(leb2long(value, offset));
     }
     
-    public static void short2beb(int value, OutputStream out) throws IOException {
+    public static OutputStream short2beb(int value, OutputStream out) throws IOException {
         out.write(value >>>  8);
         out.write(value       );
+        return out;
     }
     
     public static byte[] short2beb(int value) {
@@ -253,9 +270,10 @@ public class DataUtils {
         return dst;
     }
     
-    public static void short2leb(int value, OutputStream out) throws IOException {
+    public static OutputStream short2leb(int value, OutputStream out) throws IOException {
         out.write(value       );
         out.write(value >>>  8);
+        return out;
     }
     
     public static byte[] short2leb(int value) {
@@ -272,11 +290,12 @@ public class DataUtils {
         return dst;
     }
     
-    public static void int2beb(int value, OutputStream out) throws IOException {
+    public static OutputStream int2beb(int value, OutputStream out) throws IOException {
         out.write(value >>> 24);
         out.write(value >>> 16);
         out.write(value >>>  8);
         out.write(value       );
+        return out;
     }
     
     public static byte[] int2beb(int value) {
@@ -295,11 +314,12 @@ public class DataUtils {
         return dst;
     }
     
-    public static void int2leb(int value, OutputStream out) throws IOException {
+    public static OutputStream int2leb(int value, OutputStream out) throws IOException {
         out.write(value       );
         out.write(value >>>  8);
         out.write(value >>> 16);
         out.write(value >>> 24);
+        return out;
     }
     
     public static byte[] int2leb(int value) {
@@ -318,7 +338,7 @@ public class DataUtils {
         return dst;
     }
     
-    public static void long2beb(long value, OutputStream out) throws IOException {
+    public static OutputStream long2beb(long value, OutputStream out) throws IOException {
         out.write((int)(value >>> 56L));
         out.write((int)(value >>> 48L));
         out.write((int)(value >>> 40L));
@@ -327,6 +347,7 @@ public class DataUtils {
         out.write((int)(value >>> 16L));
         out.write((int)(value >>>  8L));
         out.write((int)(value        ));
+        return out;
     }
     
     public static byte[] long2beb(long value) {
@@ -349,7 +370,7 @@ public class DataUtils {
         return dst;
     }
     
-    public static void long2leb(long value, OutputStream out) throws IOException {
+    public static OutputStream long2leb(long value, OutputStream out) throws IOException {
         out.write((int)(value        ));
         out.write((int)(value >>>  8L));
         out.write((int)(value >>> 16L));
@@ -358,6 +379,7 @@ public class DataUtils {
         out.write((int)(value >>> 40L));
         out.write((int)(value >>> 48L));
         out.write((int)(value >>> 56L));
+        return out;
     }
     
     public static byte[] long2leb(long value) {
@@ -380,8 +402,8 @@ public class DataUtils {
         return dst;
     }
     
-    public static void float2beb(float value, OutputStream out) throws IOException {
-        int2beb(Float.floatToIntBits(value), out);
+    public static OutputStream float2beb(float value, OutputStream out) throws IOException {
+        return int2beb(Float.floatToIntBits(value), out);
     }
     
     public static byte[] float2beb(float value) {
@@ -396,8 +418,8 @@ public class DataUtils {
         return int2beb(Float.floatToIntBits(value), dst, offset);
     }
     
-    public static void float2leb(float value, OutputStream out) throws IOException {
-        int2leb(Float.floatToIntBits(value), out);
+    public static OutputStream float2leb(float value, OutputStream out) throws IOException {
+        return int2leb(Float.floatToIntBits(value), out);
     }
     
     public static byte[] float2leb(float value) {
@@ -412,8 +434,8 @@ public class DataUtils {
         return int2leb(Float.floatToIntBits(value), dst, offset);
     }
     
-    public static void double2beb(double value, OutputStream out) throws IOException {
-        long2beb(Double.doubleToLongBits(value), out);
+    public static OutputStream double2beb(double value, OutputStream out) throws IOException {
+        return long2beb(Double.doubleToLongBits(value), out);
     }
     
     public static byte[] double2beb(double value) {
@@ -428,8 +450,8 @@ public class DataUtils {
         return long2beb(Double.doubleToLongBits(value), dst, offset);
     }
     
-    public static void double2leb(double value, OutputStream out) throws IOException {
-        long2leb(Double.doubleToLongBits(value), out);
+    public static OutputStream double2leb(double value, OutputStream out) throws IOException {
+        return long2leb(Double.doubleToLongBits(value), out);
     }
     
     public static byte[] double2leb(double value) {
