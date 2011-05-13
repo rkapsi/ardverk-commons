@@ -25,8 +25,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.ardverk.concurrent.ExecutorUtils;
+import org.ardverk.concurrent.ManagedRunnable;
 
-public class InputOutputStream extends FilterInputStream {
+public abstract class InputOutputStream extends FilterInputStream {
     
     private static final Executor EXECUTOR 
         = ExecutorUtils.newCachedThreadPool("InputOutputStreamThread");
@@ -39,39 +40,45 @@ public class InputOutputStream extends FilterInputStream {
     
     private final PipedOutputStream out = new PipedOutputStream();
     
-    private final Runnable task = new Runnable() {
+    private final Runnable task = new ManagedRunnable() {
         @Override
-        public void run() {
+        protected void doRun() throws IOException {
             try {
                 writeTo(out);
-            } catch (IOException err) {
-                uncaughtException(err);
             } finally {
                 IoUtils.close(out);
             }
+        }
+
+        @Override
+        protected void exceptionCaught(Throwable t) {
+            uncaughtException(t);
         }
     };
     
     private final AtomicInteger state = new AtomicInteger(INIT);
     
     public InputOutputStream() {
-        super(new PipedInputStream());
-        connect();
+        this(-1);
     }
     
     public InputOutputStream(int bufferSize) {
-        super(new PipedInputStream(bufferSize));
-        connect();
-    }
-    
-    private void connect() {
+        super(newPipedInputStream(bufferSize));
+        
         try {
             ((PipedInputStream)in).connect(out);
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
     }
-
+    
+    private static PipedInputStream newPipedInputStream(int bufferSize) {
+        if (bufferSize == -1) {
+            return new PipedInputStream();
+        }
+        return new PipedInputStream(bufferSize);
+    }
+    
     private void execute() {
         if (state.compareAndSet(INIT, READY)) {
             EXECUTOR.execute(task);
@@ -104,10 +111,8 @@ public class InputOutputStream extends FilterInputStream {
         }
     }
     
-    public void writeTo(OutputStream out) throws IOException {
-        throw new IOException();
-    }
+    protected abstract void writeTo(OutputStream out) throws IOException;
     
-    public void uncaughtException(Throwable t) {
+    protected void uncaughtException(Throwable t) {
     }
 }
