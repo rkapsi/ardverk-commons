@@ -32,6 +32,18 @@ public abstract class OutputInputStream extends FilterOutputStream {
     private static final Executor EXECUTOR 
         = ExecutorUtils.newCachedThreadPool("OutputInputStreamThread");
     
+    private static final Consumer SELF = new Consumer() {
+        @Override
+        public void uncaughtException(Throwable t) {
+            throw new UnsupportedOperationException();
+        }
+        
+        @Override
+        public void consume(InputStream in) throws IOException {
+            throw new UnsupportedOperationException();
+        }
+    };
+    
     private static final int INIT = 0;
     
     private static final int READY = 1;
@@ -51,7 +63,7 @@ public abstract class OutputInputStream extends FilterOutputStream {
             synchronized (lock) {
                 try {
                     try {
-                        consume(in);
+                        consumer.consume(in);
                     } finally {
                         IoUtils.close(in);
                     }
@@ -64,9 +76,11 @@ public abstract class OutputInputStream extends FilterOutputStream {
 
         @Override
         protected void exceptionCaught(Throwable t) {
-            uncaughtException(t);
+            consumer.uncaughtException(t);
         }
     };
+    
+    private final Consumer consumer;
     
     private boolean consumed = false;
     
@@ -74,8 +88,36 @@ public abstract class OutputInputStream extends FilterOutputStream {
         this(-1);
     }
     
+    public OutputInputStream(Consumer consumer) {
+        this(consumer, -1);
+    }
+    
     public OutputInputStream(int bufferSize) {
+        this(SELF, bufferSize);
+    }
+    
+    public OutputInputStream(Consumer consumer, int bufferSize) {
         super(new PipedOutputStream());
+        
+        if (consumer == null) {
+            throw new NullPointerException("consumer");
+        }
+        
+        if (consumer == SELF) {
+            consumer = new Consumer() {
+                @Override
+                public void consume(InputStream in) throws IOException {
+                    OutputInputStream.this.consume(in);
+                }
+                
+                @Override
+                public void uncaughtException(Throwable t) {
+                    OutputInputStream.this.uncaughtException(t);
+                }
+            };
+        }
+        
+        this.consumer = consumer;
         
         if (bufferSize == -1) {
             in = new PipedInputStream();
@@ -160,6 +202,12 @@ public abstract class OutputInputStream extends FilterOutputStream {
         }
     }
 
+    public static interface Consumer {
+        public void consume(InputStream in) throws IOException;
+        
+        public void uncaughtException(Throwable t);
+    }
+    
     protected abstract void consume(InputStream in) throws IOException;
     
     protected void uncaughtException(Throwable t) {

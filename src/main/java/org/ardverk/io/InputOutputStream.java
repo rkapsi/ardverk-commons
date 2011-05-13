@@ -32,6 +32,18 @@ public abstract class InputOutputStream extends FilterInputStream {
     private static final Executor EXECUTOR 
         = ExecutorUtils.newCachedThreadPool("InputOutputStreamThread");
     
+    private static final Producer SELF = new Producer() {
+        @Override
+        public void produce(OutputStream out) throws IOException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void uncaughtException(Throwable t) {
+            throw new UnsupportedOperationException();
+        }
+    };
+    
     private static final int INIT = 0;
     
     private static final int READY = 1;
@@ -44,7 +56,7 @@ public abstract class InputOutputStream extends FilterInputStream {
         @Override
         protected void doRun() throws IOException {
             try {
-                writeTo(out);
+                producer.produce(out);
             } finally {
                 IoUtils.close(out);
             }
@@ -52,18 +64,48 @@ public abstract class InputOutputStream extends FilterInputStream {
 
         @Override
         protected void exceptionCaught(Throwable t) {
-            uncaughtException(t);
+            producer.uncaughtException(t);
         }
     };
     
     private final AtomicInteger state = new AtomicInteger(INIT);
     
+    private final Producer producer;
+    
     public InputOutputStream() {
         this(-1);
     }
     
+    public InputOutputStream(Producer producer) {
+        this(producer, -1);
+    }
+    
     public InputOutputStream(int bufferSize) {
+        this(SELF, bufferSize);
+    }
+    
+    public InputOutputStream(Producer producer, int bufferSize) {
         super(newPipedInputStream(bufferSize));
+        
+        if (producer == null) {
+            throw new NullPointerException("producer");
+        }
+        
+        if (producer == SELF) {
+            producer = new Producer() {
+                @Override
+                public void produce(OutputStream out) throws IOException {
+                    InputOutputStream.this.produce(out);
+                }
+
+                @Override
+                public void uncaughtException(Throwable t) {
+                    InputOutputStream.this.uncaughtException(t);
+                }
+            };
+        }
+        
+        this.producer = producer;
         
         try {
             ((PipedInputStream)in).connect(out);
@@ -111,7 +153,13 @@ public abstract class InputOutputStream extends FilterInputStream {
         }
     }
     
-    protected abstract void writeTo(OutputStream out) throws IOException;
+    public static interface Producer {
+        public void produce(OutputStream out) throws IOException;
+        
+        public void uncaughtException(Throwable t);
+    }
+    
+    protected abstract void produce(OutputStream out) throws IOException;
     
     protected void uncaughtException(Throwable t) {
     }

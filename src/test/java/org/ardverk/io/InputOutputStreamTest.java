@@ -29,7 +29,7 @@ import org.junit.Test;
 public class InputOutputStreamTest {
 
     @Test
-    public void writeTo() throws IOException {
+    public void produce() throws IOException {
         final byte[] expected = new byte[8*1024];
 
         Random generator = new Random();
@@ -37,7 +37,7 @@ public class InputOutputStreamTest {
         
         InputStream in = new InputOutputStream() {
             @Override
-            public void writeTo(OutputStream out) throws IOException {
+            protected void produce(OutputStream out) throws IOException {
                 out.write(expected);
             }
         };
