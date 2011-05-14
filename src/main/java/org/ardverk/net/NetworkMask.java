@@ -89,9 +89,8 @@ public class NetworkMask implements Comparable<NetworkMask>,
     }
     
     @Override
-    public int write(OutputStream out) throws IOException {
+    public void writeTo(OutputStream out) throws IOException {
         out.write(mask);
-        return length();
     }
 
     /**

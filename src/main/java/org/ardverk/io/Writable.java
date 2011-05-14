@@ -28,5 +28,5 @@ public interface Writable {
      * Writes this Object to the given {@link OutputStream} and returns
      * the number of bytes that were written.
      */
-    public int write(OutputStream out) throws IOException;
+    public void writeTo(OutputStream out) throws IOException;
 }
