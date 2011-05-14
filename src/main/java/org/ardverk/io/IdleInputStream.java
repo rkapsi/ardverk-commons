@@ -21,13 +21,11 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.ardverk.concurrent.EventUtils;
-import org.ardverk.concurrent.ExecutorUtils;
-import org.ardverk.concurrent.FutureUtils;
+import org.ardverk.utils.Idle;
+import org.ardverk.utils.Idle.IdleListener;
 
 /**
  * The {@link IdleInputStream} fires events if nothing have been read
@@ -35,27 +33,21 @@ import org.ardverk.concurrent.FutureUtils;
  * firing EOF and CLOSE events.
  */
 public class IdleInputStream extends FilterInputStream {
-
-    private static final ScheduledThreadPoolExecutor EXECUTOR 
-        = ExecutorUtils.newSingleThreadScheduledExecutor(
-                "IdleInputStreamThread");
     
-    private static final IdleListener DEFAULT = new IdleAdapter() {
+    private static final IdleInputStreamListener DEFAULT = new IdleInputStreamAdapter() {
         @Override
         public void handleClosed(IdleInputStream in) {
         }
     };
     
-    private final ConcurrentHashMap<IdleListener, ScheduledFuture<?>> listeners 
-        = new ConcurrentHashMap<IdleListener, ScheduledFuture<?>>();
+    private final ConcurrentHashMap<IdleInputStreamListener, IdleListener> listeners 
+        = new ConcurrentHashMap<IdleInputStreamListener, IdleListener>();
     
-    private final long frequencyInMillis;
+    private final Idle idle;
     
     private boolean open = true;
     
     private boolean eof = false;
-    
-    private volatile long timeStamp;
     
     public IdleInputStream(InputStream in) {
         this(in, 5L, TimeUnit.SECONDS);
@@ -64,7 +56,7 @@ public class IdleInputStream extends FilterInputStream {
     public IdleInputStream(InputStream in, long frequency, TimeUnit unit) {
         super(in);
         
-        this.frequencyInMillis = unit.toMillis(frequency);
+        this.idle = new Idle(frequency, unit);
     }
     
     public boolean isOpen() {
@@ -119,7 +111,7 @@ public class IdleInputStream extends FilterInputStream {
                 handleEOF();
             }
         } else {
-            timeStamp = System.currentTimeMillis();
+            idle.touch();
         }
     }
     
@@ -129,7 +121,7 @@ public class IdleInputStream extends FilterInputStream {
             
             synchronized (listeners) {
                 open = false;
-                FutureUtils.cancelAll(listeners.values(), true);
+                idle.close();
             }
             
             try {
@@ -140,15 +132,15 @@ public class IdleInputStream extends FilterInputStream {
         }
     }
     
-    public void addIdleListener(IdleListener l) {
-        addIdleListener(l, -1L, TimeUnit.MILLISECONDS);
+    public void addIdleInputStreamListener(IdleInputStreamListener l) {
+        addIdleInputStreamListener(l, -1L, TimeUnit.MILLISECONDS);
     }
     
-    public void addIdleListener(long timeout, TimeUnit unit) {
-        addIdleListener(DEFAULT, timeout, unit);
+    public void addIdleInputStreamListener(long timeout, TimeUnit unit) {
+        addIdleInputStreamListener(DEFAULT, timeout, unit);
     }
     
-    public void addIdleListener(final IdleListener l, 
+    public void addIdleInputStreamListener(final IdleInputStreamListener l, 
             final long timeout, final TimeUnit unit) {
         
         synchronized (listeners) {
@@ -158,31 +150,18 @@ public class IdleInputStream extends FilterInputStream {
             }
             
             if (timeout != -1L) {
-                Runnable task = new Runnable() {
-                    
-                    private final long timeoutInMillis = unit.toMillis(timeout);
-                    
+                IdleListener delegate = new IdleListener() {
                     @Override
-                    public void run() {
-                        long time = System.currentTimeMillis() - timeStamp;
-                        if (time >= timeoutInMillis) {
-                            synchronized (listeners) {
-                                ScheduledFuture<?> future = listeners.get(l);
-                                if (future != null) {
-                                    future.cancel(true);
-                                }
-                            }
-                            handleIdle(time, TimeUnit.MILLISECONDS);
-                        }
+                    public void handleIdle(IdleListener l, long timeout, TimeUnit unit) {
+                        IdleInputStream.this.handleIdle(timeout, unit);
                     }
                 };
                 
-                ScheduledFuture<?> future = EXECUTOR.scheduleWithFixedDelay(
-                        task, frequencyInMillis, frequencyInMillis, TimeUnit.MILLISECONDS);
+                idle.addIdleListener(delegate, timeout, unit);
+                IdleListener existing = listeners.put(l, delegate);
                 
-                ScheduledFuture<?> existing = listeners.put(l, future);
                 if (existing != null) {
-                    existing.cancel(true);
+                    idle.removeIdleListener(existing);
                 }
                 
             } else {
@@ -191,11 +170,11 @@ public class IdleInputStream extends FilterInputStream {
         }
     }
     
-    public void removeIdleListener(IdleListener l) {
+    public void removeIdleInputStreamListener(IdleInputStreamListener l) {
         synchronized(listeners) {
-            ScheduledFuture<?> future = listeners.remove(l);
-            if (future != null) {
-                future.cancel(true);
+            IdleListener delegate = listeners.remove(l);
+            if (delegate != null) {
+                idle.removeIdleListener(delegate);
             }
         }
     }
@@ -217,7 +196,7 @@ public class IdleInputStream extends FilterInputStream {
             Runnable event = new Runnable() {
                 @Override
                 public void run() {
-                    for (IdleListener l : listeners.keySet()) {
+                    for (IdleInputStreamListener l : listeners.keySet()) {
                         l.handleIdle(IdleInputStream.this, time, unit);
                     }
                 }
@@ -231,7 +210,7 @@ public class IdleInputStream extends FilterInputStream {
             Runnable event = new Runnable() {
                 @Override
                 public void run() {
-                    for (IdleListener l : listeners.keySet()) {
+                    for (IdleInputStreamListener l : listeners.keySet()) {
                         l.handleEOF(IdleInputStream.this);
                     }
                 }
@@ -245,7 +224,7 @@ public class IdleInputStream extends FilterInputStream {
             Runnable event = new Runnable() {
                 @Override
                 public void run() {
-                    for (IdleListener l : listeners.keySet()) {
+                    for (IdleInputStreamListener l : listeners.keySet()) {
                         l.handleClosed(IdleInputStream.this);
                     }
                 }
@@ -254,7 +233,7 @@ public class IdleInputStream extends FilterInputStream {
         }
     }
     
-    public static interface IdleListener {
+    public static interface IdleInputStreamListener {
         
         public void handleIdle(IdleInputStream in, long time, TimeUnit unit);
         
@@ -263,7 +242,9 @@ public class IdleInputStream extends FilterInputStream {
         public void handleClosed(IdleInputStream in);
     }
     
-    public static abstract class IdleAdapter implements IdleListener {
+    public static abstract class IdleInputStreamAdapter 
+            implements IdleInputStreamListener {
+        
         @Override
         public void handleIdle(IdleInputStream in, long time, TimeUnit unit) {
             IoUtils.close(in);
