@@ -29,7 +29,7 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.ardverk.coding.CodingUtils;
-import org.ardverk.lang.Arguments;
+import org.ardverk.lang.Precoditions;
 import org.ardverk.utils.ByteArrayComparator;
 
 /**
@@ -50,7 +50,7 @@ public class NetworkCounter implements Serializable {
      * Creates a {@link NetworkCounter} with the given {@link NetworkMask}.
      */
     public NetworkCounter(NetworkMask mask) {
-        this.mask = Arguments.notNull(mask, "mask");
+        this.mask = Precoditions.notNull(mask, "mask");
     }
     
     /**

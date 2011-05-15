@@ -19,7 +19,7 @@ package org.ardverk.utils;
 import java.io.Serializable;
 import java.util.Comparator;
 
-import org.ardverk.lang.Arguments;
+import org.ardverk.lang.Precoditions;
 
 /**
  * A {@link ReverseComparator} takes a {@link Comparator} as input and reverses
@@ -33,7 +33,7 @@ public class ReverseComparator<T> implements Comparator<T>, Serializable {
     private final Comparator<? super T> comparator;
     
     public ReverseComparator(Comparator<? super T> comparator) {
-        this.comparator = Arguments.notNull(comparator, "comparator");
+        this.comparator = Precoditions.notNull(comparator, "comparator");
     }
     
     /**
