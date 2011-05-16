@@ -16,6 +16,7 @@
 
 package org.ardverk.io;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,5 +48,24 @@ public class StreamUtils {
         }
         
         return total;
+    }
+    
+    public static byte[] readFully(InputStream in, byte[] dst) throws IOException {
+        return readFully(in, dst, 0, dst.length);
+    }
+    
+    public static byte[] readFully(InputStream in, 
+            byte[] dst, int offset, int length) throws IOException {
+        
+        int total = 0;
+        while (total < length) {
+            int r = in.read(dst, offset + total, length - total);
+            if (r == -1) {
+                throw new EOFException();
+            }
+            total += r;
+        }
+        
+        return dst;
     }
 }
