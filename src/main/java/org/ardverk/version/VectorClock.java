@@ -19,9 +19,10 @@ package org.ardverk.version;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * An implementation of a Vector Clock. This class is immutable!
@@ -51,6 +52,8 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     
     private final Map<? extends K, ? extends Vector> map;
     
+    private volatile int hashCode = 0;
+    
     private VectorClock(long creationTime, 
             Map<? extends K, ? extends Vector> map) {
         this.creationTime = creationTime;
@@ -66,7 +69,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
             throw new IllegalArgumentException("key=null");
         }
         
-        Map<K, Vector> dst = new HashMap<K, Vector>(map);
+        Map<K, Vector> dst = new TreeMap<K, Vector>(map);
         
         Vector vector = dst.get(key);
         if (vector == null) {
@@ -164,7 +167,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     }
 
     public VectorClock<K> merge(VectorClock<? extends K> other) {
-        Map<K, Vector> dst = new HashMap<K, Vector>(map);
+        Map<K, Vector> dst = new TreeMap<K, Vector>(map);
         
         for (Map.Entry<? extends K, ? extends Vector> entry : other.entrySet()) {
             K key = entry.getKey();
@@ -180,6 +183,48 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         
         long creationTime = Math.min(getCreationTime(), other.getCreationTime());
         return new VectorClock<K>(creationTime, dst);
+    }
+    
+    @Override
+    public int hashCode() {
+        if (hashCode == 0) {
+            int value = 0;
+            for (Map.Entry<?, ?> entry : entrySet()) {
+                value = 31 * value + entry.getKey().hashCode();
+                value = 31 * value + entry.getValue().hashCode();
+            }
+            hashCode = value;
+        }
+        
+        return hashCode;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        } else if (!(o instanceof VectorClock<?>)) {
+            return false;
+        }
+        
+        VectorClock<?> clock = (VectorClock<?>)o;
+        if (clock.size() != size()) {
+            return false;
+        }
+        
+        Iterator<? extends Map.Entry<?, ?>> it 
+                    = clock.entrySet().iterator();
+        
+        for (Map.Entry<?, ?> entry : entrySet()) {
+            Map.Entry<?, ?> other = it.next();
+            
+            if (!entry.getKey().equals(other.getKey()) 
+                    || !entry.getValue().equals(other.getValue())) {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     @Override
