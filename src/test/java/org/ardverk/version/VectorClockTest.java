@@ -7,14 +7,14 @@ import org.junit.Test;
 public class VectorClockTest {
 
     @Test
-    public void equal1() {
+    public void identical1() {
         VectorClock<String> clock = VectorClock.create("roger");
         
         TestCase.assertEquals(Occured.IDENTICAL, clock.compareTo(clock));
     }
     
     @Test
-    public void equal2() {
+    public void identical2() {
         VectorClock<String> clock1 = VectorClock.create("roger");
         VectorClock<String> clock2 = VectorClock.create("roger");
         
@@ -29,12 +29,24 @@ public class VectorClockTest {
     }
     
     @Test
-    public void equal3() {
+    public void identical3() {
         VectorClock<String> clock1 = VectorClock.create("roger").append("odvar");
         VectorClock<String> clock2 = VectorClock.create("odvar").append("roger");
         
         TestCase.assertEquals(Occured.IDENTICAL, clock1.compareTo(clock2));
         TestCase.assertEquals(Occured.IDENTICAL, clock2.compareTo(clock1));
+    }
+    
+    @Test
+    public void equal1() {
+        VectorClock<String> clock1 = VectorClock.create("roger").append("odvar");
+        VectorClock<String> clock2 = VectorClock.create("odvar").append("roger");
+        
+        TestCase.assertEquals(Occured.IDENTICAL, clock1.compareTo(clock2));
+        TestCase.assertEquals(Occured.IDENTICAL, clock2.compareTo(clock1));
+        
+        TestCase.assertEquals(clock1, clock2);
+        TestCase.assertEquals(clock1.hashCode(), clock2.hashCode());
     }
     
     @Test

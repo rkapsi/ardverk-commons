@@ -19,7 +19,6 @@ package org.ardverk.version;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -189,6 +188,8 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     public int hashCode() {
         if (hashCode == 0) {
             int value = 0;
+            
+            // We assume it's a SortedMap
             for (Map.Entry<?, ?> entry : entrySet()) {
                 value = 31 * value + entry.getKey().hashCode();
                 value = 31 * value + entry.getValue().hashCode();
@@ -207,24 +208,13 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
             return false;
         }
         
-        VectorClock<?> clock = (VectorClock<?>)o;
-        if (clock.size() != size()) {
+        @SuppressWarnings("unchecked")
+        VectorClock<K> other = (VectorClock<K>)o;
+        if (other.size() != size()) {
             return false;
         }
         
-        Iterator<? extends Map.Entry<?, ?>> it 
-                    = clock.entrySet().iterator();
-        
-        for (Map.Entry<?, ?> entry : entrySet()) {
-            Map.Entry<?, ?> other = it.next();
-            
-            if (!entry.getKey().equals(other.getKey()) 
-                    || !entry.getValue().equals(other.getValue())) {
-                return false;
-            }
-        }
-        
-        return true;
+        return compareTo(other) == Occured.IDENTICAL;
     }
     
     @Override
