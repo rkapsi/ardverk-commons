@@ -39,14 +39,16 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     
     private static final long serialVersionUID = 8061383748163285648L;
     
-    public static <K> VectorClock<K> create() {
-        return new VectorClock<K>(System.currentTimeMillis(), 
+    public static <K> VectorClock<K> create(K... keys) {
+        VectorClock<K> clock = new VectorClock<K>(
+                System.currentTimeMillis(), 
                 Collections.<K, Vector>emptyMap());
-    }
-    
-    public static <K> VectorClock<K> create(K key) {
-        VectorClock<K> clock = create();
-        return clock.append(key);
+        
+        for (K key : keys) {
+            clock = clock.update(key);
+        }
+        
+        return clock;
     }
     
     public static <K> VectorClock<K> create(long creationTime, 
@@ -70,7 +72,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         return creationTime;
     }
     
-    public VectorClock<K> append(K key) {
+    public VectorClock<K> update(K key) {
         if (key == null) {
             throw new IllegalArgumentException("key=null");
         }

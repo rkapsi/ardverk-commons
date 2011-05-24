@@ -21,8 +21,8 @@ public class VectorClockTest {
         TestCase.assertEquals(Occured.IDENTICAL, clock1.compareTo(clock2));
         TestCase.assertEquals(Occured.IDENTICAL, clock2.compareTo(clock1));
         
-        clock1 = clock1.append("roger");
-        clock2 = clock2.append("roger");
+        clock1 = clock1.update("roger");
+        clock2 = clock2.update("roger");
         
         TestCase.assertEquals(Occured.IDENTICAL, clock1.compareTo(clock2));
         TestCase.assertEquals(Occured.IDENTICAL, clock2.compareTo(clock1));
@@ -30,8 +30,8 @@ public class VectorClockTest {
     
     @Test
     public void identical3() {
-        VectorClock<String> clock1 = VectorClock.create("roger").append("odvar");
-        VectorClock<String> clock2 = VectorClock.create("odvar").append("roger");
+        VectorClock<String> clock1 = VectorClock.create("roger").update("odvar");
+        VectorClock<String> clock2 = VectorClock.create("odvar").update("roger");
         
         TestCase.assertEquals(Occured.IDENTICAL, clock1.compareTo(clock2));
         TestCase.assertEquals(Occured.IDENTICAL, clock2.compareTo(clock1));
@@ -39,8 +39,8 @@ public class VectorClockTest {
     
     @Test
     public void equal1() {
-        VectorClock<String> clock1 = VectorClock.create("roger").append("odvar");
-        VectorClock<String> clock2 = VectorClock.create("odvar").append("roger");
+        VectorClock<String> clock1 = VectorClock.create("roger").update("odvar");
+        VectorClock<String> clock2 = VectorClock.create("odvar").update("roger");
         
         TestCase.assertEquals(Occured.IDENTICAL, clock1.compareTo(clock2));
         TestCase.assertEquals(Occured.IDENTICAL, clock2.compareTo(clock1));
@@ -61,7 +61,7 @@ public class VectorClockTest {
     
     @Test
     public void after1() {
-        VectorClock<String> clock1 = VectorClock.create("roger").append("odvar");
+        VectorClock<String> clock1 = VectorClock.create("roger").update("odvar");
         
         VectorClock<String> clock2 = VectorClock.create("odvar");
         
@@ -71,7 +71,7 @@ public class VectorClockTest {
     
     @Test
     public void after2() {
-        VectorClock<String> clock1 = VectorClock.create("roger").append("roger");
+        VectorClock<String> clock1 = VectorClock.create("roger").update("roger");
         
         VectorClock<String> clock2 = VectorClock.create("roger");
         
@@ -83,7 +83,7 @@ public class VectorClockTest {
     public void before() {
         VectorClock<String> clock1 = VectorClock.create("roger");
         
-        VectorClock<String> clock2 = VectorClock.create("odvar").append("roger");
+        VectorClock<String> clock2 = VectorClock.create("odvar").update("roger");
         
         TestCase.assertEquals(Occured.BEFORE, clock1.compareTo(clock2));
         TestCase.assertEquals(Occured.AFTER, clock2.compareTo(clock1));
