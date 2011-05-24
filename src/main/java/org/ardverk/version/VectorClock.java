@@ -17,11 +17,18 @@
 package org.ardverk.version;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
+
+import org.ardverk.collection.CollectionUtils;
+import org.ardverk.lang.Longs;
 
 /**
  * An implementation of a Vector Clock. This class is immutable!
@@ -181,6 +188,43 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         }
         
         long creationTime = Math.min(getCreationTime(), other.getCreationTime());
+        return new VectorClock<K>(creationTime, dst);
+    }
+    
+    public VectorClock<K> prune(int minSize, long timeout, TimeUnit unit) {
+        @SuppressWarnings("unchecked")
+        Map.Entry<? extends K, ? extends Vector>[] entries 
+            = CollectionUtils.toArray(map.entrySet(), Map.Entry.class);
+        
+        // Sort the Entries from *NEWEST* to *OLDEST*
+        Arrays.sort(entries, new Comparator<Map.Entry<? extends K, ? extends Vector>>() {
+            @Override
+            public int compare(Entry<? extends K, ? extends Vector> o1,
+                    Entry<? extends K, ? extends Vector> o2) {
+                
+                Vector v1 = o1.getValue();
+                Vector v2 = o2.getValue();
+                
+                return Longs.compare(v2.getTimeStamp(), v1.getTimeStamp());
+            }
+        });
+        
+        long timeoutInMillis = unit.toMillis(timeout);
+        Map<K, Vector> dst = new TreeMap<K, Vector>();        
+        
+        long now = System.currentTimeMillis();
+        for (Map.Entry<? extends K, ? extends Vector> entry : entries) {
+            Vector value = entry.getValue();
+            long time = now - value.getTimeStamp();
+            
+            if (dst.size() >= minSize && time >= timeoutInMillis) {
+                break;
+            }
+            
+            dst.put(entry.getKey(), value);
+        }
+        
+        long creationTime = getCreationTime();
         return new VectorClock<K>(creationTime, dst);
     }
     
