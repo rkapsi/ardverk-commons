@@ -59,7 +59,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
             throw new NullPointerException("map");
         }
         
-        if (!(map instanceof SortedMap<?, ?>)) {
+        if (!map.isEmpty() && !(map instanceof SortedMap<?, ?>)) {
             map = new TreeMap<K, Vector>(map);
         }
         
