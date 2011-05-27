@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
@@ -53,6 +54,15 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     
     public static <K> VectorClock<K> create(long creationTime, 
             Map<? extends K, ? extends Vector> map) {
+        
+        if (map == null) {
+            throw new NullPointerException("map");
+        }
+        
+        if (!(map instanceof SortedMap<?, ?>)) {
+            map = new TreeMap<K, Vector>(map);
+        }
+        
         return new VectorClock<K>(creationTime, map);
     }
     
