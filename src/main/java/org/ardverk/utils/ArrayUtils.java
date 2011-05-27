@@ -30,6 +30,20 @@ public class ArrayUtils {
     private ArrayUtils() {}
     
     /**
+     * Returns {@code true} if the given array is either {@code null} or empty.
+     */
+    public static boolean isEmpty(Object[] elements) {
+        return isEmpty(elements, elements != null ? elements.length : 0);
+    }
+    
+    /**
+     * Returns {@code true} if the given array is either {@code null} or empty.
+     */
+    public static boolean isEmpty(Object[] elements, int length) {
+        return elements == null || length == 0;
+    }
+
+    /**
      * Swaps the array's elements.
      */
     public static <T> void swap(T[] elements, int i, int j) {
