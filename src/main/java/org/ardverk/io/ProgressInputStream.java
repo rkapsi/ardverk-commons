@@ -40,6 +40,14 @@ public class ProgressInputStream extends FilterInputStream {
         this.callback = callback;
     }
     
+    public boolean isOpen() {
+        return open;
+    }
+    
+    public boolean isEof() {
+        return eof;
+    }
+    
     private int init() throws IOException {
         if (eof && !open) {
             throw new EOFException();

@@ -75,7 +75,7 @@ public class IdleInputStream extends ProgressInputStream {
     }
     
     @Override
-    public void in(int count) {
+    protected void in(int count) {
         timeStamp = System.currentTimeMillis();
         super.in(count);
     }
