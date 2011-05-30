@@ -37,6 +37,11 @@ public class DataUtils {
     public static final int BYTE = Byte.SIZE / Byte.SIZE;
     
     /**
+     * The size of a {@code boolean} in bytes.
+     */
+    public static final int BOOLEAN = BYTE;
+    
+    /**
      * The size of a {@code short} in bytes.
      */
     public static final int SHORT = Short.SIZE / Byte.SIZE;
@@ -61,6 +66,16 @@ public class DataUtils {
      */
     public static final int DOUBLE = Double.SIZE / Byte.SIZE;
     
+    /**
+     * Constant for {@code true}.
+     */
+    private static final byte TRUE = 1;
+    
+    /**
+     * Constant for {@code false}.
+     */
+    private static final byte FALSE = 0;
+    
     private DataUtils() {}
     
     /**
@@ -74,6 +89,35 @@ public class DataUtils {
             throw new EOFException();
         }
         return value;
+    }
+    
+    public static boolean bool(InputStream in) throws IOException {
+        return r(in) != FALSE;
+    }
+    
+    public static boolean bool(byte[] value) throws IOException {
+        return bool(value, 0);
+    }
+    
+    public static boolean bool(byte[] value, int offset) throws IOException {
+        return value[offset] != FALSE;
+    }
+    
+    public static void bool(boolean value, OutputStream out) throws IOException {
+        out.write(value ? TRUE : FALSE);
+    }
+    
+    public static byte[] bool(boolean value) throws IOException {
+        return bool(value, new byte[BOOLEAN]);
+    }
+    
+    public static byte[] bool(boolean value, byte[] dst) throws IOException {
+        return bool(value, dst, 0);
+    }
+    
+    public static byte[] bool(boolean value, byte[] dst, int offset) throws IOException {
+        dst[offset] = value ? TRUE : FALSE;
+        return dst;
     }
     
     public static int beb2ushort(InputStream in) throws IOException {
