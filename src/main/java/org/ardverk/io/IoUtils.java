@@ -266,4 +266,28 @@ public class IoUtils {
         }
         return success;
     }
+    
+    public static boolean shutdownInput(Socket socket) {
+        if (socket != null) {
+            try {
+                socket.shutdownInput();
+            } catch (IOException err) {
+                ExceptionUtils.exceptionCaught(err);
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean shutdownOutput(Socket socket) {
+        if (socket != null) {
+            try {
+                socket.shutdownOutput();
+            } catch (IOException err) {
+                ExceptionUtils.exceptionCaught(err);
+            }
+            return true;
+        }
+        return false;
+    }
 }
