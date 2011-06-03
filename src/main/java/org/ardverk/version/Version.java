@@ -19,7 +19,7 @@ package org.ardverk.version;
 /**
  * An interface for versioned objects.
  */
-interface Version<T> {
+public interface Version<T> {
 
     /**
      * Returns in which order two events occurred.
