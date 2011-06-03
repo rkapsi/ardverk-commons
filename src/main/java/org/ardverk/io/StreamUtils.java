@@ -39,10 +39,42 @@ public class StreamUtils {
     
     public static long copy(InputStream in, OutputStream out, 
             byte[] buffer) throws IOException {
+        return copy(in, out, buffer, -1L);
+    }
+    
+    public static long copy(InputStream in, OutputStream out, 
+            long length) throws IOException {
+        return copy(in, out, BUFFER_SIZE, length);
+    }
+    
+    public static long copy(InputStream in, OutputStream out, 
+            int bufferSize, long length) throws IOException {
+        return copy(in, out, new byte[bufferSize], length);
+    }
+    
+    public static long copy(InputStream in, OutputStream out, 
+            byte[] buffer, long length) throws IOException {
+        
         long total = 0L;
         
+        int remaining = -1;
         int len = -1;
-        while ((len = in.read(buffer)) != -1) {
+        
+        while (total < length || length == -1L) {
+            
+            remaining = buffer.length;
+            if (length != -1L) {
+                remaining = (int)Math.min(length-total, buffer.length);
+            }
+            
+            len = in.read(buffer, 0, remaining);
+            if (len == -1) {
+                if (length != -1) {
+                    throw new EOFException();
+                }
+                break;
+            }
+            
             out.write(buffer, 0, len);
             total += len;
         }
