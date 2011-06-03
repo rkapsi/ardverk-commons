@@ -21,7 +21,7 @@ import java.io.Serializable;
 /**
  * A {@link Vector} is an entry in a {@link VectorClock}. This class is immutable.
  */
-public class Vector implements Comparable<Vector>, Serializable {
+public final class Vector implements Comparable<Vector>, Serializable {
     
     private static final long serialVersionUID = -1915316363583960219L;
 

@@ -41,26 +41,30 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     private static final long serialVersionUID = 8061383748163285648L;
     
     public static <K> VectorClock<K> create(K... keys) {
-        VectorClock<K> clock = new VectorClock<K>(
-                System.currentTimeMillis(), 
-                Collections.<K, Vector>emptyMap());
+        return create(null, keys);
+    }
+    
+    public static <K> VectorClock<K> create(Comparator<? super K> c, K... keys) {
+        long creationTime = System.currentTimeMillis();
+        SortedMap<K, Vector> dst = new TreeMap<K, Vector>(c);
         
         for (K key : keys) {
-            clock = clock.update(key);
+            Vector vector = dst.get(key);
+            if (vector == null) {
+                vector = Vector.INIT;
+            }
+            
+            dst.put(key, vector.increment());
         }
         
-        return clock;
+        return create(creationTime, dst);
     }
     
     public static <K> VectorClock<K> create(long creationTime, 
-            Map<? extends K, ? extends Vector> map) {
+            SortedMap<K, ? extends Vector> map) {
         
         if (map == null) {
             throw new NullPointerException("map");
-        }
-        
-        if (!map.isEmpty() && !(map instanceof SortedMap<?, ?>)) {
-            map = new TreeMap<K, Vector>(map);
         }
         
         return new VectorClock<K>(creationTime, map);
@@ -68,12 +72,12 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     
     private final long creationTime;
     
-    private final Map<? extends K, ? extends Vector> map;
+    private final SortedMap<K, ? extends Vector> map;
     
     private volatile int hashCode = 0;
     
     private VectorClock(long creationTime, 
-            Map<? extends K, ? extends Vector> map) {
+            SortedMap<K, ? extends Vector> map) {
         this.creationTime = creationTime;
         this.map = map;
     }
@@ -87,7 +91,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
             throw new IllegalArgumentException("key=null");
         }
         
-        Map<K, Vector> dst = new TreeMap<K, Vector>(map);
+        SortedMap<K, Vector> dst = new TreeMap<K, Vector>(map);
         
         Vector vector = dst.get(key);
         if (vector == null) {
@@ -114,11 +118,11 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         return map.get(key);
     }
     
-    public Set<? extends Map.Entry<? extends K, ? extends Vector>> entrySet() {
+    public Set<? extends Map.Entry<K, ? extends Vector>> entrySet() {
         return Collections.unmodifiableSet(map.entrySet());
     }
     
-    public Set<? extends K> keySet() {
+    public Set<K> keySet() {
         return Collections.unmodifiableSet(map.keySet());
     }
     
@@ -141,7 +145,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
             bigger1 = true;
             
         } else {
-            for (Map.Entry<? extends K, ? extends Vector> entry : entrySet()) {
+            for (Map.Entry<K, ? extends Vector> entry : entrySet()) {
                 Vector vector = other.get(entry.getKey());
                 if (vector == null) {
                     bigger1 = true;
@@ -185,7 +189,7 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
     }
 
     public VectorClock<K> merge(VectorClock<? extends K> other) {
-        Map<K, Vector> dst = new TreeMap<K, Vector>(map);
+        SortedMap<K, Vector> dst = new TreeMap<K, Vector>(map);
         
         for (Map.Entry<? extends K, ? extends Vector> entry : other.entrySet()) {
             K key = entry.getKey();
@@ -222,7 +226,9 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         });
         
         long timeoutInMillis = unit.toMillis(timeout);
-        Map<K, Vector> dst = new TreeMap<K, Vector>();        
+        
+        Comparator<? super K> c = map.comparator();
+        SortedMap<K, Vector> dst = new TreeMap<K, Vector>(c);        
         
         long now = System.currentTimeMillis();
         for (Map.Entry<? extends K, ? extends Vector> entry : entries) {
