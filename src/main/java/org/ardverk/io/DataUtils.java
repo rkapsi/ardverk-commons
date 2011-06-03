@@ -83,7 +83,7 @@ public class DataUtils {
      * and returns it or throws an {@link EOFException} if the EOF has
      * been reached.
      */
-    private static int r(InputStream in) throws IOException {
+    public static int read(InputStream in) throws IOException {
         int value = in.read();
         if (value == -1) {
             throw new EOFException();
@@ -92,7 +92,7 @@ public class DataUtils {
     }
     
     public static boolean bool(InputStream in) throws IOException {
-        return r(in) != FALSE;
+        return read(in) != FALSE;
     }
     
     public static boolean bool(byte[] value) throws IOException {
@@ -121,7 +121,7 @@ public class DataUtils {
     }
     
     public static int beb2ushort(InputStream in) throws IOException {
-        return (r(in) << 8) | r(in);
+        return (read(in) << 8) | read(in);
     }
     
     public static int beb2ushort(byte[] value) {
@@ -134,7 +134,7 @@ public class DataUtils {
     }
     
     public static int leb2ushort(InputStream in) throws IOException {
-        return r(in) | (r(in) << 8);
+        return read(in) | (read(in) << 8);
     }
     
     public static int leb2ushort(byte[] value) {
@@ -171,8 +171,8 @@ public class DataUtils {
     }
     
     public static int beb2int(InputStream in) throws IOException {
-        return (r(in) << 24) | (r(in) << 16) 
-            |  (r(in) <<  8) | (r(in)      );
+        return (read(in) << 24) | (read(in) << 16) 
+            |  (read(in) <<  8) | (read(in)      );
     }
     
     public static int beb2int(byte[] value) {
@@ -187,8 +187,8 @@ public class DataUtils {
     }
     
     public static int leb2int(InputStream in) throws IOException {
-        return (r(in)      ) | (r(in) <<  8) 
-            |  (r(in) << 16) | (r(in) << 24);
+        return (read(in)      ) | (read(in) <<  8) 
+            |  (read(in) << 16) | (read(in) << 24);
     }
     
     public static int leb2int(byte[] value) {
@@ -203,10 +203,10 @@ public class DataUtils {
     }
     
     public static long beb2long(InputStream in) throws IOException {
-        return (r(in) << 56L) | (r(in) << 48L) 
-            |  (r(in) << 40L) | (r(in) << 32L) 
-            |  (r(in) << 24L) | (r(in) << 16L) 
-            |  (r(in) <<  8L) | (r(in)       );
+        return (read(in) << 56L) | (read(in) << 48L) 
+            |  (read(in) << 40L) | (read(in) << 32L) 
+            |  (read(in) << 24L) | (read(in) << 16L) 
+            |  (read(in) <<  8L) | (read(in)       );
     }
     
     public static long beb2long(byte[] value) {
@@ -225,10 +225,10 @@ public class DataUtils {
     }
     
     public static long leb2long(InputStream in) throws IOException {
-        return (r(in)       ) | (r(in) <<  8L) 
-            |  (r(in) << 16L) | (r(in) << 24L) 
-            |  (r(in) << 32L) | (r(in) << 40L) 
-            |  (r(in) << 48L) | (r(in) << 56L);
+        return (read(in)       ) | (read(in) <<  8L) 
+            |  (read(in) << 16L) | (read(in) << 24L) 
+            |  (read(in) << 32L) | (read(in) << 40L) 
+            |  (read(in) << 48L) | (read(in) << 56L);
     }
     
     public static long leb2long(byte[] value) {
