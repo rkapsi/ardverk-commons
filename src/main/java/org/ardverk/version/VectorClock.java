@@ -86,6 +86,19 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
         return creationTime;
     }
     
+    public long getLastModified() {
+        long timeStamp = creationTime;
+        
+        for (Vector vector : map.values()) {
+            long time = vector.getTimeStamp();
+            if (time >= timeStamp) {
+                timeStamp = time;
+            }
+        }
+        
+        return timeStamp;
+    }
+    
     public VectorClock<K> update(K key) {
         if (key == null) {
             throw new IllegalArgumentException("key=null");
