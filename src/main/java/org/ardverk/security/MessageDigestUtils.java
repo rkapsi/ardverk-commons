@@ -18,6 +18,7 @@ package org.ardverk.security;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.zip.CRC32;
 
 /**
@@ -65,6 +66,67 @@ public class MessageDigestUtils {
         } catch (NoSuchAlgorithmException e) {
             throw new IllegalArgumentException(
                     "algorithm=" + algorithm, e);
+        }
+    }
+    
+    /**
+     * 
+     */
+    public static MessageDigest wrap(MessageDigest... digests) {
+        if (digests == null) {
+            throw new NullPointerException("digests");
+        }
+        
+        if (digests.length == 0) {
+            throw new IllegalArgumentException("digests");
+        }
+        
+        if (digests.length == 1) {
+            return digests[0];
+        }
+        
+        return new MultiMessageDigest(digests);
+    }
+    
+    private static class MultiMessageDigest extends MessageDigest {
+        
+        private final MessageDigest[] digest;
+        
+        private MultiMessageDigest(MessageDigest... digest) {
+            super(Arrays.asList(digest).toString());
+            
+            this.digest = digest;
+        }
+        
+        @Override
+        protected int engineGetDigestLength() {
+            throw new UnsupportedOperationException();
+        }
+        
+        @Override
+        protected byte[] engineDigest() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void engineUpdate(byte input) {
+            for (int i = digest.length-1; i >= 0; --i) {
+                digest[i].update(input);
+            }
+        }
+
+        @Override
+        protected void engineUpdate(byte[] input, int offset, int len) {
+            for (int i = digest.length-1; i >= 0; --i) {
+                digest[i].update(input, offset, len);
+            }
+        }
+        
+        @Override
+        protected void engineReset() {
+            for (int i = digest.length-1; i >= 0; --i) {
+                digest[i].reset();
+            }
         }
     }
 }
