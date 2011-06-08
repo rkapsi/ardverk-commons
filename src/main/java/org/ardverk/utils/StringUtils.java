@@ -100,10 +100,10 @@ public class StringUtils {
      * empty string or is just a bunch of whitespace characters as defined
      * by {@link Character#isWhitespace(char)}.
      */
-    public static boolean isEmpty(String data) {
-        if (data != null && !data.isEmpty()) {
-            for (int i = data.length()-1; i >= 0; --i) {
-                if (!Character.isWhitespace(data.charAt(i))) {
+    public static boolean isEmpty(String value) {
+        if (value != null && !value.isEmpty()) {
+            for (int i = value.length()-1; i >= 0; --i) {
+                if (!Character.isWhitespace(value.charAt(i))) {
                     return false;
                 }
             }
