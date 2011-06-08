@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 
 import org.ardverk.io.ByteUtils;
 
@@ -168,5 +170,31 @@ public class StringUtils {
         }
         
         return false;
+    }
+    
+    public static String decode(String value) {
+        return decode(value, StringUtils.UTF_8);
+    }
+    
+    public static String decode(String value, String encoding) {
+        try {
+            return URLDecoder.decode(value, encoding);
+        } catch (UnsupportedEncodingException err) {
+            throw new IllegalArgumentException(
+                    "UnsupportedEncodingException", err);
+        }
+    }
+    
+    public static String encode(String value) {
+        return encode(value, StringUtils.UTF_8);
+    }
+    
+    public static String encode(String value, String encoding) {
+        try {
+            return URLEncoder.encode(value, encoding);
+        } catch (UnsupportedEncodingException err) {
+            throw new IllegalArgumentException(
+                    "UnsupportedEncodingException", err);
+        }
     }
 }
