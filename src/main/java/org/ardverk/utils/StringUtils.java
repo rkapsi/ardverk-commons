@@ -110,41 +110,32 @@ public class StringUtils {
         return true;
     }
     
+    /**
+     * @see String#trim()
+     */
     public static String trim(String value) {
         return trim(value, ' ');
     }
     
     public static String trim(String value, char ch, char... others) {
         if (value != null) {
-            value = trim(value, ch);
-            
-            if (others != null) {
-                for (int i = others.length-1; i >= 0; --i) {
-                    value = trim(value, others[i]);
-                }
-            }
-        }
-        
-        return value;
-    }
-    
-    public static String trim(String value, char ch) {
-        if (value != null) {
             int length = value.length();
             
             int p = 0;
             int q = length;
             
+            // Left to Right...
             for (int i = 0; i < length; i++) {
-                if (value.charAt(i) != ch) {
+                if (!isCharAt(value, i, ch, others)) {
                     break;
                 }
                 
                 ++p;
             }
             
+            // Right to Left...
             for (int i = length-1; p < i; --i) {
-                if (value.charAt(i) != ch) {
+                if (!isCharAt(value, i, ch, others)) {
                     break;
                 }
                 
@@ -157,5 +148,25 @@ public class StringUtils {
         }
         
         return value;
+    }
+    
+    public static boolean isCharAt(String value, int index, 
+            char ch, char... others) {
+        char actual = value.charAt(index);
+        
+        if (ch == actual) {
+            return true;
+        }
+        
+        int length = (others != null) ? others.length : 0;
+        if (0 < length) {
+            for (int i = length-1; i >= 0; --i) {
+                if (actual == others[i]) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
 }
