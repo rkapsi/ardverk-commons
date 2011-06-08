@@ -110,6 +110,10 @@ public class StringUtils {
         return true;
     }
     
+    public static String trim(String value) {
+        return trim(value, ' ');
+    }
+    
     public static String trim(String value, char ch, char... others) {
         if (value != null) {
             value = trim(value, ch);
