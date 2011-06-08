@@ -109,4 +109,49 @@ public class StringUtils {
         
         return true;
     }
+    
+    public static String trim(String value, char ch, char... others) {
+        if (value != null) {
+            value = trim(value, ch);
+            
+            if (others != null) {
+                for (int i = others.length-1; i >= 0; --i) {
+                    value = trim(value, others[i]);
+                }
+            }
+        }
+        
+        return value;
+    }
+    
+    public static String trim(String value, char ch) {
+        if (value != null) {
+            int length = value.length();
+            
+            int p = 0;
+            int q = length;
+            
+            for (int i = 0; i < length; i++) {
+                if (value.charAt(i) != ch) {
+                    break;
+                }
+                
+                ++p;
+            }
+            
+            for (int i = length-1; p < i; --i) {
+                if (value.charAt(i) != ch) {
+                    break;
+                }
+                
+                --q;
+            }
+            
+            if (p != 0 || q != length) {
+                return value.substring(p, q);
+            }
+        }
+        
+        return value;
+    }
 }
