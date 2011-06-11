@@ -16,22 +16,20 @@
 
 package org.ardverk.io;
 
-import java.io.IOException;
-
 /**
- * An I/O objects that is bindable to some other object.
+ * An object that is bindable to some other object.
  */
 public interface Bindable<T> {
 
     /**
      * Binds this to the given object.
      */
-    public void bind(T t) throws IOException;
+    public void bind(T t) throws Exception;
     
     /**
      * Unbinds this from the other object.
      */
-    public void unbind() throws IOException;
+    public void unbind() throws Exception;
     
     /**
      * Returns {@code true} if this object is bound to some other Object.

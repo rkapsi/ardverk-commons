@@ -219,7 +219,7 @@ public class IoUtils {
             try {
                 bindable.bind(value);
                 return true;
-            } catch (IOException err) {
+            } catch (Exception err) {
                 ExceptionUtils.exceptionCaught(err);
             }
         }
@@ -234,7 +234,7 @@ public class IoUtils {
             try {
                 bindable.unbind();
                 return true;
-            } catch (IOException err) {
+            } catch (Exception err) {
                 ExceptionUtils.exceptionCaught(err);
             }
         }
