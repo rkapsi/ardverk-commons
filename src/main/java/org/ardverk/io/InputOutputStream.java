@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.ardverk.concurrent.ExecutorUtils;
 import org.ardverk.concurrent.ManagedRunnable;
@@ -44,11 +44,11 @@ public abstract class InputOutputStream extends FilterInputStream {
         }
     };
     
-    private static final int INIT = 0;
-    
-    private static final int READY = 1;
-    
-    private static final int CLOSED = 2;
+    private static enum State {
+        INIT,
+        READY,
+        CLOSED;
+    }
     
     private final PipedOutputStream out = new PipedOutputStream();
     
@@ -68,7 +68,8 @@ public abstract class InputOutputStream extends FilterInputStream {
         }
     };
     
-    private final AtomicInteger state = new AtomicInteger(INIT);
+    private final AtomicReference<State> state 
+        = new AtomicReference<State>(State.INIT);
     
     private final Producer producer;
     
@@ -122,7 +123,7 @@ public abstract class InputOutputStream extends FilterInputStream {
     }
     
     private void execute() {
-        if (state.compareAndSet(INIT, READY)) {
+        if (state.compareAndSet(State.INIT, State.READY)) {
             EXECUTOR.execute(task);
         }
     }
@@ -147,7 +148,7 @@ public abstract class InputOutputStream extends FilterInputStream {
 
     @Override
     public void close() throws IOException {
-        if (state.getAndSet(CLOSED) != CLOSED) {
+        if (state.getAndSet(State.CLOSED) != State.CLOSED) {
             IoUtils.close(out);
             super.close();
         }

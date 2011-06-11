@@ -211,62 +211,6 @@ public class IoUtils {
         return success;
     }
     
-    /**
-     * Binds the {@link Bindable} to the given value.
-     */
-    public static <T> boolean bind(Bindable<? super T> bindable, T value) {
-        if (bindable != null) {
-            try {
-                bindable.bind(value);
-                return true;
-            } catch (Exception err) {
-                ExceptionUtils.exceptionCaught(err);
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Unbinds the given {@link Bindable}.
-     */
-    public static boolean unbind(Bindable<?> bindable) {
-        if (bindable != null) {
-            try {
-                bindable.unbind();
-                return true;
-            } catch (Exception err) {
-                ExceptionUtils.exceptionCaught(err);
-            }
-        }
-        return false;
-    }
-    
-    /**
-     * Unbinds the given array of {@link Bindable}s.
-     */
-    public static boolean unbindAll(Bindable<?>... bindables) {
-        boolean success = true;
-        if (bindables != null) {
-            for (Bindable<?> c : bindables) {
-                success &= unbind(c);
-            }
-        }
-        return success;
-    }
-    
-    /**
-     * Unbinds the given {@link Iterable} of {@link Bindable}s
-     */
-    public static boolean unbindAll(Iterable<? extends Bindable<?>> bindables) {
-        boolean success = true;
-        if (bindables != null) {
-            for (Bindable<?> c : bindables) {
-                success &= unbind(c);
-            }
-        }
-        return success;
-    }
-    
     public static boolean shutdownInput(Socket socket) {
         if (socket != null) {
             try {

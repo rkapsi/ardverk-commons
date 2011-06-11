@@ -14,7 +14,7 @@
  *   limitations under the License.
  */
 
-package org.ardverk.io;
+package org.ardverk.lang;
 
 /**
  * An object that is bindable to some other object.

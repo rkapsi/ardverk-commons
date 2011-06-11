@@ -48,7 +48,7 @@ public class Bytes {
      * @see Comparable
      * @see Comparator
      */
-    public static int compareUnsigned(byte b1, byte b2) {
-        return (int)(b1 & 0xFF) - (int)(b2 & 0xFF);
+    public static int compareUnsigned(int b1, int b2) {
+        return (b1 & 0xFF) - (b2 & 0xFF);
     }
 }

@@ -1,40 +1,71 @@
+/*
+ * Copyright 2010-2011 Roger Kapsi
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ */
+
 package org.ardverk.io;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class FileUtils {
-
+    
     private FileUtils() {}
     
-    public static File mkdirs(String path) throws IOException {
-        return mkdirs(new File(path));
+    /**
+     * Creates and returns a {@link File} for the given path.
+     * 
+     * NOTE: It's being assumed the path represents a directory!
+     */
+    public static File mkdirs(String path, boolean mkdirs) throws IOException {
+        return mkdirs(new File(path), mkdirs);
     }
     
-    public static File mkdirs(File parent, String name) throws IOException {
-        return mkdirs(new File(parent, name));
+    /**
+     * Creates and returns a {@link File} for the given path and name.
+     * 
+     * NOTE: It's being assumed the path represents a directory!
+     */
+    public static File mkdirs(File parent, String name, boolean mkdirs) throws IOException {
+        return mkdirs(new File(parent, name), mkdirs);
     }
     
-    public static File mkfile(String path) throws IOException {
-        File file = new File(path);
-        mkdirs(file.getParentFile());
+    /**
+     * Creates and returns a {@link File} for the given path.
+     * 
+     * NOTE: It's being assumed the path represents a file!
+     */
+    public static File mkfile(String path, boolean mkdirs) throws IOException {
+        return mkfile(new File(path), mkdirs);
+    }
+    
+    /**
+     * Creates and returns a {@link File} for the given path and name.
+     * 
+     * NOTE: It's being assumed the path represents a file!
+     */
+    public static File mkfile(File parent, String name, boolean mkdirs) throws IOException {
+        return mkfile(new File(parent, name), mkdirs);
+    }
+    
+    private static File mkfile(File file, boolean mkdirs) throws IOException {
+        mkdirs(file.getParentFile(), mkdirs);
         return file;
     }
     
-    public static File mkfile(File parent, String name) throws IOException {
-        File file = new File(parent, name);
-        mkdirs(file.getParentFile());
-        return file;
-    }
-    
-    public static File mkdirs(File dir) throws IOException {
-        if (!dir.exists()) {
+    private static File mkdirs(File dir, boolean mkdirs) throws IOException {
+        if (mkdirs && !dir.exists()) {
             dir.mkdirs();
             
             if (!dir.exists()) {
@@ -42,45 +73,5 @@ public class FileUtils {
             }
         }
         return dir;
-    }
-    
-    public static void renameTo(File src, File dst) throws IOException {
-        renameTo(src, dst, true);
-    }
-    
-    public static void renameTo(File src, File dst, boolean delete) throws IOException {
-        if (!src.renameTo(dst)) {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = new BufferedInputStream(new FileInputStream(src));
-                out = new BufferedOutputStream(new FileOutputStream(dst));
-                StreamUtils.copy(in, out);
-            } finally {
-                IoUtils.closeAll(in, out);
-            }
-            
-            if (delete) {
-                src.delete();
-            }
-        }
-    }
-    
-    public static boolean deleteAll(File... files) {
-        if (files != null) {
-            boolean success = true;
-            for (File file : files) {
-                success &= delete(file);
-            }
-            return success;
-        }
-        return false;
-    }
-    
-    public static boolean delete(File file) {
-        if (file != null) {
-            return file.delete();
-        }
-        return false;
     }
 }

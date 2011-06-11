@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.ardverk.concurrent.ExecutorUtils;
 import org.ardverk.concurrent.ManagedRunnable;
@@ -44,13 +44,14 @@ public abstract class OutputInputStream extends FilterOutputStream {
         }
     };
     
-    private static final int INIT = 0;
+    private static enum State {
+        INIT,
+        READY,
+        CLOSED;
+    }
     
-    private static final int READY = 1;
-    
-    private static final int CLOSED = 2;
-    
-    private final AtomicInteger state = new AtomicInteger(INIT);
+    private final AtomicReference<State> state 
+        = new AtomicReference<State>(State.INIT);
     
     private final Object lock = new Object();
     
@@ -133,7 +134,7 @@ public abstract class OutputInputStream extends FilterOutputStream {
     }
     
     private void execute() {
-        if (state.compareAndSet(INIT, READY)) {
+        if (state.compareAndSet(State.INIT, State.READY)) {
             boolean success = false;
             try {
                 EXECUTOR.execute(task);
@@ -183,12 +184,12 @@ public abstract class OutputInputStream extends FilterOutputStream {
     }
     
     public void close(boolean await) throws IOException, InterruptedException {
-        int wasState = state.getAndSet(CLOSED);
-        if (wasState != CLOSED) {
+        State wasState = state.getAndSet(State.CLOSED);
+        if (wasState != State.CLOSED) {
             try {
                 super.close();
                 
-                if (await && wasState == READY) {
+                if (await && wasState == State.READY) {
                     synchronized (lock) {
                         if (!consumed) {
                             lock.wait();
