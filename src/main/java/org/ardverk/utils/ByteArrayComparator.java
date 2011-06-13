@@ -29,7 +29,7 @@ public class ByteArrayComparator implements Comparator<byte[]>, Serializable {
     private static final long serialVersionUID = 6625000716332463624L;
 
     public static final ByteArrayComparator COMPARATOR = new ByteArrayComparator();
-
+    
     @Override
     public int compare(byte[] o1, byte[] o2) {
         if (o1.length != o2.length) {

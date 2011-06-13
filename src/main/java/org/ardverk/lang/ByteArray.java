@@ -25,7 +25,8 @@ import org.ardverk.coding.CodingUtils;
 import org.ardverk.io.Writable;
 import org.ardverk.utils.ByteArrayComparator;
 
-public class ByteArray<T extends ByteArray<T>> implements Comparable<T>, Writable, Serializable {
+public class ByteArray<T extends ByteArray<T>> 
+        implements Comparable<T>, Writable, Serializable {
     
     private static final long serialVersionUID = -3599578418695385540L;
     
@@ -37,15 +38,32 @@ public class ByteArray<T extends ByteArray<T>> implements Comparable<T>, Writabl
         this.value = value;
     }
     
+    /**
+     * Returns the length of the {@link ByteArray} in {@code byte}s.
+     */
     public int length() {
         return value.length;
     }
     
+    /**
+     * Returns a copy of the underlying {@code byte[]}.
+     */
     public byte[] getBytes() {
-        return value;
+        return getBytes(true);
     }
     
+    /**
+     * Returns the underlying {@code byte[]}.
+     */
+    public byte[] getBytes(boolean copy) {
+        return copy ? value.clone() : value;
+    }
+    
+    /**
+     * Copies and returns the underlying {@code byte[]}.
+     */
     public byte[] getBytes(byte[] dst, int destPos) {
+        assert (dst != value); // Who would be so stupid?
         System.arraycopy(value, 0, dst, destPos, value.length);
         return dst;
     }
