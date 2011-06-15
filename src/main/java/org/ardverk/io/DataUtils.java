@@ -521,4 +521,30 @@ public class DataUtils {
     public static long uint2long(int value) {
         return value & 0xFFFFFFFFL;
     }
+    
+    public static void int2vbeb(int value, OutputStream out) throws IOException {
+        while ((value & ~0x7F) != 0) {
+            out.write((value & 0x7f) | 0x80);
+            value >>>= 7;
+          }
+          out.write(value);
+    }
+    
+    public static int vbeb2int(InputStream in) throws IOException {
+        int b = read(in);
+        int i = b & 0x7F;
+        if ((b & 0x80) == 0) return i;
+        b = read(in);
+        i |= (b & 0x7F) << 7;
+        if ((b & 0x80) == 0) return i;
+        b = read(in);
+        i |= (b & 0x7F) << 14;
+        if ((b & 0x80) == 0) return i;
+        b = read(in);
+        i |= (b & 0x7F) << 21;
+        if ((b & 0x80) == 0) return i;
+        b = read(in);
+        assert (b & 0x80) == 0;
+        return i | ((b & 0x7F) << 28);
+    }
 }

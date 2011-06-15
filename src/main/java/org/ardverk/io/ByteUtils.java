@@ -58,12 +58,12 @@ public class ByteUtils {
     
     public static void writeBytes(byte[] data, int offset, int length, 
             OutputStream out) throws IOException {
-        DataUtils.int2beb(length, out);
+        DataUtils.int2vbeb(length, out);
         out.write(data, offset, length);
     }
     
     public static byte[] readBytes(InputStream in) throws IOException {
-        int length = DataUtils.beb2int(in);
+        int length = DataUtils.vbeb2int(in);
         byte[] data = new byte[length];
         return readFully(in, data);
     }
