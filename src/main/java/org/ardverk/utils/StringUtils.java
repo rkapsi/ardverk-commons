@@ -22,14 +22,19 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 
 import org.ardverk.io.ByteUtils;
 
 public class StringUtils {
 
-    public static final String UTF_8 = "UTF-8";
+    public static final String UTF8 = "UTF-8";
     
-    public static final String ISO_8859_1 = "ISO-8859-1";
+    public static final Charset UTF8_CHARSET = Charset.forName(UTF8);
+    
+    public static final String ASCII = "ISO-8859-1";
+    
+    public static final Charset ASCII_CHARSET = Charset.forName(ASCII);
     
     private StringUtils() {}
     
@@ -38,44 +43,51 @@ public class StringUtils {
     }
     
     public static String toString(byte[] data, int offset, int length) {
-        return toString(data, offset, length, UTF_8);
+        return toString(data, offset, length, UTF8_CHARSET);
     }
     
     public static String toString(byte[] data, String encoding) {
+        return toString(data, Charset.forName(encoding));
+    }
+    
+    public static String toString(byte[] data, Charset encoding) {
         return toString(data, 0, data.length, encoding);
     }
     
-    public static String toString(byte[] data, int offset, int length, String encoding) {
-        try {
-            return new String(data, offset, length, encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("encoding=" + encoding, e);
-        }
+    public static String toString(byte[] data, int offset, int length, Charset encoding) {
+        return new String(data, offset, length, encoding);
     }
     
     public static byte[] getBytes(String data) {
-        return getBytes(data, UTF_8);
+        return getBytes(data, UTF8_CHARSET);
     }
     
     public static byte[] getBytes(String data, String encoding) {
-        try {
-            return data.getBytes(encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("encoding=" + encoding, e);
-        }
+        return getBytes(data, Charset.forName(encoding));
+    }
+    
+    public static byte[] getBytes(String data, Charset encoding) {
+        return data.getBytes(encoding);
     }
     
     /**
      * Writes the {@link String} to the given {@link OutputStream}.
      */
     public static void writeString(String value, OutputStream out) throws IOException {
-        writeString(value, UTF_8, out);
+        writeString(value, UTF8_CHARSET, out);
     }
     
     /**
      * Writes the {@link String} to the given {@link OutputStream}.
      */
     public static void writeString(String value, String encoding, OutputStream out) throws IOException {
+        writeString(value, Charset.forName(encoding), out);
+    }
+    
+    /**
+     * Writes the {@link String} to the given {@link OutputStream}.
+     */
+    public static void writeString(String value, Charset encoding, OutputStream out) throws IOException {
         byte[] data = getBytes(value, encoding);
         ByteUtils.writeBytes(data, out);
     }
@@ -84,13 +96,20 @@ public class StringUtils {
      * Reads and returns a {@link String} from the given {@link InputStream}.
      */
     public static String readString(InputStream in) throws IOException {
-        return readString(in, UTF_8);
+        return readString(in, UTF8_CHARSET);
     }
     
     /**
      * Reads and returns a {@link String} from the given {@link InputStream}.
      */
     public static String readString(InputStream in, String encoding) throws IOException {
+        return readString(in, Charset.forName(encoding));
+    }
+    
+    /**
+     * Reads and returns a {@link String} from the given {@link InputStream}.
+     */
+    public static String readString(InputStream in, Charset encoding) throws IOException {
         byte[] data = ByteUtils.readBytes(in);
         return toString(data, encoding);
     }
@@ -172,11 +191,11 @@ public class StringUtils {
         return false;
     }
     
-    public static String decode(String value) {
-        return decode(value, StringUtils.UTF_8);
+    public static String decodeURL(String value) {
+        return decodeURL(value, UTF8);
     }
     
-    public static String decode(String value, String encoding) {
+    public static String decodeURL(String value, String encoding) {
         try {
             return URLDecoder.decode(value, encoding);
         } catch (UnsupportedEncodingException err) {
@@ -185,11 +204,11 @@ public class StringUtils {
         }
     }
     
-    public static String encode(String value) {
-        return encode(value, StringUtils.UTF_8);
+    public static String encodeURL(String value) {
+        return encodeURL(value, UTF8);
     }
     
-    public static String encode(String value, String encoding) {
+    public static String encodeURL(String value, String encoding) {
         try {
             return URLEncoder.encode(value, encoding);
         } catch (UnsupportedEncodingException err) {
