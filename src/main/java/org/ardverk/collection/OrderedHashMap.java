@@ -47,4 +47,49 @@ public class OrderedHashMap<K, V> extends LinkedHashMap<K, V>
     public OrderedHashMap(Map<? extends K, ? extends V> m) {
         super(m);
     }
+
+    @Override
+    public java.util.Map.Entry<K, V> firstEntry() {
+        return CollectionUtils.first(entrySet());
+    }
+
+    @Override
+    public java.util.Map.Entry<K, V> lastEntry() {
+        return CollectionUtils.last(entrySet());
+    }
+
+    @Override
+    public java.util.Map.Entry<K, V> nthEntry(int index) {
+        return CollectionUtils.nth(entrySet(), index);
+    }
+
+    @Override
+    public K firstKey() {
+        return firstEntry().getKey();
+    }
+
+    @Override
+    public K lastKey() {
+        return lastEntry().getKey();
+    }
+
+    @Override
+    public K nthKey(int index) {
+        return nthEntry(index).getKey();
+    }
+
+    @Override
+    public V firstValue() {
+        return firstEntry().getValue();
+    }
+
+    @Override
+    public V lastValue() {
+        return lastEntry().getValue();
+    }
+
+    @Override
+    public V nthValue(int index) {
+        return nthEntry(index).getValue();
+    }
 }

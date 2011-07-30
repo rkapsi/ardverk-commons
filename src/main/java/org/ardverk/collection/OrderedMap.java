@@ -24,4 +24,21 @@ import java.util.Map;
  */
 public interface OrderedMap<K, V> extends Map<K, V> {
 
+    public Map.Entry<K, V> firstEntry();
+    
+    public Map.Entry<K, V> lastEntry();
+    
+    public Map.Entry<K, V> nthEntry(int index);
+    
+    public K firstKey();
+    
+    public K lastKey();
+    
+    public K nthKey(int index);
+    
+    public V firstValue();
+    
+    public V lastValue();
+    
+    public V nthValue(int index);
 }
