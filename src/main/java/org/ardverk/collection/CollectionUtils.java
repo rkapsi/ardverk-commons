@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.concurrent.BlockingQueue;
 
 public class CollectionUtils {
 
@@ -191,6 +192,149 @@ public class CollectionUtils {
         }
 
         throw new IndexOutOfBoundsException("position=" + position + ", n=" + n);
+    }
+    
+    /**
+     * Returns the number of elements in the {@link Iterable}.
+     */
+    public static int size(Iterable<?> values) {
+        if (values instanceof Collection<?>) {
+            return ((Collection<?>)values).size();
+        }
+        
+        int count = 0;
+        for (Iterator<?> it = values.iterator(); 
+                it.hasNext(); ++count) {
+            it.next();
+        }
+        return count;
+    }
+    
+    /**
+     * Returns the index of the first occurrence of the specified element in 
+     * this array, or -1 if this list does not contain the element.
+     */
+    public static int indexOf(Object[] elements, Object value) {
+        int index = 0;
+        for (Object element : elements) {
+            if (equals(element, value)) {
+                return index;
+            }
+            ++index;
+        }
+        return -1;
+    }
+    
+    /**
+     * Returns the index of the first occurrence of the specified element in 
+     * this {@link Iterable}, or -1 if this list does not contain the element.
+     */
+    public static int indexOf(Iterable<?> elements, Object value) {
+        if (elements instanceof List<?>) {
+            return ((List<?>)elements).indexOf(value);
+        }
+        
+        int index = 0;
+        for (Object element : elements) {
+            if (equals(element, value)) {
+                return index;
+            }
+            ++index;
+        }
+        return -1;
+    }
+    
+    /**
+     * Returns the index of the last occurrence of the specified element in 
+     * this array, or -1 if this list does not contain the element.
+     */
+    public static int lastIndexOf(Object[] elements, Object value) {
+        for (int i = elements.length-1; i >= 0; --i) {
+            if (equals(elements[i], value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+    
+    /**
+     * Returns the index of the last occurrence of the specified element in 
+     * this {@link Iterable}, or -1 if this list does not contain the element.
+     */
+    public static int lastIndexOf(Iterable<?> elements, Object value) {
+        if (elements instanceof List<?>) {
+            return ((List<?>)elements).lastIndexOf(value);
+        }
+        
+        int lastIndex = -1;
+        int index = 0;
+        for (Object element : elements) {
+            if (equals(element, value)) {
+                lastIndex = index;
+            }
+            ++index;
+        }
+        return lastIndex;
+    }
+    
+    /**
+     * Returns {@code true} if the array contains the given element.
+     */
+    public static boolean contains(Object[] elements, Object value) {
+        return indexOf(elements, value) != -1;
+    }
+    
+    /**
+     * Returns {@code true} if the {@link Iterable} contains the given element.
+     */
+    public static boolean contains(Iterable<?> elements, Object value) {
+        if (elements instanceof Collection<?>) {
+            return ((Collection<?>)elements).contains(value);
+        }
+        return indexOf(elements, value) != -1;
+    }
+    
+    /**
+     * Removes all available elements from this {@link Iterable} and adds 
+     * them to the given {@link Collection}.
+     */
+    public static <T> int drainTo(Iterable<? extends T> src, Collection<? super T> dst) {
+        return drainTo(src, dst, Integer.MAX_VALUE);
+    }
+    
+    /**
+     * Removes all available elements from this {@link Iterable} and adds 
+     * them to the given {@link Collection}.
+     */
+    public static <T> int drainTo(Iterable<? extends T> src, Collection<? super T> dst, int max) {
+        if (src instanceof BlockingQueue<?>) {
+            return ((BlockingQueue<? extends T>)src).drainTo(dst, max);
+        }
+        
+        int count = 0;
+        
+        for (Iterator<? extends T> it = src.iterator(); it.hasNext(); ) {
+            if (count >= max) {
+                break;
+            }
+            
+            dst.add(it.next());
+            it.remove();
+            ++count;
+        }
+        
+        return count;
+    }
+    
+    /**
+     * Returns {@code true} if the two objects are equal.
+     */
+    private static boolean equals(Object a, Object b) {
+        if (a == null) {
+            return b == null;
+        }
+        
+        return a.equals(b);
     }
     
     /**
