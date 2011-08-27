@@ -19,7 +19,7 @@ package org.ardverk.net;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Jacobson + Karel’s Algorithm
+ * Jacobson + Karel's Algorithm
  */
 public class DefaultRTT implements RTT {
 
