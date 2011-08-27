@@ -4,25 +4,44 @@
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <scm.uri>scm:git:git@github.com:rkapsi/ardverk-commons.git</scm.uri>
+  </properties>
+  
   <groupId>org.ardverk</groupId>
   <artifactId>ardverk-commons</artifactId>
-  <version>0.1</version>
+  <version>0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <url>https://github.com/rkapsi/ardverk-commons</url>
   
   <distributionManagement>
     <repository>
-      <id>ardverk.org</id>
-      <url>scp://ardverk.org/repository</url>
+      <id>ardverk-release</id>
+      <url>scp://mvn.ardverk.org/repository/release</url>
     </repository>
+    <snapshotRepository>
+      <id>ardverk-snapshot</id>
+      <url>scp://mvn.ardverk.org/repository/snapshot</url>
+    </snapshotRepository>
   </distributionManagement>
   
   <repositories>
     <repository>
-      <id>ardverk.org</id>
-      <url>http://ardverk.org/repository</url>
+      <id>ardverk-release</id>
+      <url>http://mvn.ardverk.org/repository/release</url>
+    </repository>
+    <repository>
+      <id>ardverk-snapshot</id>
+      <url>http://mvn.ardverk.org/repository/snapshot</url>
     </repository>
   </repositories>
+  
+  <scm>
+    <connection>${scm.uri}</connection>
+    <url>${scm.uri}</url>
+    <developerConnection>${scm.uri}</developerConnection>
+  </scm>
   
   <build>
     <extensions>
@@ -43,6 +62,11 @@
             <target>1.6</target>
         </configuration>
       </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
   
@@ -56,7 +80,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.2</version>
+      <version>[4.8.2,)</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
