@@ -17,8 +17,10 @@
 package org.ardverk.utils;
 
 import java.lang.management.LockInfo;
+import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 
 /**
  * An utility class for {@link Thread}s.
@@ -26,6 +28,22 @@ import java.lang.management.ThreadInfo;
 public class ThreadUtils {
 
     private ThreadUtils() {}
+    
+    /**
+     * 
+     */
+    public static ThreadInfo[] getStackTraces() {
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        return bean.dumpAllThreads(true, true);
+    }
+    
+    /**
+     * 
+     */
+    public static long[] getDeadlocks() {
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        return bean.findDeadlockedThreads();
+    }
     
     /**
      * Turns the given {@link ThreadInfo} into a {@link String}.
