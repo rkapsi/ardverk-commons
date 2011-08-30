@@ -46,6 +46,14 @@ public class ThreadUtils {
     }
     
     /**
+     * 
+     */
+    public static ThreadInfo[] getThreadInfo(long[] ids) {
+        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
+        return bean.getThreadInfo(ids, true, true);
+    }
+    
+    /**
      * Turns the given {@link ThreadInfo} into a {@link String}.
      */
     public static String toString(ThreadInfo[] threads) {

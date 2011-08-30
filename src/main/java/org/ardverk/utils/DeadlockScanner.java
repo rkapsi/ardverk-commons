@@ -17,9 +17,7 @@
 package org.ardverk.utils;
 
 import java.lang.instrument.Instrumentation;
-import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -140,16 +138,14 @@ public class DeadlockScanner {
      */
     private static void checkForDeadlock(Callback callback) {
         
-        ThreadMXBean bean = ManagementFactory.getThreadMXBean();
-        long[] deadlocks = bean.findDeadlockedThreads();
+        long[] deadlocks = ThreadUtils.getDeadlocks();
         
         // Any deadlocks found?
         if (deadlocks == null || deadlocks.length == 0) {
             return;
         }
         
-        ThreadInfo[] threads = bean.getThreadInfo(
-                deadlocks, true, true);
+        ThreadInfo[] threads = ThreadUtils.getThreadInfo(deadlocks);
         
         callback.deadlock(new Deadlock(deadlocks, threads));
     }
