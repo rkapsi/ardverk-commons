@@ -32,6 +32,13 @@ public class ThreadUtils {
     /**
      * 
      */
+    public static void dumpThreads() {
+        System.out.println(toString(getStackTraces()));
+    }
+    
+    /**
+     * 
+     */
     public static ThreadInfo[] getStackTraces() {
         ThreadMXBean bean = ManagementFactory.getThreadMXBean();
         return bean.dumpAllThreads(true, true);
