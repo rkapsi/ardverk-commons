@@ -565,4 +565,24 @@ public class NetworkUtils {
             return createResolved(getAddress(address), getPort(port));
         }
     }
+    
+    /**
+     * 
+     */
+    public static SocketAddress createNext(SocketAddress address) {
+        return createNext(address, 1);
+    }
+    
+    /**
+     * 
+     */
+    public static SocketAddress createNext(SocketAddress address, int index) {
+        int port = getPort(address) + index;
+        
+        if (isUnresolved(address)) {
+            return createUnresolved(getHostName(address), port);
+        } else {
+            return createResolved(getAddress(address), port);
+        }
+    }
 }
