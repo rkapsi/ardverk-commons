@@ -25,6 +25,8 @@ public class Duration implements Comparable<Duration>, Serializable {
     
     private static final long serialVersionUID = -7966576555871244178L;
 
+    public static final Duration ZERO = new Duration(0L, TimeUnit.MILLISECONDS);
+    
     private final long duration;
     
     private final TimeUnit unit;
