@@ -17,6 +17,7 @@
 package org.ardverk.concurrent;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.ardverk.lang.Longs;
@@ -36,22 +37,30 @@ public class Duration implements Comparable<Duration>, Serializable {
         this.unit = unit;
     }
     
-    public long getTime(TimeUnit unit) {
+    public long getDuration(TimeUnit unit) {
         return unit.convert(duration, this.unit);
     }
     
-    public long getTimeInMillis() {
-        return getTime(TimeUnit.MILLISECONDS);
+    public long getDurationInMillis() {
+        return getDuration(TimeUnit.MILLISECONDS);
+    }
+    
+    public long getTime() {
+        return System.currentTimeMillis() + getDurationInMillis();
+    }
+    
+    public Date getDate() {
+        return new Date(getTime());
     }
     
     @Override
     public int compareTo(Duration o) {
-        return Longs.compare(getTimeInMillis(), o.getTimeInMillis());
+        return Longs.compare(getDurationInMillis(), o.getDurationInMillis());
     }
 
     @Override
     public int hashCode() {
-        return (int)getTimeInMillis();
+        return (int)getDurationInMillis();
     }
     
     @Override
@@ -62,7 +71,7 @@ public class Duration implements Comparable<Duration>, Serializable {
             return false;
         }
         
-        return getTimeInMillis() == ((Duration)o).getTimeInMillis();
+        return getDurationInMillis() == ((Duration)o).getDurationInMillis();
     }
     
     @Override

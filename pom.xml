@@ -71,7 +71,7 @@
   	<dependency>
       <groupId>org.ardverk</groupId>
       <artifactId>ardverk-concurrent</artifactId>
-      <version>0.2</version>
+      <version>0.3-SNAPSHOT</version>
     </dependency>
     
     <dependency>
