@@ -3,7 +3,7 @@ package org.ardverk.enums;
 /**
  * 
  */
-public interface Converter<T> {
+public interface ObjectEnum<T> {
 
     /**
      * 
