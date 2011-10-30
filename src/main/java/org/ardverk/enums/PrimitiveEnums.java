@@ -5,13 +5,16 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PrimitiveEnums {
     
+    /**
+     * @see PrimitiveEnum.Int
+     */
     public static class Int {
         
         private static final ConcurrentHashMap<Class<?>, Enum<?>[]> TABLE 
             = new ConcurrentHashMap<Class<?>, Enum<?>[]>();
         
         /**
-         * 
+         * Returns an array of {@link Enum}s of the given type.
          */
         @SuppressWarnings("unchecked")
         public static <V extends Enum<V> & PrimitiveEnum.Int> V[] of(Class<V> type) {
@@ -27,7 +30,7 @@ public class PrimitiveEnums {
         }
         
         /**
-         * 
+         * Returns an {@link Enum} of the given type for the given key.
          */
         public static <V extends Enum<V> & PrimitiveEnum.Int> V valueOf(Class<V> type, int key) {
             V[] values = of(type);
@@ -41,7 +44,7 @@ public class PrimitiveEnums {
         }
         
         /**
-         * 
+         * Creates and returns a lookup table for {@link Enum}s of the given type.
          */
         @SuppressWarnings("unchecked")
         private static <V extends Enum<V> & PrimitiveEnum.Int> V[] createTable(Class<V> type) {
