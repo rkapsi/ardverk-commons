@@ -25,7 +25,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.Arrays;
 
-import org.ardverk.io.Writable;
+import org.ardverk.io.Streamable;
 import org.ardverk.lang.Bytes;
 import org.ardverk.utils.ByteArrayComparator;
 
@@ -33,7 +33,7 @@ import org.ardverk.utils.ByteArrayComparator;
  * A Network Mask
  */
 public class NetworkMask implements Comparable<NetworkMask>, 
-        Serializable, Writable, Cloneable {
+        Serializable, Streamable, Cloneable {
     
     private static final long serialVersionUID = 7628001660790804026L;
     

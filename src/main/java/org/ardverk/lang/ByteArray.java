@@ -22,11 +22,11 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 import org.ardverk.coding.CodingUtils;
-import org.ardverk.io.Writable;
+import org.ardverk.io.Streamable;
 import org.ardverk.utils.ByteArrayComparator;
 
 public class ByteArray<T extends ByteArray<T>> 
-        implements Comparable<T>, Writable, Serializable {
+        implements Comparable<T>, Streamable, Serializable {
     
     private static final long serialVersionUID = -3599578418695385540L;
     

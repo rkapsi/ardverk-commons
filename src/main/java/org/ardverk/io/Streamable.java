@@ -18,16 +18,15 @@ package org.ardverk.io;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.Writer;
 
 /**
  * An interface for serializable objects.
  */
-public interface Writable {
+public interface Streamable {
 
     /**
      * Writes this Object to the given {@link OutputStream} and returns
      * the number of bytes that were written.
      */
-    public void writeTo(Writer writer) throws IOException;
+    public void writeTo(OutputStream out) throws IOException;
 }
