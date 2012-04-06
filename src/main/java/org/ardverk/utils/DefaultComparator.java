@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,23 +23,23 @@ import java.util.Comparator;
  * A {@link Comparator} for {@link Comparable} objects.
  */
 public class DefaultComparator<T extends Comparable<T>> 
-        implements Comparator<T>, Serializable {
-    
-    private static final long serialVersionUID = 2605636601980606082L;
-    
-    @SuppressWarnings("rawtypes")
-    private static final DefaultComparator COMPARATOR = new DefaultComparator();
-    
-    /**
-     * Returns a {@link Comparator} for compare {@link Comparable} objects.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> Comparator<T> create() {
-        return (Comparator<T>)COMPARATOR;
-    }
-    
-    @Override
-    public int compare(T o1, T o2) {
-        return o1.compareTo(o2);
-    }
+    implements Comparator<T>, Serializable {
+  
+  private static final long serialVersionUID = 2605636601980606082L;
+  
+  @SuppressWarnings("rawtypes")
+  private static final DefaultComparator COMPARATOR = new DefaultComparator();
+  
+  /**
+   * Returns a {@link Comparator} for compare {@link Comparable} objects.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T extends Comparable<T>> Comparator<T> create() {
+    return (Comparator<T>)COMPARATOR;
+  }
+  
+  @Override
+  public int compare(T o1, T o2) {
+    return o1.compareTo(o2);
+  }
 }

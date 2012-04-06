@@ -6,8 +6,8 @@ package org.ardverk.enums;
  */
 public interface ObjectEnum<T> {
 
-    /**
-     * Returns the {@link Enum}'s alternative value.
-     */
-    public T convert();
+  /**
+   * Returns the {@link Enum}'s alternative value.
+   */
+  public T convert();
 }

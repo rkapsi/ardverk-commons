@@ -26,15 +26,15 @@ import java.util.ServiceLoader;
  */
 public interface EventThreadProvider {
 
-    /**
-     * Returns true if the calling {@link Thread} is the event 
-     * {@link Thread}. In other words {@link Thread}s can use 
-     * this method to check if they are the event {@link Thread}.
-     */
-    public boolean isEventThread();
-    
-    /**
-     * Executes the given {@link Runnable} on the event {@link Thread}.
-     */
-    public void fireEvent(Runnable event);
+  /**
+   * Returns true if the calling {@link Thread} is the event 
+   * {@link Thread}. In other words {@link Thread}s can use 
+   * this method to check if they are the event {@link Thread}.
+   */
+  public boolean isEventThread();
+  
+  /**
+   * Executes the given {@link Runnable} on the event {@link Thread}.
+   */
+  public void fireEvent(Runnable event);
 }

@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,15 +20,15 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeUtils {
 
-    public TimeUtils() {}
-    
-    /**
-     * Converts the given time and {@link TimeUnit} to an another {@link TimeUnit}.
-     * 
-     * TimeUtils.convert(5L, TimeUnit.MINUTS, TimeUnit.MILLISECONDS)
-     * TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES)
-     */
-    public static long convert(long time, TimeUnit src, TimeUnit dst) {
-        return dst.convert(time, src);
-    }
+  public TimeUtils() {}
+  
+  /**
+   * Converts the given time and {@link TimeUnit} to an another {@link TimeUnit}.
+   * 
+   * TimeUtils.convert(5L, TimeUnit.MINUTS, TimeUnit.MILLISECONDS)
+   * TimeUnit.MILLISECONDS.convert(5L, TimeUnit.MINUTES)
+   */
+  public static long convert(long time, TimeUnit src, TimeUnit dst) {
+    return dst.convert(time, src);
+  }
 }

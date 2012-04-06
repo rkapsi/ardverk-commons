@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,18 +21,18 @@ package org.ardverk.lang;
  */
 public interface Bindable<T> {
 
-    /**
-     * Binds this to the given object.
-     */
-    public void bind(T t) throws Exception;
-    
-    /**
-     * Unbinds this from the other object.
-     */
-    public void unbind() throws Exception;
-    
-    /**
-     * Returns {@code true} if this object is bound to some other Object.
-     */
-    public boolean isBound();
+  /**
+   * Binds this to the given object.
+   */
+  public void bind(T t) throws Exception;
+  
+  /**
+   * Unbinds this from the other object.
+   */
+  public void unbind() throws Exception;
+  
+  /**
+   * Returns {@code true} if this object is bound to some other Object.
+   */
+  public boolean isBound();
 }

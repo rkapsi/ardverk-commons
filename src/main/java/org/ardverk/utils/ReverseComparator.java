@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,25 +27,25 @@ import org.ardverk.lang.Precoditions;
  * for example.
  */
 public class ReverseComparator<T> implements Comparator<T>, Serializable {
-    
-    private static final long serialVersionUID = 563094817278176159L;
-    
-    private final Comparator<? super T> comparator;
-    
-    public ReverseComparator(Comparator<? super T> comparator) {
-        this.comparator = Precoditions.notNull(comparator, "comparator");
-    }
-    
-    /**
-     * Returns the {@link ReverseComparator}'s parent {@link Comparator}.
-     */
-    public Comparator<? super T> comparator() {
-        return comparator;
-    }
+  
+  private static final long serialVersionUID = 563094817278176159L;
+  
+  private final Comparator<? super T> comparator;
+  
+  public ReverseComparator(Comparator<? super T> comparator) {
+    this.comparator = Precoditions.notNull(comparator, "comparator");
+  }
+  
+  /**
+   * Returns the {@link ReverseComparator}'s parent {@link Comparator}.
+   */
+  public Comparator<? super T> comparator() {
+    return comparator;
+  }
 
-    @Override
-    public int compare(T o1, T o2) {
-        // NOTE: We're simply swapping the arguments!
-        return comparator.compare(o2, o1);
-    }
+  @Override
+  public int compare(T o1, T o2) {
+    // NOTE: We're simply swapping the arguments!
+    return comparator.compare(o2, o1);
+  }
 }

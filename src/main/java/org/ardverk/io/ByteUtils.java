@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,47 +24,47 @@ import java.io.OutputStream;
 
 public class ByteUtils {
 
-    private ByteUtils() {}
+  private ByteUtils() {}
+  
+  /**
+   * @see DataInput#readFully(byte[])
+   */
+  public static byte[] readFully(InputStream in, byte[] dst) throws IOException {
+    return readFully(in, dst, 0, dst.length);
+  }
+  
+  /**
+   * @see DataInput#readFully(byte[])
+   */
+  public static byte[] readFully(InputStream in, byte[] dst, 
+      int offset, int length) throws IOException {
     
-    /**
-     * @see DataInput#readFully(byte[])
-     */
-    public static byte[] readFully(InputStream in, byte[] dst) throws IOException {
-        return readFully(in, dst, 0, dst.length);
+    int total = 0;
+    while (total < length) {
+      int r = in.read(dst, offset + total, length - total);
+      if (r == -1) {
+        throw new EOFException();
+      }
+      
+      total += r;
     }
     
-    /**
-     * @see DataInput#readFully(byte[])
-     */
-    public static byte[] readFully(InputStream in, byte[] dst, 
-            int offset, int length) throws IOException {
-        
-        int total = 0;
-        while (total < length) {
-            int r = in.read(dst, offset + total, length - total);
-            if (r == -1) {
-                throw new EOFException();
-            }
-            
-            total += r;
-        }
-        
-        return dst;
-    }
-    
-    public static void writeBytes(byte[] data, OutputStream out) throws IOException {
-        writeBytes(data, 0, data.length, out);
-    }
-    
-    public static void writeBytes(byte[] data, int offset, int length, 
-            OutputStream out) throws IOException {
-        DataUtils.int2vbeb(length, out);
-        out.write(data, offset, length);
-    }
-    
-    public static byte[] readBytes(InputStream in) throws IOException {
-        int length = DataUtils.vbeb2int(in);
-        byte[] data = new byte[length];
-        return readFully(in, data);
-    }
+    return dst;
+  }
+  
+  public static void writeBytes(byte[] data, OutputStream out) throws IOException {
+    writeBytes(data, 0, data.length, out);
+  }
+  
+  public static void writeBytes(byte[] data, int offset, int length, 
+      OutputStream out) throws IOException {
+    DataUtils.int2vbeb(length, out);
+    out.write(data, offset, length);
+  }
+  
+  public static byte[] readBytes(InputStream in) throws IOException {
+    int length = DataUtils.vbeb2int(in);
+    byte[] data = new byte[length];
+    return readFully(in, data);
+  }
 }

@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,21 +22,21 @@ import java.util.concurrent.atomic.AtomicInteger;
  * A simple {@link CountDown}.
  */
 public class CountDown extends AtomicInteger {
-    
-    private static final long serialVersionUID = -4789846820544350132L;
+  
+  private static final long serialVersionUID = -4789846820544350132L;
 
-    public CountDown() {
-    }
-    
-    public CountDown(int initialValue) {
-        super(initialValue);
-    }
-    
-    /**
-     * Decrements the {@link CountDown} by 1 and returns {@code true}
-     * if the {@link CountDown} has reached zero.
-     */
-    public boolean countDown() {
-        return decrementAndGet() == 0;
-    }
+  public CountDown() {
+  }
+  
+  public CountDown(int initialValue) {
+    super(initialValue);
+  }
+  
+  /**
+   * Decrements the {@link CountDown} by 1 and returns {@code true}
+   * if the {@link CountDown} has reached zero.
+   */
+  public boolean countDown() {
+    return decrementAndGet() == 0;
+  }
 }

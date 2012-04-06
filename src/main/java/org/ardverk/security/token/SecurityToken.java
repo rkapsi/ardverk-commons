@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,31 +22,31 @@ package org.ardverk.security.token;
  */
 public interface SecurityToken {
 
-    /**
-     * Creates a security token for the given {@code byte[]}.
-     */
-    public byte[] create(byte[] data);
+  /**
+   * Creates a security token for the given {@code byte[]}.
+   */
+  public byte[] create(byte[] data);
 
-    /**
-     * Creates a security token for the given {@code byte[]}.
-     */
-    public byte[] create(byte[] data, int offset, int length);
+  /**
+   * Creates a security token for the given {@code byte[]}.
+   */
+  public byte[] create(byte[] data, int offset, int length);
 
-    /**
-     * Returns {@code true} if the given security token is valid.
-     */
-    public boolean isFor(byte[] data, byte[] securityToken);
+  /**
+   * Returns {@code true} if the given security token is valid.
+   */
+  public boolean isFor(byte[] data, byte[] securityToken);
 
-    /**
-     * Returns {@code true} if the given security token is valid.
-     */
-    public boolean isFor(byte[] data, byte[] securityToken, 
-            int offset, int length);
+  /**
+   * Returns {@code true} if the given security token is valid.
+   */
+  public boolean isFor(byte[] data, byte[] securityToken, 
+      int offset, int length);
 
-    /**
-     * Returns {@code true} if the given security token is valid.
-     */
-    public boolean isFor(byte[] data, int dataOffset, int dataLength,
-            byte[] securityToken, int offset, int length);
+  /**
+   * Returns {@code true} if the given security token is valid.
+   */
+  public boolean isFor(byte[] data, int dataOffset, int dataLength,
+      byte[] securityToken, int offset, int length);
 
 }

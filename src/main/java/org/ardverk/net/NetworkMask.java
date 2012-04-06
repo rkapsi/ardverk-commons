@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,168 +33,168 @@ import org.ardverk.utils.ByteArrayComparator;
  * A Network Mask
  */
 public class NetworkMask implements Comparable<NetworkMask>, 
-        Serializable, Streamable, Cloneable {
-    
-    private static final long serialVersionUID = 7628001660790804026L;
-    
-    /**
-     * A {@link NetworkMask} that does nothing
-     */
-    public static final NetworkMask NOP 
-        = new NetworkMask(Bytes.EMPTY);
-    
-    /**
-     * A {@link NetworkMask} for a Class-A network
-     */
-    public static final NetworkMask A 
-        = new NetworkMask(new byte[] { 0x00, 0x00, 0x00 });
-    
-    /**
-     * A {@link NetworkMask} for a Class-B network
-     */
-    public static final NetworkMask B 
-        = new NetworkMask(new byte[] { 0x00, 0x00 });
-    
-    /**
-     * A {@link NetworkMask} for a Class-C network
-     */
-    public static final NetworkMask C 
-        = new NetworkMask(new byte[] { 0x00 });
-    
-    private final byte[] mask;
-    
-    private final int hashCode;
-    
-    /**
-     * Creates a {@link NetworkMask}
-     */
-    public NetworkMask(byte[] mask) {
-        if (mask == null) {
-            throw new NullPointerException("mask");
-        }
-        
-        this.mask = mask.clone();
-        this.hashCode = Arrays.hashCode(mask);
+    Serializable, Streamable, Cloneable {
+  
+  private static final long serialVersionUID = 7628001660790804026L;
+  
+  /**
+   * A {@link NetworkMask} that does nothing
+   */
+  public static final NetworkMask NOP 
+    = new NetworkMask(Bytes.EMPTY);
+  
+  /**
+   * A {@link NetworkMask} for a Class-A network
+   */
+  public static final NetworkMask A 
+    = new NetworkMask(new byte[] { 0x00, 0x00, 0x00 });
+  
+  /**
+   * A {@link NetworkMask} for a Class-B network
+   */
+  public static final NetworkMask B 
+    = new NetworkMask(new byte[] { 0x00, 0x00 });
+  
+  /**
+   * A {@link NetworkMask} for a Class-C network
+   */
+  public static final NetworkMask C 
+    = new NetworkMask(new byte[] { 0x00 });
+  
+  private final byte[] mask;
+  
+  private final int hashCode;
+  
+  /**
+   * Creates a {@link NetworkMask}
+   */
+  public NetworkMask(byte[] mask) {
+    if (mask == null) {
+      throw new NullPointerException("mask");
     }
     
-    /**
-     * Returns the byte mask
-     */
-    public byte[] getBytes() {
-        return mask.clone();
-    }
-    
-    public int length() {
-        return mask.length;
-    }
-    
-    @Override
-    public void writeTo(OutputStream out) throws IOException {
-        out.write(mask);
-    }
+    this.mask = mask.clone();
+    this.hashCode = Arrays.hashCode(mask);
+  }
+  
+  /**
+   * Returns the byte mask
+   */
+  public byte[] getBytes() {
+    return mask.clone();
+  }
+  
+  public int length() {
+    return mask.length;
+  }
+  
+  @Override
+  public void writeTo(OutputStream out) throws IOException {
+    out.write(mask);
+  }
 
-    /**
-     * Returns the given {@link SocketAddress} as a mashed byte-array
-     */
-    public byte[] mask(SocketAddress address) {
-        return mask(((InetSocketAddress)address).getAddress());
+  /**
+   * Returns the given {@link SocketAddress} as a mashed byte-array
+   */
+  public byte[] mask(SocketAddress address) {
+    return mask(((InetSocketAddress)address).getAddress());
+  }
+  
+  /**
+   * Returns the given {@link InetAddress} as a mashed byte-array
+   */
+  public byte[] mask(InetAddress address) {
+    return mask(address.getAddress(), false);
+  }
+  
+  /**
+   * Masks and returns the given byte-array
+   */
+  public byte[] mask(byte[] address) {
+    return mask(address, true);
+  }
+  
+  /**
+   * Makes a copy of the given address (optional) and returns
+   * a masked version of it.
+   */
+  byte[] mask(byte[] address, boolean copy) {
+    if (address == null) {
+      throw new NullPointerException("address");
     }
     
-    /**
-     * Returns the given {@link InetAddress} as a mashed byte-array
-     */
-    public byte[] mask(InetAddress address) {
-        return mask(address.getAddress(), false);
+    if (copy) {
+      address = address.clone();
     }
     
-    /**
-     * Masks and returns the given byte-array
-     */
-    public byte[] mask(byte[] address) {
-        return mask(address, true);
+    int length = Math.min(address.length, mask.length);
+    for (int i = 0; i < length; i++) {
+      address[address.length - i - 1] &= mask[mask.length - i - 1]; 
     }
     
-    /**
-     * Makes a copy of the given address (optional) and returns
-     * a masked version of it.
-     */
-    byte[] mask(byte[] address, boolean copy) {
-        if (address == null) {
-            throw new NullPointerException("address");
-        }
-        
-        if (copy) {
-            address = address.clone();
-        }
-        
-        int length = Math.min(address.length, mask.length);
-        for (int i = 0; i < length; i++) {
-            address[address.length - i - 1] &= mask[mask.length - i - 1]; 
-        }
-        
-        return address;
-    }
-    
-    /**
-     * Returns true if the two given {@link SocketAddress}es 
-     * are in the same network.
-     */
-    public boolean isSameNetwork(SocketAddress a, SocketAddress b) {
-        return isSameNetwork(
-                ((InetSocketAddress)a).getAddress(), 
-                ((InetSocketAddress)b).getAddress());
-    }
-    
-    /**
-     * Returns true if the two given {@link InetAddress}es 
-     * are in the same network.
-     */
-    public boolean isSameNetwork(InetAddress a, InetAddress b) {
-        return isSameNetwork(a.getAddress(), b.getAddress(), false);
-    }
-    
-    /**
-     * Returns true if the two given addresses are in the same network.
-     */
-    public boolean isSameNetwork(byte[] a, byte[] b) {
-        return isSameNetwork(a, b, true);
-    }
-    
-    /**
-     * Returns true if the two given addresses are in the same network.
-     */
-    boolean isSameNetwork(byte[] a, byte[] b, boolean copy) {
-        return Arrays.equals(mask(a, copy), mask(b, copy));
-    }
+    return address;
+  }
+  
+  /**
+   * Returns true if the two given {@link SocketAddress}es 
+   * are in the same network.
+   */
+  public boolean isSameNetwork(SocketAddress a, SocketAddress b) {
+    return isSameNetwork(
+        ((InetSocketAddress)a).getAddress(), 
+        ((InetSocketAddress)b).getAddress());
+  }
+  
+  /**
+   * Returns true if the two given {@link InetAddress}es 
+   * are in the same network.
+   */
+  public boolean isSameNetwork(InetAddress a, InetAddress b) {
+    return isSameNetwork(a.getAddress(), b.getAddress(), false);
+  }
+  
+  /**
+   * Returns true if the two given addresses are in the same network.
+   */
+  public boolean isSameNetwork(byte[] a, byte[] b) {
+    return isSameNetwork(a, b, true);
+  }
+  
+  /**
+   * Returns true if the two given addresses are in the same network.
+   */
+  boolean isSameNetwork(byte[] a, byte[] b, boolean copy) {
+    return Arrays.equals(mask(a, copy), mask(b, copy));
+  }
 
-    @Override
-    public NetworkMask clone() {
-        return this;
+  @Override
+  public NetworkMask clone() {
+    return this;
+  }
+  
+  @Override
+  public int hashCode() {
+    return hashCode;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    } else if (!(o instanceof NetworkMask)) {
+      return false;
     }
     
-    @Override
-    public int hashCode() {
-        return hashCode;
-    }
+    return compareTo((NetworkMask)o) == 0;
+  }
+  
+  @Override
+  public int compareTo(NetworkMask o) {
+    return ByteArrayComparator.COMPARATOR.compare(mask, o.mask);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (!(o instanceof NetworkMask)) {
-            return false;
-        }
-        
-        return compareTo((NetworkMask)o) == 0;
-    }
-    
-    @Override
-    public int compareTo(NetworkMask o) {
-        return ByteArrayComparator.COMPARATOR.compare(mask, o.mask);
-    }
-
-    @Override
-    public String toString() {
-        return new BigInteger(1, mask).toString(16);
-    }
+  @Override
+  public String toString() {
+    return new BigInteger(1, mask).toString(16);
+  }
 }

@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,44 +21,44 @@ package org.ardverk.lang;
  */
 public class Precoditions {
 
-    private Precoditions() {}
-    
-    public static void argument(boolean expression) {
-        if (!expression) {
-            throw new IllegalArgumentException();
-        }
+  private Precoditions() {}
+  
+  public static void argument(boolean expression) {
+    if (!expression) {
+      throw new IllegalArgumentException();
     }
-    
-    public static void argument(boolean expression, String message) {
-        if (!expression) {
-            throw new IllegalArgumentException(message);
-        }
+  }
+  
+  public static void argument(boolean expression, String message) {
+    if (!expression) {
+      throw new IllegalArgumentException(message);
     }
+  }
 
-    public static void argument(boolean expression, 
-            String message, Object... arguments) {
-        if (!expression) {
-            throw new IllegalArgumentException(String.format(message, arguments));
-        }
+  public static void argument(boolean expression, 
+      String message, Object... arguments) {
+    if (!expression) {
+      throw new IllegalArgumentException(String.format(message, arguments));
     }
+  }
 
-    /**
-     * Makes sure the given argument is not {@code null}.
-     */
-    public static <T> T notNull(T t) {
-        return notNull(t, null);
+  /**
+   * Makes sure the given argument is not {@code null}.
+   */
+  public static <T> T notNull(T t) {
+    return notNull(t, null);
+  }
+  
+  /**
+   * Makes sure the given argument is not {@code null}.
+   */
+  public static <T> T notNull(T t, String message) {
+    if (t == null) {
+      if (message != null) {
+        throw new NullPointerException(message);
+      }
+      throw new NullPointerException();
     }
-    
-    /**
-     * Makes sure the given argument is not {@code null}.
-     */
-    public static <T> T notNull(T t, String message) {
-        if (t == null) {
-            if (message != null) {
-                throw new NullPointerException(message);
-            }
-            throw new NullPointerException();
-        }
-        return t;
-    }
+    return t;
+  }
 }

@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,23 +26,23 @@ import org.ardverk.lang.Bytes;
  */
 public class ByteArrayComparator implements Comparator<byte[]>, Serializable {
 
-    private static final long serialVersionUID = 6625000716332463624L;
+  private static final long serialVersionUID = 6625000716332463624L;
 
-    public static final ByteArrayComparator COMPARATOR = new ByteArrayComparator();
-    
-    @Override
-    public int compare(byte[] o1, byte[] o2) {
-        if (o1.length != o2.length) {
-            return o1.length - o2.length;
-        }
-        
-        for (int i = 0; i < o1.length; i++) {
-            int diff = Bytes.compareUnsigned(o1[i], o2[i]);
-            if (diff != 0) {
-                return diff;
-            }
-        }
-
-        return 0;
+  public static final ByteArrayComparator COMPARATOR = new ByteArrayComparator();
+  
+  @Override
+  public int compare(byte[] o1, byte[] o2) {
+    if (o1.length != o2.length) {
+      return o1.length - o2.length;
     }
+    
+    for (int i = 0; i < o1.length; i++) {
+      int diff = Bytes.compareUnsigned(o1[i], o2[i]);
+      if (diff != 0) {
+        return diff;
+      }
+    }
+
+    return 0;
+  }
 }

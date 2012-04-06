@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,70 +20,70 @@ import java.util.Map;
 
 public class DefaultEntry<K, V> implements Map.Entry<K, V> {
 
-    private final K key;
-    
-    private V value;
+  private final K key;
+  
+  private V value;
 
-    public DefaultEntry(K key) {
-        this(key, null);
-    }
-    
-    public DefaultEntry(K key, V value) {
-        this.key = key;
-        this.value = value;
-    }
-    
-    @Override
-    public K getKey() {
-        return key;
-    }
+  public DefaultEntry(K key) {
+    this(key, null);
+  }
+  
+  public DefaultEntry(K key, V value) {
+    this.key = key;
+    this.value = value;
+  }
+  
+  @Override
+  public K getKey() {
+    return key;
+  }
 
-    @Override
-    public V getValue() {
-        return value;
-    }
+  @Override
+  public V getValue() {
+    return value;
+  }
 
-    @Override
-    public V setValue(V value) {
-        V existing = this.value;
-        this.value = value;
-        return existing;
+  @Override
+  public V setValue(V value) {
+    V existing = this.value;
+    this.value = value;
+    return existing;
+  }
+  
+  @Override
+  public int hashCode() {
+    return 31*hashCode(key) + hashCode(value);
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    } else if (!(o instanceof Map.Entry<?, ?>)) {
+      return false;
     }
     
-    @Override
-    public int hashCode() {
-        return 31*hashCode(key) + hashCode(value);
+    Map.Entry<?, ?> other = (Map.Entry<?, ?>)o;
+    return equals(key, other.getKey()) 
+        && equals(value, other.getValue());
+  }
+  
+  @Override
+  public String toString() {
+    return "{" + key + "=" + value + "}";
+  }
+  
+  private static int hashCode(Object o) {
+    return o != null ? o.hashCode() : 0;
+  }
+  
+  private static boolean equals(Object o1, Object o2) {
+    if (o1 == null) {
+      return o2 == null;
+    } else if (o2 == null) {
+      return false;
     }
     
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (!(o instanceof Map.Entry<?, ?>)) {
-            return false;
-        }
-        
-        Map.Entry<?, ?> other = (Map.Entry<?, ?>)o;
-        return equals(key, other.getKey()) 
-                && equals(value, other.getValue());
-    }
-    
-    @Override
-    public String toString() {
-        return "{" + key + "=" + value + "}";
-    }
-    
-    private static int hashCode(Object o) {
-        return o != null ? o.hashCode() : 0;
-    }
-    
-    private static boolean equals(Object o1, Object o2) {
-        if (o1 == null) {
-            return o2 == null;
-        } else if (o2 == null) {
-            return false;
-        }
-        
-        return o1.equals(o2);
-    }
+    return o1.equals(o2);
+  }
 }

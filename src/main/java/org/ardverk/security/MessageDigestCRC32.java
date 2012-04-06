@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,50 +27,50 @@ import java.util.zip.CRC32;
  */
 public class MessageDigestCRC32 extends MessageDigest {
 
-    /**
-     * The name of the algorithm.
-     */
-    public static final String NAME = "CRC32";
-    
-    /**
-     * The length of the hash in bytes.
-     */
-    public static final int LENGTH = 4;
-    
-    private final CRC32 crc = new CRC32();
-    
-    public MessageDigestCRC32() {
-        super(NAME);
-    }
-    
-    @Override
-    protected int engineGetDigestLength() {
-        return LENGTH;
-    }
-    
-    @Override
-    protected byte[] engineDigest() {
-        long value = crc.getValue();
-        return new byte[] {
-            (byte)((value >> 24L) & 0xFF),
-            (byte)((value >> 16L) & 0xFF),
-            (byte)((value >>  8L) & 0xFF),
-            (byte)((value       ) & 0xFF),
-        };
-    }
+  /**
+   * The name of the algorithm.
+   */
+  public static final String NAME = "CRC32";
+  
+  /**
+   * The length of the hash in bytes.
+   */
+  public static final int LENGTH = 4;
+  
+  private final CRC32 crc = new CRC32();
+  
+  public MessageDigestCRC32() {
+    super(NAME);
+  }
+  
+  @Override
+  protected int engineGetDigestLength() {
+    return LENGTH;
+  }
+  
+  @Override
+  protected byte[] engineDigest() {
+    long value = crc.getValue();
+    return new byte[] {
+      (byte)((value >> 24L) & 0xFF),
+      (byte)((value >> 16L) & 0xFF),
+      (byte)((value >>  8L) & 0xFF),
+      (byte)((value     ) & 0xFF),
+    };
+  }
 
-    @Override
-    protected void engineReset() {
-        crc.reset();
-    }
+  @Override
+  protected void engineReset() {
+    crc.reset();
+  }
 
-    @Override
-    protected void engineUpdate(byte input) {
-        crc.update(input);
-    }
+  @Override
+  protected void engineUpdate(byte input) {
+    crc.update(input);
+  }
 
-    @Override
-    protected void engineUpdate(byte[] input, int offset, int len) {
-        crc.update(input, offset, len);
-    }
+  @Override
+  protected void engineUpdate(byte[] input, int offset, int len) {
+    crc.update(input, offset, len);
+  }
 }

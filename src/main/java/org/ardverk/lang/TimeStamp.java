@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,13 +50,13 @@ import java.util.concurrent.TimeUnit;
  * <pre>
  * final long startTime = System.nanoTime();
  * new Thread(new Runnable() {
- *      @Override
- *      public void run() {
- *          // Do something and this is hopefully running on a different
- *          // CPU core than the one that captured the startTime.
- *          long elapsedTime = System.nanoTime() - startTime;
- *          assert (elapsedTime >= 0L);
- *      }
+ *    @Override
+ *    public void run() {
+ *      // Do something and this is hopefully running on a different
+ *      // CPU core than the one that captured the startTime.
+ *      long elapsedTime = System.nanoTime() - startTime;
+ *      assert (elapsedTime >= 0L);
+ *    }
  * }).start();
  * </pre>
  * 
@@ -65,78 +65,78 @@ import java.util.concurrent.TimeUnit;
  * but it's at least not negative.
  */
 public class TimeStamp implements Epoch, Age, Comparable<TimeStamp>, Serializable {
-    
-    private static final long serialVersionUID = -981788126324372167L;
+  
+  private static final long serialVersionUID = -981788126324372167L;
 
-    /**
-     * Weather not {@link #getAge(TimeUnit)} will return the absolute time.
-     * 
-     * @see Math#abs(long)
-     */
-    private static final boolean ABSOLUTE = true;
-    
-    /**
-     * Creates and returns a {@link TimeStamp}.
-     */
-    public static TimeStamp now() {
-        return new TimeStamp();
+  /**
+   * Weather not {@link #getAge(TimeUnit)} will return the absolute time.
+   * 
+   * @see Math#abs(long)
+   */
+  private static final boolean ABSOLUTE = true;
+  
+  /**
+   * Creates and returns a {@link TimeStamp}.
+   */
+  public static TimeStamp now() {
+    return new TimeStamp();
+  }
+  
+  private final long timeStamp = System.currentTimeMillis();
+  
+  private TimeStamp() {}
+  
+  @Override
+  public long getCreationTime() {
+    return timeStamp;
+  }
+  
+  @Override
+  public long getAge(TimeUnit unit) {
+    long time = System.currentTimeMillis() - timeStamp;
+    return unit.convert(check(time), TimeUnit.MILLISECONDS);
+  }
+  
+  @Override
+  public long getAgeInMillis() {
+    return getAge(TimeUnit.MILLISECONDS);
+  }
+  
+  @Override
+  public int compareTo(TimeStamp other) {
+    return Longs.compare(timeStamp, other.timeStamp);
+  }
+  
+  @Override
+  public int hashCode() {
+    return (int)timeStamp;
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (o == this) {
+      return true;
+    } else if (!(o instanceof TimeStamp)) {
+      return false;
     }
     
-    private final long timeStamp = System.currentTimeMillis();
-    
-    private TimeStamp() {}
-    
-    @Override
-    public long getCreationTime() {
-        return timeStamp;
-    }
-    
-    @Override
-    public long getAge(TimeUnit unit) {
-        long time = System.currentTimeMillis() - timeStamp;
-        return unit.convert(check(time), TimeUnit.MILLISECONDS);
-    }
-    
-    @Override
-    public long getAgeInMillis() {
-        return getAge(TimeUnit.MILLISECONDS);
-    }
-    
-    @Override
-    public int compareTo(TimeStamp other) {
-        return Longs.compare(timeStamp, other.timeStamp);
-    }
-    
-    @Override
-    public int hashCode() {
-        return (int)timeStamp;
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (!(o instanceof TimeStamp)) {
-            return false;
-        }
-        
-        TimeStamp other = (TimeStamp)o;
-        return timeStamp == other.timeStamp;
-    }
-    
-    @Override
-    public String toString() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("Creation Time: ").append(new Date(getCreationTime()))
-            .append(", Age=").append(getAgeInMillis()).append("ms");
-        return buffer.toString();
-    }
-    
-    /**
-     * Checks if {@link #ABSOLUTE} is {@code true} and returns the 
-     * {@link Math#abs(long)} value of the given argument.
-     */
-    private static long check(long value) {
-        return ABSOLUTE ? Math.abs(value) : value;
-    }
+    TimeStamp other = (TimeStamp)o;
+    return timeStamp == other.timeStamp;
+  }
+  
+  @Override
+  public String toString() {
+    StringBuilder buffer = new StringBuilder();
+    buffer.append("Creation Time: ").append(new Date(getCreationTime()))
+      .append(", Age=").append(getAgeInMillis()).append("ms");
+    return buffer.toString();
+  }
+  
+  /**
+   * Checks if {@link #ABSOLUTE} is {@code true} and returns the 
+   * {@link Math#abs(long)} value of the given argument.
+   */
+  private static long check(long value) {
+    return ABSOLUTE ? Math.abs(value) : value;
+  }
 }

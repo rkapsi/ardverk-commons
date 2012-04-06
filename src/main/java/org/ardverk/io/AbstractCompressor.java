@@ -5,7 +5,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *       http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,29 +23,29 @@ import java.io.IOException;
  */
 public abstract class AbstractCompressor implements Compressor {
 
-    private final String algorithm;
-    
-    public AbstractCompressor(String algorithm) {
-        this.algorithm = algorithm;
-    }
-    
-    @Override
-    public String getAlgorithm() {
-        return algorithm;
-    }
+  private final String algorithm;
+  
+  public AbstractCompressor(String algorithm) {
+    this.algorithm = algorithm;
+  }
+  
+  @Override
+  public String getAlgorithm() {
+    return algorithm;
+  }
 
-    @Override
-    public byte[] compress(byte[] value) throws IOException {
-        return compress(value, 0, value.length);
-    }
+  @Override
+  public byte[] compress(byte[] value) throws IOException {
+    return compress(value, 0, value.length);
+  }
 
-    @Override
-    public byte[] decompress(byte[] value) throws IOException {
-        return decompress(value, 0, value.length);
-    }
-    
-    @Override
-    public String toString() {
-        return getAlgorithm();
-    }
+  @Override
+  public byte[] decompress(byte[] value) throws IOException {
+    return decompress(value, 0, value.length);
+  }
+  
+  @Override
+  public String toString() {
+    return getAlgorithm();
+  }
 }

@@ -29,70 +29,70 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class EventUtils {
 
-    private static final EventThreadProvider PROVIDER = newEventThreadProvider();
-    
-    private static EventThreadProvider newEventThreadProvider() {
-        for (EventThreadProvider element : ServiceLoader.load(
-                EventThreadProvider.class)) {
-            return element;
-        }
-        
-        return new DefaultEventThreadProvider();
+  private static final EventThreadProvider PROVIDER = newEventThreadProvider();
+  
+  private static EventThreadProvider newEventThreadProvider() {
+    for (EventThreadProvider element : ServiceLoader.load(
+        EventThreadProvider.class)) {
+      return element;
     }
     
-    private EventUtils() {}
+    return new DefaultEventThreadProvider();
+  }
+  
+  private EventUtils() {}
 
-    /**
-     * Returns true if the caller {@link Thread} is the same as the event 
-     * {@link Thread}. In other words {@link Thread}s can use method to 
-     * determinate if they are the event {@link Thread}.
-     */
-    public static boolean isEventThread() {
-        return PROVIDER.isEventThread();
-    }
+  /**
+   * Returns true if the caller {@link Thread} is the same as the event 
+   * {@link Thread}. In other words {@link Thread}s can use method to 
+   * determinate if they are the event {@link Thread}.
+   */
+  public static boolean isEventThread() {
+    return PROVIDER.isEventThread();
+  }
 
-    /**
-     * Executes the given {@link Runnable} on the event {@link Thread}.
-     */
-    public static void fireEvent(Runnable event) {
-        PROVIDER.fireEvent(event);
+  /**
+   * Executes the given {@link Runnable} on the event {@link Thread}.
+   */
+  public static void fireEvent(Runnable event) {
+    PROVIDER.fireEvent(event);
+  }
+  
+  /**
+   * The default event {@link Thread} provider that is being used 
+   * if no other {@link EventThreadProvider} was given.
+   */
+  private static class DefaultEventThreadProvider 
+      implements EventThreadProvider {
+
+    private final AtomicReference<Thread> reference 
+      = new AtomicReference<Thread>();
+    
+    private final ThreadFactory factory 
+        = new DefaultThreadFactory("DefaultEventThread") {
+      @Override
+      public Thread newThread(Runnable r) {
+        Thread thread = super.newThread(r);
+        reference.set(thread);
+        return thread;
+      } 
+    };
+    
+    private final Executor executor 
+      = Executors.newSingleThreadExecutor(factory);
+    
+    @Override
+    public boolean isEventThread() {
+      return reference.get() == Thread.currentThread();
     }
     
-    /**
-     * The default event {@link Thread} provider that is being used 
-     * if no other {@link EventThreadProvider} was given.
-     */
-    private static class DefaultEventThreadProvider 
-            implements EventThreadProvider {
-
-        private final AtomicReference<Thread> reference 
-            = new AtomicReference<Thread>();
-        
-        private final ThreadFactory factory 
-                = new DefaultThreadFactory("DefaultEventThread") {
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread thread = super.newThread(r);
-                reference.set(thread);
-                return thread;
-            } 
-        };
-        
-        private final Executor executor 
-            = Executors.newSingleThreadExecutor(factory);
-        
-        @Override
-        public boolean isEventThread() {
-            return reference.get() == Thread.currentThread();
-        }
-        
-        @Override
-        public void fireEvent(Runnable event) {
-            if (event == null) {
-                throw new NullPointerException("event");
-            }
-            
-            executor.execute(event);
-        }
+    @Override
+    public void fireEvent(Runnable event) {
+      if (event == null) {
+        throw new NullPointerException("event");
+      }
+      
+      executor.execute(event);
     }
+  }
 }
