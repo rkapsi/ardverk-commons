@@ -43,6 +43,9 @@ public class IoUtils {
    * @see Closeable
    * @see #close(Closeable)
    * 
+   * @see AutoCloseable
+   * @see #close(AutoCloseable)
+   * 
    * @see Socket
    * @see #close(Socket)
    * 
@@ -58,6 +61,8 @@ public class IoUtils {
   public static boolean close(Object o) {
     if (o instanceof Closeable) {
       return close((Closeable)o);
+    } else if (o instanceof AutoCloseable) {
+      return close((AutoCloseable)o);
     } else if (o instanceof Socket) {
       return close((Socket)o);
     } else if (o instanceof ServerSocket) {
@@ -127,6 +132,21 @@ public class IoUtils {
   }
   
   /**
+   * Closes the given {@link AutoCloseable}
+   */
+  public static boolean close(AutoCloseable closeable) {
+    if (closeable != null) {
+      try {
+        closeable.close();
+        return true;
+      } catch (Exception err) {
+        ExceptionUtils.exceptionCaught(err);
+      }
+    }
+    return false;
+  }
+  
+  /**
    * Closes the given {@link AtomicReference}
    */
   public static boolean close(AtomicReference<?> closeable) {
@@ -141,6 +161,7 @@ public class IoUtils {
    * 
    * @see #close(Object)
    */
+  @SafeVarargs
   public static <T> boolean closeAll(T... closeables) {
     return closeAll(closeables, 0, closeables != null ? closeables.length : 0);
   }
