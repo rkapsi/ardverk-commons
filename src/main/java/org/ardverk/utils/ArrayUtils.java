@@ -55,6 +55,7 @@ public class ArrayUtils {
   /**
    * Shuffles the array's elements.
    */
+  @SafeVarargs
   public static <T> T[] shuffle(T... elements) {
     return shuffle(elements, 0, elements.length);
   }
@@ -479,6 +480,7 @@ public class ArrayUtils {
   /**
    * Returns the min value in the given array.
    */
+  @SafeVarargs
   public static <T extends Number & Comparable<T>> T min(T... values) {
     return min(values, 0, values.length);
   }
@@ -493,6 +495,7 @@ public class ArrayUtils {
   /**
    * Returns the max value in the given array.
    */
+  @SafeVarargs
   public static <T extends Number & Comparable<T>> T max(T... values) {
     return max(values, 0, values.length);
   }
@@ -507,6 +510,7 @@ public class ArrayUtils {
   /**
    * Returns the min and max value in the given array.
    */
+  @SafeVarargs
   public static <T extends Number & Comparable<T>> T[] mm(T... values) {
     return mm(values, 0, values.length);
   }
@@ -522,6 +526,7 @@ public class ArrayUtils {
   /**
    * Returns the min value in the given array.
    */
+  @SafeVarargs
   public static <T> T min(Comparator<T> comparator, T... values) {
     return min(comparator, values, 0, values.length);
   }
@@ -536,6 +541,7 @@ public class ArrayUtils {
   /**
    * Returns the max value in the given array.
    */
+  @SafeVarargs
   public static <T> T max(Comparator<T> comparator, T... values) {
     return max(comparator, values, 0, values.length);
   }
@@ -550,6 +556,7 @@ public class ArrayUtils {
   /**
    * Returns the min and max value in the given array.
    */
+  @SafeVarargs
   public static <T> T[] mm(Comparator<T> comparator, T... values) {
     return mm(comparator, values, 0, values.length);
   }

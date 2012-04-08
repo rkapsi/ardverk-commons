@@ -41,15 +41,11 @@ public class ZlibCompressor extends AbstractCompressor {
   public byte[] compress(byte[] value, int offset, int length)
       throws IOException {
     
-    ByteArrayOutputStream baos = null;
-    OutputStream out = null;
-    
-    try {
-      baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(length));
-      out = new DeflaterOutputStream(baos);   
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(length));
+    try (OutputStream out = new DeflaterOutputStream(baos)) {
       out.write(value, offset, length);
     } finally {
-      IoUtils.closeAll(out, baos);
+      IoUtils.closeAll(baos);
     }
     
     return baos.toByteArray();
@@ -58,14 +54,12 @@ public class ZlibCompressor extends AbstractCompressor {
   @Override
   public byte[] decompress(byte[] value, int offset, int length)
       throws IOException {
-    ByteArrayOutputStream baos = null;
-    OutputStream out = null;
-    try {
-      baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(2 * length));
-      out = new InflaterOutputStream(baos);
+    
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(2 * length));
+    try (OutputStream out = new InflaterOutputStream(baos)) {
       out.write(value, offset, length);
     } finally {
-      IoUtils.closeAll(out, baos);
+      IoUtils.closeAll(baos);
     }
     
     return baos.toByteArray();

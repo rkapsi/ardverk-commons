@@ -27,6 +27,7 @@ public class EnumUtils {
   /**
    * Creates and returns an {@link EnumSet}
    */
+  @SafeVarargs
   public static <E extends Enum<E>> EnumSet<E> createSet(Class<E> clazz, E... elements) {
     switch (elements.length) {
       case 0:

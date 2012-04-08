@@ -526,8 +526,8 @@ public class DataUtils {
     while ((value & ~0x7F) != 0) {
       out.write((value & 0x7f) | 0x80);
       value >>>= 7;
-      }
-      out.write(value);
+    }
+    out.write(value);
   }
   
   public static int vbeb2int(InputStream in) throws IOException {

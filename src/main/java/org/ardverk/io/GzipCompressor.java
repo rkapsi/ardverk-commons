@@ -42,15 +42,11 @@ public class GzipCompressor extends AbstractCompressor {
   public byte[] compress(byte[] value, int offset, int length)
       throws IOException {
     
-    ByteArrayOutputStream baos = null;
-    OutputStream out = null;
-    
-    try {
-      baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(length));
-      out = new GZIPOutputStream(baos);   
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(length));
+    try (OutputStream out = new GZIPOutputStream(baos)) {
       out.write(value, offset, length);
     } finally {
-      IoUtils.closeAll(out, baos);
+      IoUtils.close(baos);
     }
     
     return baos.toByteArray();
@@ -59,28 +55,18 @@ public class GzipCompressor extends AbstractCompressor {
   @Override
   public byte[] decompress(byte[] value, int offset, int length)
       throws IOException {
-    ByteArrayOutputStream baos = null;
-    try {
-      baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(2 * length));
-      
-      ByteArrayInputStream bais = null;
-      InputStream in = null;
-      
-      try {
-        bais = new ByteArrayInputStream(value, offset, length);
-        in = new GZIPInputStream(bais);
-        
+    
+    ByteArrayOutputStream baos = new ByteArrayOutputStream(MathUtils.nextPowOfTwo(2 * length));
+    
+    try (ByteArrayInputStream bais = new ByteArrayInputStream(value, offset, length)) {
+      try (InputStream in = new GZIPInputStream(bais)) {
         byte[] buffer = new byte[Math.min(length, 1024)];
         int len = -1;
         
         while ((len = in.read(buffer)) != -1) {
           baos.write(buffer, 0, len);
         }
-        
-      } finally {
-        IoUtils.closeAll(in, bais);
       }
-      
     } finally {
       IoUtils.close(baos);
     }
