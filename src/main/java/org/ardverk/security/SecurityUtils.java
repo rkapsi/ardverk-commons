@@ -22,8 +22,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.SecureRandom;
 
-import org.ardverk.io.IoUtils;
-
 public class SecurityUtils {
 
   private static final int SEED_LENGTH = 32;
@@ -42,19 +40,12 @@ public class SecurityUtils {
     // All Unix like Systems should have this device.
     File file = new File("/dev/urandom");
     
-    DataInputStream in = null;
-    try {
-      if (file.exists() && file.canRead()) {
-        in = new DataInputStream(new FileInputStream(file));
-        
+    if (file.exists() && file.canRead()) {
+      try (DataInputStream in = new DataInputStream(new FileInputStream(file))) {
         byte[] seed = new byte[SEED_LENGTH];
         in.readFully(seed);
         return new SecureRandom(seed);
-      }
-    } catch (SecurityException ignore) {
-    } catch (IOException ignore) {
-    } finally {
-      IoUtils.close(in);
+      } catch (SecurityException | IOException ignore) {}
     }
     
     // We're either on Windows or something else happened.
