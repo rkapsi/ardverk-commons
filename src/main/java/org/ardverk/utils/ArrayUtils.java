@@ -24,8 +24,7 @@ import org.ardverk.security.SecurityUtils;
 
 public class ArrayUtils {
 
-  private static final Random GENERATOR 
-    = SecurityUtils.createSecureRandom();
+  private static final Random GENERATOR = SecurityUtils.createSecureRandom();
   
   private ArrayUtils() {}
   

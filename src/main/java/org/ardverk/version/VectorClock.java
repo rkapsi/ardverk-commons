@@ -40,10 +40,12 @@ public class VectorClock<K> implements Version<VectorClock<K>>, Serializable {
   
   private static final long serialVersionUID = 8061383748163285648L;
   
+  @SafeVarargs
   public static <K> VectorClock<K> create(K... keys) {
     return create(null, keys);
   }
   
+  @SafeVarargs
   public static <K> VectorClock<K> create(Comparator<? super K> c, K... keys) {
     long creationTime = System.currentTimeMillis();
     SortedMap<K, Vector> dst = new TreeMap<K, Vector>(c);
